@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товары | RetailCRM Mockup</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-app: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        
+        body { display: flex; height: 100vh; background-color: var(--bg-app); color: var(--text-main); }
+
+        /* Sidebar */
+        .sidebar { width: 70px; background-color: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; flex-shrink: 0; }
+        .sidebar-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--sidebar-text); margin-bottom: 15px; cursor: pointer; transition: 0.2s; font-size: 1.2rem; text-decoration: none; }
+        .sidebar-icon:hover, .sidebar-icon.active { background-color: #334155; color: #fff; }
+        .sidebar-icon.active { border-left: 3px solid var(--primary); }
+
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Header */
+        .header { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        .header-title { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .actions { display: flex; gap: 10px; }
+        
+        /* Buttons */
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #fff; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-secondary:hover { background: #f9fafb; }
+        .btn-icon { padding: 6px; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary); }
+        .btn-icon:hover { background: #f3f4f6; color: var(--primary); }
+
+        /* Workspace */
+        .workspace { flex: 1; padding: 24px; overflow-y: auto; }
+        
+        /* Filter Bar */
+        .filter-bar { background: var(--bg-card); padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; }
+        .filter-select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: #fff; min-width: 140px; }
+
+        /* Table */
+        .table-container { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 16px; background: #f9fafb; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+        tr:hover { background: #f9fafb; }
+        tr:last-child td { border-bottom: none; }
+        
+        /* Badges & Tags */
+        .badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+        .badge-success { background: #ecfdf5; color: var(--success); }
+        .badge-grey { background: #f3f4f6; color: #6b7280; }
+        .badge-danger { background: #fef2f2; color: var(--danger); }
+        .badge-info { background: #eff6ff; color: var(--primary); }
+        
+        .stock-indicator { font-weight: bold; }
+        .stock-critical { color: var(--danger); background: #fef2f2; padding: 2px 6px; border-radius: 4px; }
+        .stock-ok { color: var(--success); }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal { background: #fff; width: 600px; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; transform: translateY(10px); transition: transform 0.2s; }
+        .modal-overlay.active .modal { transform: translateY(0); }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: #f9fafb; border-radius: 0 0 8px 8px; }
+
+        /* Form Grid */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
+        .form-input, .form-textarea, .form-select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        /* History List in Modal */
+        .history-list { list-style: none; }
+        .history-item { padding: 10px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; }
+        .history-item:last-child { border-bottom: none; }
+        .history-date { font-size: 0.8rem; color: var(--text-secondary); }
+        .history-client { font-weight: 500; }
+
+        /* Toast Notification */
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #1f2937; color: #fff; padding: 12px 20px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; animation: slideIn 0.3s ease-out; z-index: 200; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 50px; }
+            .workspace { padding: 16px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .modal { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket" viewBox="0 0 16 16">
+  <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9zM1 7v1h14V7zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5"/>
+</svg></div> <!-- Orders -->
+         <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-diagram-3" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+</svg></div> <!-- Clients -->
+	<div class="sidebar-icon"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+  <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+</svg></div>
+        <div class="sidebar-icon active"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+  <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+</svg></div> <!-- Products -->
+        <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+</svg></div> <!-- Reports -->
+        <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+</svg></div> <!-- Settings -->
+    </aside>
+
+    <main class="main">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">Справочник товаров</div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="openProductModal()">+ Добавить товар</button>
+            </div>
+        </header>
+
+        <!-- Workspace -->
+        <div class="workspace">
+            
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" class="search-input" placeholder="Поиск по названию или артикулу..." id="searchInput" oninput="renderProducts()">
+                <select class="filter-select" id="stockFilter" onchange="renderProducts()">
+                    <option value="all">Все товары</option>
+                    <option value="low">Заканчивается</option>
+                    <option value="active">В наличии</option>
+                </select>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название</th>
+                            <th>Артикул</th>
+                            <th>Цена</th>
+                            <th>Остаток</th>
+                            <th>Статус</th>
+                            <th style="width: 140px;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <!-- JS renders rows here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add/Edit Product -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Новый товар</h3>
+                <button class="btn-icon" onclick="closeProductModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <input type="hidden" id="productId">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Название товара *</label>
+                            <input type="text" id="productName" class="form-input" required placeholder="Смартфон X100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Артикул (SKU)</label>
+                            <input type="text" id="productSku" class="form-input" placeholder="ART-001">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Цена (₽)</label>
+                            <input type="number" id="productPrice" class="form-input" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Текущий остаток</label>
+                            <input type="number" id="productStock" class="form-input" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Порог уведомления</label>
+                            <input type="number" id="productThreshold" class="form-input" value="5">
+                            <div class="form-hint">Уведомлять, если остаток ниже этого значения</div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Описание</label>
+                            <textarea id="productDesc" class="form-textarea" placeholder="Характеристики товара..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeProductModal()">Отмена</button>
+                <button class="btn btn-primary" onclick="saveProduct()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Product History (Related Inquiries) -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>История: <span id="historyProductName" style="color: var(--primary);"></span></h3>
+                <button class="btn-icon" onclick="closeHistoryModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; color: var(--text-secondary);">Заявки и обращения, связанные с этим товаром (UC-4 &rarr; UC-5):</p>
+                <ul class="history-list" id="historyList">
+                    <!-- JS populates this -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeHistoryModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // --- MOCK DATA ---
+        let products = [
+            { id: 1, name: "Смартфон X100", sku: "PH-100", price: 25000, stock: 12, threshold: 5, is_active: true, description: "Флагманская модель" },
+            { id: 2, name: "Чехол силиконовый", sku: "ACC-50", price: 500, stock: 2, threshold: 5, is_active: true, description: "Прозрачный, прочный" },
+            { id: 3, name: "Ноутбук Pro 15", sku: "LT-200", price: 85000, stock: 0, threshold: 2, is_active: false, description: "Для профессионалов" },
+            { id: 4, name: "Наушники Bluetooth", sku: "AUD-30", price: 3500, stock: 45, threshold: 10, is_active: true, description: "С шумоподавлением" }
+        ];
+
+        // Mock Inquiries for History (Connection UC-4 -> UC-5)
+        const inquiries = [
+            { id: 101, client: "Иванов И.И.", date: "2024-05-10", type: "Заказ", text: "Хочу заказать 2 шт. Смартфон X100" },
+            { id: 102, client: "Сидорова А.", date: "2024-05-12", type: "Вопрос", text: "Есть ли в наличии Чехол силиконовый?" },
+            { id: 103, client: "ООО Ромашка", date: "2024-05-14", type: "Заказ", text: "Оптовая партия: Смартфон X100 (5 шт)" }
+        ];
+
+        let currentProductId = null;
+
+        // --- RENDER LOGIC ---
+        function renderProducts() {
+            const tbody = document.getElementById('productsTableBody');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const stockFilter = document.getElementById('stockFilter').value;
+            
+            tbody.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchVal) || 
+                                      (p.sku && p.sku.toLowerCase().includes(searchVal));
+                
+                let matchesStock = true;
+                if (stockFilter === 'low') matchesStock = p.stock < p.threshold && p.is_active;
+                if (stockFilter === 'active') matchesStock = p.stock > 0 && p.is_active;
+
+                return matchesSearch && matchesStock;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999; padding: 20px;">Товары не найдены</td></tr>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                const tr = document.createElement('tr');
+                if (!p.is_active) tr.style.opacity = '0.6';
+                
+                // Stock Badge Logic
+                let stockHtml = '';
+                if (p.stock < p.threshold) {
+                    stockHtml = `<span class="stock-critical">${p.stock} шт.</span>`;
+                } else {
+                    stockHtml = `<span class="stock-ok">${p.stock} шт.</span>`;
+                }
+
+                // Status Badge
+                let statusBadge = p.is_active ? '<span class="badge badge-success">Активен</span>' : '<span class="badge badge-grey">Не активен</span>';
+
+                tr.innerHTML = `
+                    <td style="color: var(--text-secondary);">#${p.id}</td>
+                    <td>
+                        <div style="font-weight: 500;">${p.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${p.description || ''}</div>
+                    </td>
+                    <td style="font-family: monospace;">${p.sku || '—'}</td>
+                    <td style="font-weight: 600;">${p.price.toLocaleString()} ₽</td>
+                    <td>${stockHtml}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="btn-icon" onclick="openProductModal(${p.id})" title="Редактировать">Редактировать</button>
+                        <button class="btn-icon" onclick="openHistoryModal(${p.id})" title="История / Заявки">История</button>
+                        <button class="btn-icon" onclick="toggleProductStatus(${p.id})" title="${p.is_active ? 'Деактивировать' : 'Активировать'}">${p.is_active ? 'Присотановить' : 'Возобновить'}</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- MODAL LOGIC: PRODUCT ---
+        function openProductModal(id = null) {
+            document.getElementById('productModal').classList.add('active');
+            if (id) {
+                const p = products.find(i => i.id === id);
+                document.getElementById('modalTitle').innerText = 'Редактирование товара';
+                document.getElementById('productId').value = p.id;
+                document.getElementById('productName').value = p.name;
+                document.getElementById('productSku').value = p.sku;
+                document.getElementById('productPrice').value = p.price;
+                document.getElementById('productStock').value = p.stock;
+                document.getElementById('productThreshold').value = p.threshold;
+                document.getElementById('productDesc').value = p.description || '';
+                currentProductId = id;
+            } else {
+                document.getElementById('modalTitle').innerText = 'Новый товар';
+                document.getElementById('productForm').reset();
+                document.getElementById('productId').value = '';
+                document.getElementById('productThreshold').value = 5;
+                currentProductId = null;
+            }
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        function saveProduct() {
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            if (!name || isNaN(price)) {
+                alert('Заполните обязательные поля: Название и Цена');
+                return;
+            }
+
+            const data = {
+                name: name,
+                sku: document.getElementById('productSku').value,
+                price: price,
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                threshold: parseInt(document.getElementById('productThreshold').value) || 5,
+                description: document.getElementById('productDesc').value
+            };
+
+            if (currentProductId) {
+                const idx = products.findIndex(p => p.id === currentProductId);
+                products[idx] = { ...products[idx], ...data };
+                showToast(`Товар "${name}" обновлен`);
+            } else {
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.unshift({ id: newId, ...data, is_active: true });
+                showToast(`Товар "${name}" добавлен`);
+            }
+
+            closeProductModal();
+            renderProducts();
+        }
+
+        function toggleProductStatus(id) {
+            const p = products.find(i => i.id === id);
+            if (p) {
+                p.is_active = !p.is_active;
+                renderProducts();
+                showToast(p.is_active ? `▶️ Товар "${p.name}" активирован` : `⏸️ Товар "${p.name}" деактивирован`);
+            }
+        }
+
+        // --- MODAL LOGIC: HISTORY (The "Interesting" Part) ---
+        function openHistoryModal(productId) {
+            const p = products.find(i => i.id === productId);
+            if (!p) return;
+
+            document.getElementById('historyProductName').innerText = p.name;
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+
+            // Filter inquiries related to this product
+            // In real app, this would be a JOIN query: SELECT * FROM inquiries JOIN ... WHERE product_id = X
+            const relatedInquiries = inquiries.filter(i => i.text.toLowerCase().includes(p.name.toLowerCase()));
+
+            if (relatedInquiries.length === 0) {
+                list.innerHTML = '<li style="padding: 20px; text-align: center; color: #999;">Нет связанных обращений</li>';
+            } else {
+                relatedInquiries.forEach(i => {
+                    const li = document.createElement('li');
+                    li.className = 'history-item';
+                    li.innerHTML = `
+                        <div>
+                            <div class="history-client">${i.client}</div>
+                            <div style="font-size: 0.9rem;">${i.text}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="history-date">${i.date}</div>
+                            <span class="badge badge-info" style="font-size: 0.7rem;">${i.type}</span>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            }
+
+            document.getElementById('historyModal').classList.add('active');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+
+        // --- UTILS ---
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Init
+        renderProducts();
+    </script>
+</body>
+</html>
+

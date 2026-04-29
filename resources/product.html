@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новый заказ | RetailCRM Mockup</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-app: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        
+        body { display: flex; height: 100vh; background-color: var(--bg-app); color: var(--text-main); }
+
+        /* Sidebar */
+        .sidebar { width: 70px; background-color: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; flex-shrink: 0; }
+        .sidebar-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--sidebar-text); margin-bottom: 15px; cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
+        .sidebar-icon:hover, .sidebar-icon.active { background-color: #334155; color: #fff; }
+        .sidebar-icon.active { border-left: 3px solid var(--primary); }
+
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Header */
+        .header { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        .header-title { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .badge { font-size: 0.75rem; background: #e0e7ff; color: var(--primary); padding: 2px 8px; border-radius: 12px; }
+        .actions { display: flex; gap: 10px; }
+        
+        /* Buttons */
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #fff; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-secondary:hover { background: #f9fafb; }
+        .btn-danger-text { color: var(--danger); background: transparent; padding: 4px 8px; }
+        .btn-danger-text:hover { background: #fef2f2; }
+
+        /* Workspace */
+        .workspace { flex: 1; padding: 24px; overflow-y: auto; display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+        /* Cards */
+        .card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
+        .card-header { font-size: 1rem; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 16px; position: relative; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
+        .form-input, .form-select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; transition: 0.2s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        /* Autocomplete Mock */
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 10; display: none; }
+        .autocomplete-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
+        .autocomplete-item:hover { background: #f9fafb; }
+        .autocomplete-item strong { display: block; color: var(--text-main); }
+        .autocomplete-item span { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Product Table */
+        .product-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .product-table th { text-align: left; font-size: 0.8rem; color: var(--text-secondary); padding: 8px; border-bottom: 1px solid var(--border); }
+        .product-table td { padding: 10px 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; }
+        .product-table td.align-right { text-align: right; }
+        .product-input { width: 70px; padding: 4px; text-align: center; }
+        
+        /* Right Column (Totals) */
+        .totals-block { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 0.95rem; }
+        .total-row.grand { font-weight: 700; font-size: 1.2rem; color: var(--text-main); margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--border); }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal { background: #fff; width: 500px; border-radius: 8px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+        .modal-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+
+        .stock-tag { font-size: 0.75rem; color: var(--success); background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-icon active"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket" viewBox="0 0 16 16">
+  <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9zM1 7v1h14V7zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5"/>
+</svg></div> <!-- Orders -->
+         <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-diagram-3" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+</svg></div> <!-- Clients -->
+	<div class="sidebar-icon"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+  <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+</svg></div>
+        <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+  <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+</svg></div> <!-- Products -->
+        <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+</svg></div> <!-- Reports -->
+        <div class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+</svg></div> <!-- Settings -->
+    </aside>
+
+    <main class="main">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                Оформление продажи
+                <span class="badge">Новый</span>
+            </div>
+            <div class="actions">
+                <button class="btn btn-secondary" onclick="alert('Данные не сохранены. Сценарий: Отмена')">Отмена</button>
+                <button class="btn btn-secondary" onclick="alert('Сценарий: Печать чека')">Печать</button>
+                <button class="btn btn-primary" onclick="alert('Сценарий: Сохранение (INSERT в Sale/SaleItem, UPDATE stock, INSERT audit_log)')">Сохранить заказ</button>
+            </div>
+        </header>
+
+        <!-- Workspace -->
+        <div class="workspace">
+            
+            <!-- Left Column: Details -->
+            <div class="content-left">
+                
+                <!-- 1. Client Block (UC-1 Step 3, 4) -->
+                <div class="card">
+                    <div class="card-header">Клиент</div>
+                    <div class="form-group">
+                        <label class="form-label">Поиск клиента</label>
+                        <input type="text" id="clientSearch" class="form-input" placeholder="Начните вводить ФИО или телефон..." oninput="searchClient(this.value)">
+                        <div id="clientDropdown" class="autocomplete-list">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="clientEmail" class="form-input" readonly placeholder="—">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Телефон</label>
+                            <input type="tel" id="clientPhone" class="form-input" readonly placeholder="—">
+                        </div>
+                    </div>
+                    <button class="btn btn-danger-text" onclick="document.getElementById('clientSearch').value=''; document.getElementById('clientSearch').disabled=false; document.getElementById('clientEmail').value=''; document.getElementById('clientPhone').value='';">
+                        ↺ Очистить / Выбрать другого
+                    </button>
+                </div>
+
+                <!-- 2. Products Block (UC-1 Step 5) -->
+                <div class="card">
+                    <div class="card-header">
+                        Товары
+                        <button class="btn btn-primary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="openProductModal()">+ Добавить товар</button>
+                    </div>
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th style="width: 100px;">Цена</th>
+                                <th style="width: 80px;">Кол-во</th>
+                                <th style="width: 100px;">Скидка (%)</th>
+                                <th style="width: 120px;">Сумма</th>
+                                <th style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartItems">
+                            <!-- Rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Column: Summary (UC-1 Step 6, 7, 8) -->
+            <div class="content-right">
+                <div class="card">
+                    <div class="card-header">Итоги</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Способ оплаты</label>
+                        <select class="form-select" id="paymentMethod">
+                            <option value="cash">Наличные</option>
+                            <option value="card">Картой</option>
+                            <option value="transfer">Перевод</option>
+                        </select>
+                    </div>
+
+                    <div class="totals-block">
+                        <div class="total-row">
+                            <span>Сумма заказов</span>
+                            <span id="subtotal">0 ₽</span>
+                        </div>
+                        <div class="total-row" style="color: var(--danger);">
+                            <span>Скидка</span>
+                            <span id="discountTotal">-0 ₽</span>
+                        </div>
+                        <div class="total-row grand">
+                            <span>Итого к оплате</span>
+                            <span id="grandTotal">0 ₽</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Комментарий к заказу</label>
+                        <textarea class="form-input" rows="3" placeholder="Дополнительная информация..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: Add Product -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">Выбор товара</div>
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder="Поиск по названию или артикулу..." id="productSearchInput">
+            </div>
+            
+            <div style="border: 1px solid var(--border); border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                <!-- Static Mock Data for Products -->
+                <div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; cursor: pointer; align-items: center;" onclick="addProductToCart('Смартфон X100', 25000, 10)">
+                    <div>
+                        <strong>Смартфон X100</strong><br>
+                        <span style="font-size: 0.8rem; color: #666;">Арт: 12345</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>25 000 ₽</div>
+                        <span class="stock-tag">Остаток: 10</span>
+                    </div>
+                </div>
+                <div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; cursor: pointer; align-items: center;" onclick="addProductToCart('Чехол силиконовый', 500, 150)">
+                    <div>
+                        <strong>Чехол силиконовый</strong><br>
+                        <span style="font-size: 0.8rem; color: #666;">Арт: 99887</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>500 ₽</div>
+                        <span class="stock-tag">Остаток: 150</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeProductModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- MOCK LOGIC FOR UC-1 ---
+
+        // 1. Client Search Simulation
+        const clientsDB = [
+            { name: "Иванов Иван Иванович", email: "ivan@example.com", phone: "+7 (999) 111-22-33" },
+            { name: "ООО 'Ромашка'", email: "info@romashka.ru", phone: "+7 (495) 000-00-01" }
+        ];
+
+        function searchClient(val) {
+            const dropdown = document.getElementById('clientDropdown');
+            if (val.length < 2) { dropdown.style.display = 'none'; return; }
+
+            const filtered = clientsDB.filter(c => c.name.toLowerCase().includes(val.toLowerCase()));
+            dropdown.innerHTML = '';
+            
+            if (filtered.length > 0) {
+                dropdown.style.display = 'block';
+                filtered.forEach(client => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerHTML = `<strong>${client.name}</strong><span>${client.phone}</span>`;
+                    div.onclick = () => selectClient(client);
+                    dropdown.appendChild(div);
+                });
+            } else {
+                // UC-1 Alt Flow A1: If not found, user might want to create new
+                dropdown.style.display = 'block';
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.innerHTML = `<strong>+ Создать нового клиента</strong><span>На основе введенных данных</span>`;
+                div.onclick = () => alert('Переход к форме создания клиента (UC-2)');
+                dropdown.appendChild(div);
+            }
+        }
+
+        function selectClient(client) {
+            document.getElementById('clientSearch').value = client.name;
+            document.getElementById('clientSearch').disabled = true; // Lock selection
+            document.getElementById('clientEmail').value = client.email;
+            document.getElementById('clientPhone').value = client.phone;
+            document.getElementById('clientDropdown').style.display = 'none';
+        }
+
+        // 2. Product Modal Logic
+        function openProductModal() {
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        // 3. Cart Logic
+        let cart = [];
+
+        function addProductToCart(name, price, stock) {
+            // UC-1 Step 5.3 Check Stock
+            // (Simplified here, usually checking if adding exceeds stock)
+            
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                if (existing.qty + 1 > stock) {
+                    alert(`Внимание! Недостаточно товара на складе. Доступно: ${stock}`);
+                    return;
+                }
+                existing.qty++;
+            } else {
+                cart.push({ name, price, qty: 1, discount: 0, stock });
+            }
+            renderCart();
+            closeProductModal();
+        }
+
+        function updateQty(index, val) {
+            const qty = parseInt(val);
+            if (qty > cart[index].stock) {
+                alert('Недостаточно на складе!');
+                renderCart(); // reset visual
+                return;
+            }
+            cart[index].qty = qty > 0 ? qty : 1;
+            renderCart();
+        }
+
+        function updateDiscount(index, val) {
+            cart[index].discount = parseFloat(val) || 0;
+            renderCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cartItems');
+            tbody.innerHTML = '';
+            
+            let subtotal = 0;
+            let totalDiscount = 0;
+
+            cart.forEach((item, index) => {
+                const rowSum = item.price * item.qty;
+                const discountAmount = rowSum * (item.discount / 100);
+                const finalSum = rowSum - discountAmount;
+
+                subtotal += rowSum;
+                totalDiscount += discountAmount;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.price.toLocaleString()} ₽</td>
+                    <td><input type="number" class="form-input product-input" value="${item.qty}" onchange="updateQty(${index}, this.value)"></td>
+                    <td><input type="number" class="form-input product-input" value="${item.discount}" min="0" max="100" onchange="updateDiscount(${index}, this.value)"></td>
+                    <td class="align-right"><strong>${finalSum.toLocaleString()} ₽</strong></td>
+                    <td><button class="btn-danger-text" onclick="removeItem(${index})">🗑️</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('subtotal').innerText = subtotal.toLocaleString() + ' ₽';
+            document.getElementById('discountTotal').innerText = '-' + totalDiscount.toLocaleString() + ' ₽';
+            document.getElementById('grandTotal').innerText = (subtotal - totalDiscount).toLocaleString() + ' ₽';
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target == modal) {
+                closeProductModal();
+            }
+        }
+    </script>
+</body>
+</html>
+

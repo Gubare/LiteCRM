@@ -1,0 +1,41 @@
+<!-- clients.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Клиенты - CRM</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">Главная</a>
+        <a href="clients.html">Клиенты</a>
+        <a href="report.html">Продажи</a>
+    </nav>
+    
+    <h1>Список клиентов</h1>
+    <table id="clientList">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Телефон</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Заполняется через JS -->
+        </tbody>
+    </table>
+    <script type="module">
+    import { loadClientList } from './js/client.js';
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+        const clients = await loadClientList();
+        renderClientTable(clients);
+    });
+</script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/client.js"></script>
+</body>
+</html>
