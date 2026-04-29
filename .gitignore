@@ -1,13 +1,51 @@
-# Developer tools' files
-.lite_workspace.lua
+```
+# Dependencies
+node_modules/
 
-# Neutralinojs binaries and builds
-/bin
-/dist
+# Build artifacts
+dist/
+build/
+target/
 
-# Neutralinojs client (minified)
-neutralino.js
+# Temporary files
+*.tmp
+*.temp
 
-# Neutralinojs related files
-.storage
+# Environment variables
+.env
+.env.local
+*.env.*
+
+# Logs
 *.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Package lock files (preserving existing)
+package-lock.json
+node_modules/.package-lock.json
+
+# Temporary auth info
+.tmp/
+```

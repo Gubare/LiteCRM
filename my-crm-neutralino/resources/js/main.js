@@ -1,6 +1,14 @@
-import { initDatabase, getDbInstance } from './db.js';
-import { handleClientFormSubmit, loadClientList, setDbInstance } from './client.js';
+// This is just a sample app. You can structure your Neutralinojs app code as you wish.
+// This example app is written with vanilla JavaScript and HTML.
+// Feel free to use any frontend framework you like :)
+// See more details: https://neutralino.js.org/docs/how-to/use-a-frontend-library
 
+/*
+    Function to display information about the Neutralino app.
+    This function updates the content of the 'info' element in the HTML
+    with details regarding the running Neutralino application, including
+    its ID, port, operating system, and version information.
+*/
 function showInfo() {
     document.getElementById('info').innerHTML = `
         ${NL_APPID} is running on port ${NL_PORT} inside ${NL_OS}
@@ -77,52 +85,6 @@ function onWindowClose() {
 
 // Initialize Neutralino
 Neutralino.init();
-
-document.addEventListener('DOMContentLoaded', async () => {
-    // Инициализация БД при старте
-    const db = await initDatabase();
-    
-    // Передаем экземпляр БД в client.js
-    setDbInstance(db);
-    
-    // Навешивание обработчиков событий (аналог URL routing)
-    document.getElementById('clientForm')?.addEventListener('submit', 
-        async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            await handleClientFormSubmit({
-                name: formData.get('name'),
-                phone: formData.get('phone'),
-                email: formData.get('email')
-            });
-        }
-    );
-    
-    // Загрузка списка клиентов при открытии страницы
-    if (document.getElementById('clientList')) {
-        const clients = await loadClientList();
-        renderClientTable(clients);
-    }
-});
-
-function renderClientTable(clients) {
-    const tbody = document.querySelector('#clientList tbody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = clients.map(client => `
-        <tr>
-            <td>${client.id}</td>
-            <td>${client.name}</td>
-            <td>${client.phone}</td>
-            <td>${client.email}</td>
-        </tr>
-    `).join('');
-}
-
-// Делаем функцию доступной глобально для client.js
-window.renderClientTable = renderClientTable;
-
-
 
 // Register event listeners
 Neutralino.events.on("trayMenuItemClicked", onTrayMenuItemClicked);

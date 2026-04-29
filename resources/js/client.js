@@ -1,34 +1,48 @@
-// resources/js/client.js (аналог views.py для клиентов)
-import { getClientById, createClient, initDatabase } from './db.js';
+// resources/js/client.js - Работа с клиентами через IndexedDB
 
-export async function handleClientFormSubmit(formData) {
+let db = null;
+
+// Получаем экземпляр БД из main.js после инициализации
+function setDbInstance(dbInstance) {
+    db = dbInstance;
+}
+
+async function handleClientFormSubmit(formData) {
     try {
-        const clientId = createClient(
+        const clientId = await createClient(
             formData.name,
             formData.phone,
             formData.email
         );
         
         // Обновление UI
-        document.getElementById('message').textContent = 
-            `Клиент создан с ID: ${clientId}`;
+        const messageEl = document.getElementById('message');
+        if (messageEl) {
+            messageEl.textContent = 'Клиент создан с ID: ' + clientId;
+        }
+        
+        // Перезагружаем список клиентов
+        if (typeof window.renderClientTable === 'function') {
+            const clients = await loadClientList();
+            window.renderClientTable(clients);
+        }
         
         return clientId;
     } catch (error) {
         console.error('Ошибка создания клиента:', error);
-        Neutralino.os.showMessageBox('Ошибка', 
-            'Не удалось создать клиента: ' + error.message);
+        if (typeof Neutralino !== 'undefined') {
+            Neutralino.os.showMessageBox('Ошибка', 
+                'Не удалось создать клиента: ' + error.message);
+        }
         return null;
     }
 }
 
-export async function loadClientList() {
-    const result = db.exec("SELECT * FROM client WHERE is_archived = 0");
-    // Преобразование в массив объектов и рендеринг
-    return result[0]?.values.map(row => ({
-        id: row[0],
-        name: row[1],
-        phone: row[2],
-        email: row[3]
-    })) || [];
+async function loadClientList() {
+    if (!db) {
+        console.error('База данных не инициализирована');
+        return [];
+    }
+    const clients = await getAllClients();
+    return clients || [];
 }
