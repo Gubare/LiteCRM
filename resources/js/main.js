@@ -1,22 +1,23 @@
 // resources/js/main.js
-// This is just a sample app. You can structure your Neutralinojs app code as you wish.
-// This example app is written with vanilla JavaScript and HTML.
-// Feel free to use any frontend framework you like :)
-// See more details: https://neutralino.js.org/docs/how-to/use-a-frontend-library
+// Работа с IndexedDB через db.js
 
-// ВАЖНО: НЕ ИМПОРТИРУЕМ sql-wasm.js - он загружается как глобальный скрипт в HTML
-// Импорты из db.js и client.js удалены, так как они используют глобальные функции
-// console.log('Neutralino.os methods:', Object.keys(Neutralino.os || {}));
-// console.log('Neutralino.filesystem methods:', Object.keys(Neutralino.filesystem || {}));
-
-
-let db = null;
+// Импортируем функции из db.js
+import { 
+    initDatabase, 
+    getDbInstance, 
+    createClient, 
+    getAllClients, 
+    deleteClient,
+    clearAllClients,
+    exportToJSON,
+    importFromJSON, 
+    exportDatabase,
+    updateClient,
+    importDatabase
+} from './db_indexeddb.js';
 
 /*
     Function to display information about the Neutralino app.
-    This function updates the content of the 'info' element in the HTML
-    with details regarding the running Neutralino application, including
-    its ID, port, operating system, and version information.
 */
 function showInfo() {
     const infoElement = document.getElementById('info');
@@ -30,32 +31,28 @@ function showInfo() {
 }
 
 /*
-    Function to open the official Neutralino documentation in the default web browser.
+    Function to open the official Neutralino documentation.
 */
 function openDocs() {
     Neutralino.os.open("https://neutralino.js.org/docs");
 }
 
 /*
-    Function to open a tutorial video on Neutralino's official YouTube channel in the default web browser.
+    Function to open a tutorial video.
 */
 function openTutorial() {
     Neutralino.os.open("https://www.youtube.com/c/CodeZri");
 }
 
 /*
-    Function to set up a system tray menu with options specific to the window mode.
-    This function checks if the application is running in window mode, and if so,
-    it defines the tray menu items and sets up the tray accordingly.
+    Function to set up a system tray menu.
 */
 function setTray() {
-    // Tray menu is only available in window mode
     if(NL_MODE != "window") {
         console.log("INFO: Tray menu is only available in the window mode.");
         return;
     }
 
-    // Define tray menu items
     let tray = {
         icon: "/resources/icons/trayIcon.png",
         menuItems: [
@@ -65,214 +62,141 @@ function setTray() {
         ]
     };
 
-    // Set the tray menu
     Neutralino.os.setTray(tray);
 }
 
 /*
     Function to handle click events on the tray menu items.
-    This function performs different actions based on the clicked item's ID,
-    such as displaying version information or exiting the application.
 */
 function onTrayMenuItemClicked(event) {
     switch(event.detail.id) {
         case "VERSION":
-            // Display version information
             Neutralino.os.showMessageBox("Version information",
                 `Neutralinojs server: v${NL_VERSION} | Neutralinojs client: v${NL_CVERSION}`);
             break;
         case "QUIT":
-            // Exit the application
             Neutralino.app.exit();
             break;
     }
 }
 
-/*
-    Function to handle the window close event by gracefully exiting the Neutralino application.
-*/
-function onWindowClose() {
-    Neutralino.app.exit();
-}
 
 /*
-    Database initialization function
-    Creates or loads the SQLite database and creates tables if needed
+    Helper: Render client table (available globally for other pages)
 */
-async function initDatabase() {
+function renderClientTable(clients) {
+    const tbody = document.querySelector('#clientList tbody');
+    if (!tbody) return;
+    
+    if (clients.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Нет клиентов</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = clients.map(client => `
+        <tr>
+            <td>${client.index+1}</td>
+            <td>${client.name || ''}</td>
+            <td>${client.phone || ''}</td>
+            <td>${client.email || ''}</td>
+            <td>
+                <button onclick="window.handleDeleteClient(${client.id})" 
+                        style="color: #ef4444; cursor: pointer; border: 1px solid #ef4444; 
+                               border-radius: 4px; padding: 4px 8px; background: #fff;">
+                    🗑️ Удалить
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Глобальная функция удаления (доступна из HTML)
+window.handleDeleteClient = async function(id) {
+    if (!confirm('Вы уверены, что хотите удалить этого клиента?')) return;
+    
     try {
-        if (typeof initSqlJs === 'undefined') {
-            throw new Error('initSqlJs is not defined');
-        }
+        await deleteClient(id);
+        console.log('✅ Клиент удалён из IndexedDB');
         
-        const SQL = await initSqlJs({
-            locateFile: file => `./js/${file}`
-        });
+        // Сохраняем бэкап сразу после удаления
+        await saveDataToFile();
         
-        const dbPath = 'crm_data/crm_data.db';
+        // Обновляем таблицу
+        const clients = await getAllClients();
+        window.renderClientTable(clients);
+    } catch (error) {
+        console.error('❌ Ошибка удаления:', error);
+        alert('Не удалось удалить клиента: ' + error.message);
+    }
+};
+
+// Сохранение данных в файл при закрытии
+async function saveDataToFile() {
+    try {
+        console.log('💾 Starting data export...');
+        const jsonData = await window.exportToJSON();
         
-        // Пробуем загрузить существующую БД
+        console.log('📁 Preparing to write file...');
+        const filePath = 'crm_data/backup.json';
+        
+        // Создаём папку
         try {
-            console.log('Loading database from:', dbPath);
-            const fileData = await Neutralino.filesystem.readBinaryFile(dbPath);
-            db = new SQL.Database(fileData);
-            console.log('Database loaded successfully');
-                
-            // Проверяем, есть ли таблица client
-            try {
-                const result = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='client'");
-                if (result.length === 0 || result[0].values.length === 0) {
-                    console.log('Table client not found, creating tables...');
-                    await createTables();
-                }
-            } catch (e) {
-                console.log('Error checking table, creating tables...');
-                await createTables();
-            }
-            
+            await Neutralino.filesystem.createDirectory('crm_data');
+            console.log('📂 Directory created/exists');
         } catch (e) {
-            // Файл не существует, создаём новую БД
-            console.log('Creating new database...');
-            db = new SQL.Database();
-            await createTables();
-            await saveDatabase();
+            console.log('📂 Directory already exists');
         }
         
-        window.dbInstance = db;
-        window.saveDatabase = saveDatabase;
-        console.log('Database initialized successfully');
-        // После загрузки базы данных
-try {
-    console.log('Database loaded, checking contents...');
-    
-    // Проверяем все таблицы
-    const tablesResult = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
-    console.log('Tables in database:', tablesResult);
-    
-    if (tablesResult.length > 0) {
-        console.log('Table names:', tablesResult[0].values);
-    }
-    
-    // Проверяем конкретно client
-    const clientCheck = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='client'");
-    console.log('Client table check:', clientCheck);
-    
-    // Проверяем, есть ли данные
-    const countResult = db.exec("SELECT COUNT(*) as count FROM client");
-    console.log('Client count:', countResult);
-    
-} catch (e) {
-    console.error('Error checking database:', e);
-}
-        return true;
+        // Записываем файл
+        console.log('✍️ Writing file:', filePath);
+        await Neutralino.filesystem.writeFile(filePath, jsonData);
+        console.log('✅ Data saved to file:', filePath);
+        
+        // Проверяем, что файл создан
+        try {
+            const stats = await Neutralino.filesystem.getStats(filePath);
+            console.log('📊 File stats:', stats);
+        } catch (e) {
+            console.warn('⚠️ Could not get file stats:', e);
+        }
         
     } catch (error) {
-        console.error('Error initializing database:', error);
-        return false;
-    }
-}
-/*
-    Create database tables if they don't exist
-*/
-async function createTables() {
-    if (!db) {
-        console.error('Cannot create tables: database not initialized');
-        throw new Error('Database not initialized');
-    }
-    
-    try {
-        console.log('Creating database tables...');
-        
-        // Таблица клиентов
-        db.run(`
-            CREATE TABLE IF NOT EXISTS client (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                phone TEXT,
-                email TEXT,
-                address TEXT,
-                notes TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                is_archived INTEGER DEFAULT 0
-            )
-        `);
-        console.log('Table client created');
-        
-        // Остальные таблицы...
-        // (ваш код для product, sale, sale_item, contact_log)
-        
-        // Создание индексов
-        db.run("CREATE INDEX IF NOT EXISTS idx_client_name ON client(name)");
-        db.run("CREATE INDEX IF NOT EXISTS idx_client_phone ON client(phone)");
-        
-        console.log('All tables created successfully');
-        
-    } catch (error) {
-        console.error('Error creating tables:', error);
+        console.error('❌ Error saving to file:', error);
         throw error;
     }
 }
 
-/*
-    Save database to disk
-*/
-// resources/js/main.js
-
-async function saveDatabase() {
-    if (!db) {
-        console.warn('Cannot save database: not initialized');
-        return false;
+// Загрузка данных из файла при старте
+async function loadDataFromFile() {
+    try {
+        const filePath = 'crm_data/backup.json';
+        const jsonData = await Neutralino.filesystem.readFile(filePath);
+        await importFromJSON(jsonData);
+        console.log('✅ Данные загружены из файла');
+        
+    } catch (error) {
+        console.log('📁 Файл резервной копии не найден (это нормально при первом запуске)');
     }
+}
+
+// Обработчик закрытия окна
+async function onWindowClose() {
+    console.log('🔄 Application closing, saving data...');
     
     try {
-        const data = db.export();
-        const dbPath = 'crm_data/crm_data.db';
-        const dirPath = 'crm_data';
+        // Сохраняем данные перед закрытием
+        await saveDataToFile();
+        console.log('✅ Data saved successfully');
         
-        // Создаём папку, если не существует
-        try {
-            await Neutralino.filesystem.createDirectory(dirPath);
-        } catch (e) {
-            // Уже существует
-        }
+        // Даём время на завершение всех операций
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Записываем файл
-        await Neutralino.filesystem.writeBinaryFile(dbPath, data);
-        console.log('Database saved to:', dbPath);
-        return true;
     } catch (error) {
-        console.error('Error saving database:', error);
-        return false;
+        console.error('❌ Error during save:', error);
     }
-}
-
-/*
-    Helper function to execute database queries
-*/
-function dbQuery(sql, params = {}) {
-    if (!db) {
-        throw new Error('Database not initialized');
-    }
-    const stmt = db.prepare(sql);
-    stmt.bind(params);
-    const results = [];
-    while (stmt.step()) {
-        results.push(stmt.getAsObject());
-    }
-    stmt.free();
-    return results;
-}
-
-/*
-    Helper function to execute database commands (INSERT, UPDATE, DELETE)
-*/
-function dbExecute(sql, params = {}) {
-    if (!db) {
-        throw new Error('Database not initialized');
-    }
-    db.run(sql, params);
-    saveDatabase(); // Автосохранение после изменения
+    
+    // Теперь закрываем приложение
+    Neutralino.app.exit();
 }
 
 // Initialize Neutralino
@@ -282,27 +206,27 @@ Neutralino.init();
 Neutralino.events.on("trayMenuItemClicked", onTrayMenuItemClicked);
 Neutralino.events.on("windowClose", onWindowClose);
 
-// Conditional initialization: Set up system tray if not running on macOS
-if(NL_OS != "Darwin") { // TODO: Fix https://github.com/neutralinojs/neutralinojs/issues/615
+// Set up system tray if not running on macOS
+if(NL_OS != "Darwin") {
     setTray();
 }
 
+// Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM Content Loaded - Initializing application...');
+    console.log('main.js: DOMContentLoaded');
     
-    // Инициализация БД при старте
-    const dbInitialized = await initDatabase();
-    
-    if (dbInitialized) {
-        console.log("✅ Приложение запущено успешно!");
+    try {
+        // 1. Инициализация IndexedDB
+        await initDatabase();
+        console.log('✅ IndexedDB initialized successfully');
+        await initDatabase();
+        await loadDataFromFile();
+        // 2. Делаем функции доступными глобально для других страниц
+        window.renderClientTable = renderClientTable;
+        window.exportDatabase = exportDatabase;
+        window.importDatabase = importDatabase;
         
-        // Делаем функции доступными глобально для других страниц
-        window.dbInstance = db;
-        window.saveDatabase = saveDatabase;
-        window.dbQuery = dbQuery;
-        window.dbExecute = dbExecute;
-        
-        // Обработка формы клиентов (если есть на странице)
+        // 3. Обработка формы клиентов (если есть на странице)
         const clientForm = document.getElementById('clientForm');
         if (clientForm) {
             clientForm.addEventListener('submit', async (e) => {
@@ -319,15 +243,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         return;
                     }
                     
-                    // Добавляем клиента в БД
-                    dbExecute(
-                        "INSERT INTO client (name, phone, email) VALUES (?, ?, ?)",
-                        [name, phone, email]
-                    );
-                    
-                    // Получаем ID последнего вставленного клиента
-                    const result = dbQuery("SELECT last_insert_rowid() as id");
-                    const clientId = result[0]?.id;
+                    // Добавляем клиента через IndexedDB
+                    const clientId = await createClient(name, phone, email);
                     
                     // Показываем сообщение
                     const messageEl = document.getElementById('message');
@@ -339,12 +256,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Очищаем форму
                     e.target.reset();
                     
-                    // Перезагружаем список клиентов (если функция существует)
-                    if (typeof window.loadClientList === 'function' && 
-                        typeof window.renderClientTable === 'function') {
-                        const clients = await window.loadClientList();
+                    // Перезагружаем список клиентов
+                    const clients = await getAllClients();
+                    if (typeof window.renderClientTable === 'function') {
                         window.renderClientTable(clients);
                     }
+                    
+                    console.log('Client created:', clientId);
                     
                 } catch (error) {
                     console.error('Error creating client:', error);
@@ -357,31 +275,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
         
-        // Загрузка списка клиентов (если таблица есть на странице)
+        // 4. Загрузка списка клиентов (если таблица есть на странице)
         const clientListTable = document.getElementById('clientList');
         if (clientListTable) {
             try {
-                const clients = dbQuery("SELECT * FROM client WHERE is_archived = 0");
+                const clients = await getAllClients();
                 
                 if (typeof window.renderClientTable === 'function') {
                     window.renderClientTable(clients);
-                } else {
-                    // Рендерим таблицу напрямую, если функции нет
-                    const tbody = clientListTable.querySelector('tbody');
-                    if (tbody) {
-                        if (clients.length === 0) {
-                            tbody.innerHTML = '<tr><td colspan="4">Нет клиентов</td></tr>';
-                        } else {
-                            tbody.innerHTML = clients.map(client => `
-                                <tr>
-                                    <td>${client.id}</td>
-                                    <td>${client.name || ''}</td>
-                                    <td>${client.phone || ''}</td>
-                                    <td>${client.email || ''}</td>
-                                </tr>
-                            `).join('');
-                        }
-                    }
                 }
                 
                 console.log(`Loaded ${clients.length} clients`);
@@ -389,13 +290,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Error loading clients:', error);
             }
         }
-    } else {
-        console.error("❌ Ошибка инициализации приложения");
+        
+        console.log("✅ Приложение запущено успешно!");
+        
+    } catch (error) {
+        console.error("❌ Ошибка инициализации приложения:", error);
+        if (typeof Neutralino !== 'undefined' && Neutralino.os) {
+            Neutralino.os.showMessageBox('Ошибка запуска', 
+                'Не удалось инициализировать приложение: ' + error.message);
+        }
     }
     
     // Display app information
     showInfo();
 });
 
-// Export functions for use in other modules (if needed)
-export { initDatabase, saveDatabase, dbQuery, dbExecute };
+// Делаем функции доступными глобально
+window.exportToJSON = exportToJSON;
+window.importFromJSON = importFromJSON;
+window.saveDataToFile = saveDataToFile;
+// Export functions for use in other modules
+export { renderClientTable };

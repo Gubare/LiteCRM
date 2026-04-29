@@ -4,6 +4,36 @@
     <meta charset="UTF-8">
     <title>Клиенты - CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Стили для кнопок действий */
+        .btn-action {
+            padding: 4px 8px;
+            margin: 0 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .btn-delete {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-edit {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        .btn-edit:hover {
+            background: #3b82f6;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -31,74 +61,67 @@
                 <th>Имя</th>
                 <th>Телефон</th>
                 <th>Email</th>
+                <th>Действия</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Заполняется через JS -->
-        </tbody>
+        <tbody></tbody>
     </table>
 
-    <!-- 1. Сначала подключаем sql.js -->
-    <script src="js/sql-wasm.js"></script>
-    
-    <!-- 2. Затем neutralino.js -->
+    <!-- Модальное окно для редактирования -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; margin: 100px auto; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;">
+            <h3>Редактировать клиента</h3>
+            <input type="hidden" id="editClientId">
+            <div style="margin-bottom: 10px;">
+                <label>Имя:</label>
+                <input type="text" id="editName" style="width: 100%; padding: 8px; margin-top: 4px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label>Телефон:</label>
+                <input type="text" id="editPhone" style="width: 100%; padding: 8px; margin-top: 4px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label>Email:</label>
+                <input type="email" id="editEmail" style="width: 100%; padding: 8px; margin-top: 4px;">
+            </div>
+            <div style="text-align: right;">
+                <button onclick="closeEditModal()" class="btn-action">Отмена</button>
+                <button onclick="saveEditClient()" class="btn-action btn-edit">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем скрипты -->
     <script src="js/neutralino.js"></script>
-    
-    <!-- 3. Затем модули -->
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/db.js"></script>
     <script type="module" src="js/client.js"></script>
+    <!-- main.js подключаем, но рендеринг будет в этом файле -->
+    <script type="module" src="js/main.js"></script>
     
-    <!-- 4. Инициализация страницы -->
+    <!-- Логика страницы клиентов -->
     <script type="module">
-        import { loadClientList, handleClientFormSubmit } from './js/client.js';
+        import { loadClientList, handleClientFormSubmit, deleteClient } from './js/client.js';
         
         // Инициализация Neutralino
         if (typeof Neutralino !== 'undefined') {
             Neutralino.init();
-            console.log('clients.html: Neutralino initialized');
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('clients.html: DOMContentLoaded');
-            
-            // Ждём, пока main.js инициализирует БД
-            let attempts = 0;
-            const maxAttempts = 20;
-            
-            const waitForDatabase = setInterval(async () => {
-                attempts++;
-                
-                if (window.dbInstance) {
-                    clearInterval(waitForDatabase);
-                    console.log('clients.html: Database found, initializing...');
-                    
-                    try {
-                        // Загружаем список клиентов
-                        const clients = await loadClientList();
-                        renderClientTable(clients);
-                        console.log('clients.html: Loaded', clients.length, 'clients');
-                    } catch (error) {
-                        console.error('clients.html: Error loading clients:', error);
-                        document.getElementById('message').textContent = 
-                            'Ошибка загрузки: ' + error.message;
-                    }
-                } else if (attempts >= maxAttempts) {
-                    clearInterval(waitForDatabase);
-                    console.error('clients.html: Database not found after 2 seconds');
-                    document.getElementById('message').textContent = 
-                        'Ошибка: база данных не инициализирована. Обновите страницу.';
+            // Ждём инициализации БД из main.js
+            setTimeout(async () => {
+                try {
+                    const clients = await loadClientList();
+                    renderClientTable(clients);
+                } catch (error) {
+                    console.error('Error loading clients:', error);
                 }
-            }, 100);
+            }, 500);
         });
         
-        // Обработка формы
+        // Обработка формы добавления
         document.getElementById('clientForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (!window.dbInstance) {
-                alert('База данных не инициализирована. Обновите страницу.');
-                return;
-            }
             
             const formData = {
                 name: document.getElementById('clientName').value,
@@ -118,20 +141,17 @@
                 const clients = await loadClientList();
                 renderClientTable(clients);
             } catch (error) {
-                console.error('Error:', error);
                 alert('Ошибка: ' + error.message);
             }
         });
         
+        // Рендер таблицы с кнопками
         function renderClientTable(clients) {
             const tbody = document.querySelector('#clientList tbody');
-            if (!tbody) {
-                console.error('Table body not found');
-                return;
-            }
+            if (!tbody) return;
             
             if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4">Нет клиентов</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5">Нет клиентов</td></tr>';
                 return;
             }
             
@@ -141,10 +161,88 @@
                     <td>${client.name || ''}</td>
                     <td>${client.phone || ''}</td>
                     <td>${client.email || ''}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="window.editClient(${client.id}, '${client.name}', '${client.phone}', '${client.email}')">
+                            ✏️ Изм.
+                        </button>
+                        <button class="btn-action btn-delete" onclick="window.deleteClientById(${client.id})">
+                            🗑️ Удалить
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         }
         
+        // Удаление клиента (глобальная функция)
+        window.deleteClientById = async function(id) {
+            if (!confirm('Вы уверены, что хотите удалить этого клиента?')) return;
+            
+            try {
+                await deleteClient(id);
+                console.log('✅ Клиент удалён');
+                
+                // Перезагружаем список
+                const clients = await loadClientList();
+                renderClientTable(clients);
+                
+                // Сохраняем бэкап
+                if (window.saveDataToFile) {
+                    await window.saveDataToFile();
+                }
+            } catch (error) {
+                console.error('❌ Ошибка удаления:', error);
+                alert('Не удалось удалить клиента: ' + error.message);
+            }
+        };
+        
+        // Редактирование клиента
+        window.editClient = function(id, name, phone, email) {
+            document.getElementById('editClientId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editPhone').value = phone;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editModal').style.display = 'block';
+        };
+        
+        // Закрытие модального окна
+        window.closeEditModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+        };
+        
+        // Сохранение изменений
+        window.saveEditClient = async function() {
+            const id = parseInt(document.getElementById('editClientId').value);
+            const updatedData = {
+                name: document.getElementById('editName').value,
+                phone: document.getElementById('editPhone').value,
+                email: document.getElementById('editEmail').value
+            };
+            
+            try {
+                // Обновляем клиента (нужно добавить функцию в db.js)
+                if (window.updateClient) {
+                    await window.updateClient(id, updatedData);
+                    console.log('✅ Клиент обновлён');
+                    
+                    closeEditModal();
+                    
+                    // Перезагружаем список
+                    const clients = await loadClientList();
+                    renderClientTable(clients);
+                    
+                    // Сохраняем бэкап
+                    if (window.saveDataToFile) {
+                        await window.saveDataToFile();
+                    }
+                } else {
+                    alert('Функция updateClient ещё не реализована');
+                }
+            } catch (error) {
+                alert('Ошибка обновления: ' + error.message);
+            }
+        };
+        
+        // Делаем renderClientTable глобальной
         window.renderClientTable = renderClientTable;
     </script>
 </body>

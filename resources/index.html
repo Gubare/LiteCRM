@@ -18,6 +18,19 @@
       <br/>
       <img src="/icons/logo.gif" alt="Neutralinojs" />
       <div>
+        <button onclick="testSave()">💾 Тестовое сохранение</button>
+
+<script>
+async function testSave() {
+    console.log('🧪 Manual save test...');
+    try {
+        await window.saveDataToFile();
+        alert('✅ Данные сохранены! Проверьте папку crm_data/backup.json');
+    } catch (error) {
+        alert('❌ Ошибка: ' + error.message);
+    }
+}
+</script>
         <a href="#" onclick="openDocs();">Docs</a> &middot;  
         <a href="#" onclick="openTutorial();">Video tutorial</a>
         <a href="#" onclick="onWindowClose();">exit</a>
