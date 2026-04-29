@@ -1,10 +1,17 @@
 // resources/js/db.js (аналог models.py)
-import { initSqlJs } from './sql-wasm.js';
+// import  initSqlJs  from './sql-wasm.js';
 
 let db = null;
 
+
+export function getDbInstance() {
+    return db;
+}
+
 export async function initDatabase() {
-    const SQL = await initSqlJs({ locateFile: file => `./sql-wasm.wasm` });
+    const SQL = await initSqlJs({
+        locateFile: file => `./js/sql-wasm.wasm`
+    });
     db = new SQL.Database();
     
     // Создание таблиц
@@ -28,6 +35,8 @@ export async function initDatabase() {
             FOREIGN KEY (client_id) REFERENCES client(id)
         )
     `);
+    
+    return db
 }
 
 export function getClientById(id) {

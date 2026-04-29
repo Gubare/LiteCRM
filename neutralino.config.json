@@ -14,9 +14,10 @@
     "writeToLogFile": true
   },
   "nativeAllowList": [
-    "app.*",
+    "filesystem.*",
     "os.*",
-    "debug.log"
+    "app.*",
+    "debug.*"
   ],
   "globalVariables": {
     "TEST1": "Hello",

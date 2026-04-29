@@ -1,4 +1,3 @@
-<!-- clients.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +13,17 @@
     </nav>
     
     <h1>Список клиентов</h1>
+    
+    <h2>Добавить клиента</h2>
+    <form id="clientForm">
+        <input type="text" id="clientName" name="name" placeholder="Имя" required>
+        <input type="text" id="clientPhone" name="phone" placeholder="Телефон">
+        <input type="email" id="clientEmail" name="email" placeholder="Email">
+        <button type="submit">Добавить</button>
+    </form>
+    <div id="message"></div>
+    
+    <h2>Все клиенты</h2>
     <table id="clientList">
         <thead>
             <tr>
@@ -27,15 +37,115 @@
             <!-- Заполняется через JS -->
         </tbody>
     </table>
-    <script type="module">
-    import { loadClientList } from './js/client.js';
+
+    <!-- 1. Сначала подключаем sql.js -->
+    <script src="js/sql-wasm.js"></script>
     
-    document.addEventListener('DOMContentLoaded', async () => {
-        const clients = await loadClientList();
-        renderClientTable(clients);
-    });
-</script>
+    <!-- 2. Затем neutralino.js -->
+    <script src="js/neutralino.js"></script>
+    
+    <!-- 3. Затем модули -->
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/client.js"></script>
+    
+    <!-- 4. Инициализация страницы -->
+    <script type="module">
+        import { loadClientList, handleClientFormSubmit } from './js/client.js';
+        
+        // Инициализация Neutralino
+        if (typeof Neutralino !== 'undefined') {
+            Neutralino.init();
+            console.log('clients.html: Neutralino initialized');
+        }
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('clients.html: DOMContentLoaded');
+            
+            // Ждём, пока main.js инициализирует БД
+            let attempts = 0;
+            const maxAttempts = 20;
+            
+            const waitForDatabase = setInterval(async () => {
+                attempts++;
+                
+                if (window.dbInstance) {
+                    clearInterval(waitForDatabase);
+                    console.log('clients.html: Database found, initializing...');
+                    
+                    try {
+                        // Загружаем список клиентов
+                        const clients = await loadClientList();
+                        renderClientTable(clients);
+                        console.log('clients.html: Loaded', clients.length, 'clients');
+                    } catch (error) {
+                        console.error('clients.html: Error loading clients:', error);
+                        document.getElementById('message').textContent = 
+                            'Ошибка загрузки: ' + error.message;
+                    }
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(waitForDatabase);
+                    console.error('clients.html: Database not found after 2 seconds');
+                    document.getElementById('message').textContent = 
+                        'Ошибка: база данных не инициализирована. Обновите страницу.';
+                }
+            }, 100);
+        });
+        
+        // Обработка формы
+        document.getElementById('clientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!window.dbInstance) {
+                alert('База данных не инициализирована. Обновите страницу.');
+                return;
+            }
+            
+            const formData = {
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value
+            };
+            
+            try {
+                await handleClientFormSubmit(formData);
+                
+                // Очищаем форму
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientPhone').value = '';
+                document.getElementById('clientEmail').value = '';
+                
+                // Перезагружаем список
+                const clients = await loadClientList();
+                renderClientTable(clients);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка: ' + error.message);
+            }
+        });
+        
+        function renderClientTable(clients) {
+            const tbody = document.querySelector('#clientList tbody');
+            if (!tbody) {
+                console.error('Table body not found');
+                return;
+            }
+            
+            if (clients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">Нет клиентов</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = clients.map(client => `
+                <tr>
+                    <td>${client.id}</td>
+                    <td>${client.name || ''}</td>
+                    <td>${client.phone || ''}</td>
+                    <td>${client.email || ''}</td>
+                </tr>
+            `).join('');
+        }
+        
+        window.renderClientTable = renderClientTable;
+    </script>
 </body>
 </html>
