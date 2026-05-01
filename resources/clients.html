@@ -45,11 +45,12 @@
     <h1>Список клиентов</h1>
     
     <h2>Добавить клиента</h2>
+    <!-- Форма добавления -->
     <form id="clientForm">
         <input type="text" id="clientName" name="name" placeholder="Имя" required>
         <input type="text" id="clientPhone" name="phone" placeholder="Телефон">
         <input type="email" id="clientEmail" name="email" placeholder="Email">
-        <button type="submit">Добавить</button>
+        <button type="submit" id="btnAddClient" class="btn-action btn-edit">Добавить</button>
     </form>
     <div id="message"></div>
     
@@ -67,40 +68,41 @@
         <tbody></tbody>
     </table>
 
-    <!-- Модальное окно для редактирования -->
-    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-        <div style="background: white; margin: 100px auto; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;">
-            <h3>Редактировать клиента</h3>
-            <input type="hidden" id="editClientId">
-            <div style="margin-bottom: 10px;">
-                <label>Имя:</label>
-                <input type="text" id="editName" style="width: 100%; padding: 8px; margin-top: 4px;">
-            </div>
-            <div style="margin-bottom: 10px;">
-                <label>Телефон:</label>
-                <input type="text" id="editPhone" style="width: 100%; padding: 8px; margin-top: 4px;">
-            </div>
-            <div style="margin-bottom: 10px;">
-                <label>Email:</label>
-                <input type="email" id="editEmail" style="width: 100%; padding: 8px; margin-top: 4px;">
-            </div>
-            <div style="text-align: right;">
-                <button onclick="closeEditModal()" class="btn-action">Отмена</button>
-                <button onclick="saveEditClient()" class="btn-action btn-edit">Сохранить</button>
-            </div>
+<!-- Модальное окно для редактирования -->
+<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="background: white; margin: 100px auto; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;">
+        <h3>Редактировать клиента</h3>
+        <input type="hidden" id="editClientId">
+        <div style="margin-bottom: 10px;">
+            <label>Имя:</label>
+            <input type="text" id="editName" style="width: 100%; padding: 8px; margin-top: 4px;">
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Телефон:</label>
+            <input type="text" id="editPhone" style="width: 100%; padding: 8px; margin-top: 4px;">
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Email:</label>
+            <input type="email" id="editEmail" style="width: 100%; padding: 8px; margin-top: 4px;">
+        </div>
+        <div style="text-align: right;">
+            <button id="btnCloseModal" class="btn-action">Отмена</button>
+            <!-- Оставил btnSaveEdit для модального окна -->
+            <button id="btnSaveEdit" class="btn-action btn-edit">Сохранить</button>
         </div>
     </div>
+</div>
 
     <!-- Подключаем скрипты -->
     <script src="js/neutralino.js"></script>
-    <script type="module" src="js/db.js"></script>
+    <script type="module" src="js/db_indexeddb.js"></script>
     <script type="module" src="js/client.js"></script>
     <!-- main.js подключаем, но рендеринг будет в этом файле -->
     <script type="module" src="js/main.js"></script>
     
     <!-- Логика страницы клиентов -->
     <script type="module">
-        import { loadClientList, handleClientFormSubmit, deleteClient } from './js/client.js';
+        import { loadClientList, handleClientFormSubmit, deleteClient, updateClient } from './js/client.js';
         
         // Инициализация Neutralino
         if (typeof Neutralino !== 'undefined') {
@@ -116,10 +118,9 @@
                 } catch (error) {
                     console.error('Error loading clients:', error);
                 }
-            }, 500);
+            }, 100);
         });
         
-        // Обработка формы добавления
         document.getElementById('clientForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -132,6 +133,11 @@
             try {
                 await handleClientFormSubmit(formData);
                 
+                if (typeof window.saveDataToFile === 'function') {
+                    await window.saveDataToFile();
+                    console.log('💾 Бэкап сохранён после добавления клиента');
+                }
+                
                 // Очищаем форму
                 document.getElementById('clientName').value = '';
                 document.getElementById('clientPhone').value = '';
@@ -140,11 +146,12 @@
                 // Перезагружаем список
                 const clients = await loadClientList();
                 renderClientTable(clients);
+                
             } catch (error) {
+                console.error('Ошибка:', error);
                 alert('Ошибка: ' + error.message);
             }
-        });
-        
+        }, { once: false }); // Уберите или оставьте false
         // Рендер таблицы с кнопками
         function renderClientTable(clients) {
             const tbody = document.querySelector('#clientList tbody');
@@ -173,77 +180,90 @@
             `).join('');
         }
         
-        // Удаление клиента (глобальная функция)
+                // Удаление клиента
         window.deleteClientById = async function(id) {
             if (!confirm('Вы уверены, что хотите удалить этого клиента?')) return;
             
             try {
                 await deleteClient(id);
-                console.log('✅ Клиент удалён');
                 
-                // Перезагружаем список
+                // Сохраняем бэкап после удаления
+                if (typeof window.saveDataToFile === 'function') {
+                    await window.saveDataToFile();
+                }
+                
                 const clients = await loadClientList();
                 renderClientTable(clients);
+                
+            } catch (error) {
+                alert('Не удалось удалить: ' + error.message);
+            }
+        };
+        
+            // Редактирование клиента
+            window.editClient = function(id, name, phone, email) {
+                document.getElementById('editClientId').value = id;
+                document.getElementById('editName').value = name;
+                document.getElementById('editPhone').value = phone;
+                document.getElementById('editEmail').value = email;
+                document.getElementById('editModal').style.display = 'block';
+            };
+            
+            // Закрытие модального окна (теперь без window.)
+            function closeEditModal() {
+                document.getElementById('editModal').style.display = 'none';
+            }
+        
+            //Cохранение редактирования клиента
+    // Сохранение изменений (теперь без window.)
+    async function saveEditClient() {
+        const id = parseInt(document.getElementById('editClientId').value);
+        const updatedData = {
+            name: document.getElementById('editName').value,
+            phone: document.getElementById('editPhone').value,
+            email: document.getElementById('editEmail').value
+        };
+        
+        try {
+            if (window.updateClient) {
+                await window.updateClient(id, updatedData);
+                console.log('✅ Клиент обновлён');
                 
                 // Сохраняем бэкап
                 if (window.saveDataToFile) {
                     await window.saveDataToFile();
                 }
-            } catch (error) {
-                console.error('❌ Ошибка удаления:', error);
-                alert('Не удалось удалить клиента: ' + error.message);
+                
+                closeEditModal();
+                
+                // Перезагружаем список
+                const clients = await loadClientList();
+                renderClientTable(clients);
+            } else {
+                alert('Функция updateClient ещё не реализована');
             }
-        };
+        } catch (error) {
+            alert('Ошибка обновления: ' + error.message);
+        }
+    }
+            // !!! Добавляем обработчики событий после загрузки DOM
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('btnCloseModal').addEventListener('click', closeEditModal);
+        document.getElementById('btnSaveEdit').addEventListener('click', saveEditClient);
         
-        // Редактирование клиента
-        window.editClient = function(id, name, phone, email) {
-            document.getElementById('editClientId').value = id;
-            document.getElementById('editName').value = name;
-            document.getElementById('editPhone').value = phone;
-            document.getElementById('editEmail').value = email;
-            document.getElementById('editModal').style.display = 'block';
-        };
-        
-        // Закрытие модального окна
-        window.closeEditModal = function() {
-            document.getElementById('editModal').style.display = 'none';
-        };
-        
-        // Сохранение изменений
-        window.saveEditClient = async function() {
-            const id = parseInt(document.getElementById('editClientId').value);
-            const updatedData = {
-                name: document.getElementById('editName').value,
-                phone: document.getElementById('editPhone').value,
-                email: document.getElementById('editEmail').value
-            };
-            
-            try {
-                // Обновляем клиента (нужно добавить функцию в db.js)
-                if (window.updateClient) {
-                    await window.updateClient(id, updatedData);
-                    console.log('✅ Клиент обновлён');
-                    
-                    closeEditModal();
-                    
-                    // Перезагружаем список
-                    const clients = await loadClientList();
-                    renderClientTable(clients);
-                    
-                    // Сохраняем бэкап
-                    if (window.saveDataToFile) {
-                        await window.saveDataToFile();
-                    }
-                } else {
-                    alert('Функция updateClient ещё не реализована');
-                }
-            } catch (error) {
-                alert('Ошибка обновления: ' + error.message);
+        // Закрытие по клику вне модального окна
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') {
+                closeEditModal();
             }
-        };
-        
-        // Делаем renderClientTable глобальной
-        window.renderClientTable = renderClientTable;
+        });
+    });
+
+        // Делаем функции глобальными
+            window.updateClient = updateClient;
+            window.deleteClientById = deleteClientById;
+            window.editClient = editClient;
+            window.renderClientTable = renderClientTable;
     </script>
 </body>
 </html>

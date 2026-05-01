@@ -16,6 +16,7 @@ import {
     importDatabase
 } from './db_indexeddb.js';
 
+// import { startVoiceInput } from './voice-input.js'
 /*
     Function to display information about the Neutralino app.
 */
@@ -216,64 +217,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('main.js: DOMContentLoaded');
     
     try {
-        // 1. Инициализация IndexedDB
+        // Инициализация IndexedDB
         await initDatabase();
         console.log('✅ IndexedDB initialized successfully');
-        await initDatabase();
         await loadDataFromFile();
-        // 2. Делаем функции доступными глобально для других страниц
+        // Делаем функции доступными глобально для других страниц
         window.renderClientTable = renderClientTable;
         window.exportDatabase = exportDatabase;
         window.importDatabase = importDatabase;
         
-        // 3. Обработка формы клиентов (если есть на странице)
-        const clientForm = document.getElementById('clientForm');
-        if (clientForm) {
-            clientForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+        // Дублируется из других файлов
+        // // 3. Обработка формы клиентов (если есть на странице)
+        // const clientForm = document.getElementById('clientForm');
+        // if (clientForm) {
+        //     clientForm.addEventListener('submit', async (e) => {
+        //         e.preventDefault();
                 
-                try {
-                    const formData = new FormData(e.target);
-                    const name = formData.get('name');
-                    const phone = formData.get('phone');
-                    const email = formData.get('email');
+        //         try {
+        //             const formData = new FormData(e.target);
+        //             const name = formData.get('name');
+        //             const phone = formData.get('phone');
+        //             const email = formData.get('email');
                     
-                    if (!name) {
-                        alert('Имя клиента обязательно');
-                        return;
-                    }
+        //             if (!name) {
+        //                 alert('Имя клиента обязательно');
+        //                 return;
+        //             }
                     
-                    // Добавляем клиента через IndexedDB
-                    const clientId = await createClient(name, phone, email);
+        //             // Добавляем клиента через IndexedDB
+        //             const clientId = await createClient(name, phone, email);
                     
-                    // Показываем сообщение
-                    const messageEl = document.getElementById('message');
-                    if (messageEl) {
-                        messageEl.textContent = `Клиент создан с ID: ${clientId}`;
-                        messageEl.style.color = 'green';
-                    }
+        //             // Показываем сообщение
+        //             const messageEl = document.getElementById('message');
+        //             if (messageEl) {
+        //                 messageEl.textContent = `Клиент создан с ID: ${clientId}`;
+        //                 messageEl.style.color = 'green';
+        //             }
                     
-                    // Очищаем форму
-                    e.target.reset();
+        //             // Очищаем форму
+        //             e.target.reset();
                     
-                    // Перезагружаем список клиентов
-                    const clients = await getAllClients();
-                    if (typeof window.renderClientTable === 'function') {
-                        window.renderClientTable(clients);
-                    }
+        //             // Перезагружаем список клиентов
+        //             const clients = await getAllClients();
+        //             if (typeof window.renderClientTable === 'function') {
+        //                 window.renderClientTable(clients);
+        //             }
                     
-                    console.log('Client created:', clientId);
+        //             console.log('Client created:', clientId);
                     
-                } catch (error) {
-                    console.error('Error creating client:', error);
-                    const messageEl = document.getElementById('message');
-                    if (messageEl) {
-                        messageEl.textContent = 'Ошибка: ' + error.message;
-                        messageEl.style.color = 'red';
-                    }
-                }
-            });
-        }
+        //         } catch (error) {
+        //             console.error('Error creating client:', error);
+        //             const messageEl = document.getElementById('message');
+        //             if (messageEl) {
+        //                 messageEl.textContent = 'Ошибка: ' + error.message;
+        //                 messageEl.style.color = 'red';
+        //             }
+        //         }
+        //     });
+        // }
         
         // 4. Загрузка списка клиентов (если таблица есть на странице)
         const clientListTable = document.getElementById('clientList');

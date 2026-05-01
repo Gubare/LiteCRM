@@ -8,20 +8,26 @@ OutputDir=..\output\installer
 OutputBaseFilename=CRM-Setup
 Compression=lzma
 SolidCompression=yes
-PrivilegesRequired=admin
 
 [Languages]
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
-
 [Files]
-; Копируем исполняемый файл Windows
+; Исполняемый файл
 Source: "..\bin\neutralino-win_x64.exe"; DestDir: "{app}"; DestName: "crm-app.exe"; Flags: ignoreversion
+
+; ВСЕ файлы ресурсов (рекурсивно)
+Source: "..\resources\*"; DestDir: "{app}\resources"; Flags: recursesubdirs createallsubdirs ignoreversion
+
+; Конфигурация
+Source: "..\neutralino.config.json"; DestDir: "{app}"; Flags: ignoreversion
+
+; Дополнительные файлы (если есть)
+Source: "..\package.json"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\CRM для малого бизнеса"; Filename: "{app}\crm-app.exe"
 Name: "{autodesktop}\CRM для малого бизнеса"; Filename: "{app}\crm-app.exe"
-Name: "{userprograms}\CRM"; Filename: "{app}\crm-app.exe"
 
 [Run]
 Filename: "{app}\crm-app.exe"; Description: "{cm:LaunchProgram,CRM для малого бизнеса}"; Flags: nowait postinstall skipifsilent

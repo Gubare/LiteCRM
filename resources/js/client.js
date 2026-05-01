@@ -1,8 +1,12 @@
 // resources/js/client.js
 
 // Импортируем функции из db.js
-import { getAllClients, createClient as dbCreateClient } from './db_indexeddb.js';
-
+import { 
+    getAllClients, 
+    createClient as dbCreateClient, 
+    deleteClient as dbDeleteClient,
+    updateClient as dbUpdateClient 
+} from './db_indexeddb.js';
 
 export async function handleClientFormSubmit(formData) {
     try {
@@ -32,6 +36,32 @@ export async function handleClientFormSubmit(formData) {
         }
         
         return null;
+    }
+}
+
+
+
+// Экспортируем deleteClient
+export async function deleteClient(id) {
+    try {
+        await dbDeleteClient(id);
+        console.log('client.js: Client deleted with ID:', id);
+        return true;
+    } catch (error) {
+        console.error('client.js: Error deleting client:', error);
+        throw error;
+    }
+}
+
+// Экспортируем updateClient
+export async function updateClient(id, data) {
+    try {
+        await dbUpdateClient(id, data);
+        console.log('client.js: Client updated with ID:', id);
+        return true;
+    } catch (error) {
+        console.error('client.js: Error updating client:', error);
+        throw error;
     }
 }
 

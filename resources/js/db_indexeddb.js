@@ -321,7 +321,7 @@ export function updateClient(id, data) {
             const request = store.put(updatedClient);
             
             request.onsuccess = function() {
-                console.log('Клиент обновлён');
+                console.log('✅ Клиент обновлён в БД');
                 resolve(id);
             };
             
