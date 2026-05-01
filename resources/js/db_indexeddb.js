@@ -1,7 +1,7 @@
 // resources/js/db_indexeddb.js
 
 const DB_NAME = 'CRM_Database';
-const DB_VERSION = 2; // Увеличиваем версию для добавления новых хранилищ!
+const DB_VERSION = 3; // Увеличиваем версию для добавления новых хранилищ!
 const STORE_NAME = 'clients'; 
 let db = null;
 
@@ -13,43 +13,35 @@ export function initDatabase() {
         request.onupgradeneeded = function(event) {
             const database = event.target.result;
 
-            // Создаём хранилище клиентов, если нет
+            // 1. Clients
             if (!database.objectStoreNames.contains('clients')) {
-                const clientStore = database.createObjectStore('clients', {
-                    keyPath: 'id',
-                    autoIncrement: true
-                });
-                clientStore.createIndex('name', 'name', { unique: false });
-                console.log('✅ Store "clients" created');
+                const store = database.createObjectStore('clients', { keyPath: 'id', autoIncrement: true });
+                store.createIndex('name', 'name', { unique: false });
             }
 
-            // Создаём хранилище товаров, если нет
+            // 2. Products
             if (!database.objectStoreNames.contains('products')) {
-                const productStore = database.createObjectStore('products', {
-                    keyPath: 'id',
-                    autoIncrement: true
-                });
-                productStore.createIndex('category', 'category', { unique: false });
-                productStore.createIndex('sku', 'sku', { unique: true });
-                productStore.createIndex('is_active', 'is_active', { unique: false });
-                console.log('✅ Store "products" created');
+                const store = database.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                store.createIndex('category', 'category', { unique: false });
+                store.createIndex('sku', 'sku', { unique: true });
             }
 
-            // Здесь можно добавлять новые таблицы по аналогии
+            // 3. Tickets (НОВОЕ)
+            if (!database.objectStoreNames.contains('tickets')) {
+                const store = database.createObjectStore('tickets', { keyPath: 'id', autoIncrement: true });
+                store.createIndex('client_id', 'client_id', { unique: false });
+                store.createIndex('status', 'status', { unique: false });
+                store.createIndex('type', 'type', { unique: false });
+                console.log('✅ Store "tickets" created');
+            }
         };
 
-        request.onsuccess = function(event) {
-            db = event.target.result;
-            console.log('✅ Database opened');
-            resolve(db);
-        };
-
-        request.onerror = function(event) {
-            console.error('❌ Database error:', event.target.error);
-            reject(event.target.error);
-        };
+        request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+        request.onerror = (e) => reject(e.target.error);
     });
 }
+
+
 // Получить экземпляр БД
 export function getDbInstance() {
     return db;
@@ -520,13 +512,17 @@ export function exportStoreToJSON(storeName) {
 // Экспорт всех данных для полного бэкапа
 export function exportAllData() {
     return Promise.all([
-        exportStoreToJSON('clients'),
-        exportStoreToJSON('products')
-        // Добавьте новые таблицы здесь
-    ]).then(results => JSON.stringify({
+        getAllItems('clients'),
+        getAllItems('products'),
+        getAllItems('tickets') // ← ДОБАВИЛИ
+    ]).then(([clients, products, tickets]) => JSON.stringify({
         version: DB_VERSION,
         exported_at: new Date().toISOString(),
-        stores: results.map(r => JSON.parse(r))
+        stores: [
+            { store: 'clients', items: clients },
+            { store: 'products', items: products },
+            { store: 'tickets', items: tickets } // ← ДОБАВИЛИ
+        ]
     }));
 }
 
@@ -536,19 +532,12 @@ export function importStoreFromJSON(storeName, jsonData) {
         try {
             const data = JSON.parse(jsonData);
             await clearStore(storeName);
-            
             const transaction = db.transaction([storeName], 'readwrite');
             const store = transaction.objectStore(storeName);
-            
-            for (const item of data.items) {
-                store.add(item);
-            }
-            
+            for (const item of data.items) store.add(item);
             transaction.oncomplete = () => resolve();
             transaction.onerror = (e) => reject(e.target.error);
-        } catch (error) {
-            reject(error);
-        }
+        } catch (error) { reject(error); }
     });
 }
 

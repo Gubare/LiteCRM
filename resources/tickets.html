@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Обращения - CRM</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .btn-action { padding: 4px 8px; margin: 0 2px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-delete { background: #fef2f2; border-color: #ef4444; color: #ef4444; }
+        .btn-delete:hover { background: #ef4444; color: white; }
+        .btn-edit { background: #eff6ff; border-color: #3b82f6; color: #3b82f6; }
+        .btn-edit:hover { background: #3b82f6; color: white; }
+        .status-open { color: #d97706; font-weight: bold; }
+        .status-done { color: #059669; font-weight: bold; }
+        .status-archive { color: #6b7280; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .full-width { width: 100%; padding: 8px; margin: 5px 0; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 Главная</a>
+        <a href="clients.html">👥 Клиенты</a>
+        <a href="products.html">📦 Товары</a>
+        <a href="tickets.html">🎫 Обращения</a>
+    </nav>
+
+    <h1>Управление обращениями</h1>
+
+    <!-- Форма создания -->
+    <form id="ticketForm" style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="grid-2">
+            <div>
+                <label>Клиент:</label>
+                <select id="ticketClient" class="full-width" required>
+                    <option value="empty">🔘 Оставить пустым (быстро)</option>
+                    <option value="new">➕ Создать нового клиента</option>
+                    <!-- Клиенты загрузятся сюда -->
+                </select>
+            </div>
+            <div>
+                <label>Тип обращения:</label>
+                <select id="ticketType" class="full-width" required>
+                    <option value="Вопрос">❓ Вопрос</option>
+                    <option value="Жалоба">️ Жалоба</option>
+                    <option value="Заказ">🛒 Заказ</option>
+                    <option value="Консультация">💬 Консультация</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div>
+                <label>Контакт для ответа:</label>
+                <input type="text" id="ticketContact" class="full-width" placeholder="Телефон / Email / Telegram">
+            </div>
+            <div>
+                <label>Статус:</label>
+                <select id="ticketStatus" class="full-width">
+                    <option value="open">🟡 Открыта</option>
+                    <option value="done">🟢 Выполнена</option>
+                    <option value="archive"> Архив</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label>Подробное описание:</label>
+            <textarea id="ticketDesc" class="full-width" rows="3" placeholder="Суть вопроса или задачи..."></textarea>
+        </div>
+        <button type="submit" id="btnAddTicket" class="btn-action btn-edit" style="margin-top: 10px;">Создать обращение</button>
+    </form>
+
+    <div id="message"></div>
+
+    <!-- Таблица -->
+    <table id="ticketList" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #f3f4f6; text-align: left;">
+                <th style="padding: 8px;">ID</th>
+                <th style="padding: 8px;">Клиент</th>
+                <th style="padding: 8px;">Тип</th>
+                <th style="padding: 8px;">Контакт</th>
+                <th style="padding: 8px;">Описание</th>
+                <th style="padding: 8px;">Дата</th>
+                <th style="padding: 8px;">Статус</th>
+                <th style="padding: 8px;">Действия</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Модальное окно редактирования -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; margin: 50px auto; padding: 20px; border-radius: 8px; width: 600px; max-width: 95%;">
+            <h3>Редактировать обращение</h3>
+            <input type="hidden" id="editTicketId">
+            <div class="grid-2">
+                <div><label>Клиент:</label><select id="editClient" class="full-width"></select></div>
+                <div><label>Тип:</label><select id="editType" class="full-width">
+                    <option value="Вопрос">Вопрос</option><option value="Жалоба">Жалоба</option>
+                    <option value="Заказ">Заказ</option><option value="Консультация">Консультация</option>
+                </select></div>
+            </div>
+            <div class="grid-2">
+                <div><label>Контакт:</label><input type="text" id="editContact" class="full-width"></div>
+                <div><label>Статус:</label><select id="editStatus" class="full-width">
+                    <option value="open">Открыта</option><option value="done">Выполнена</option><option value="archive">Архив</option>
+                </select></div>
+            </div>
+            <div><label>Описание:</label><textarea id="editDesc" class="full-width" rows="3"></textarea></div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button id="btnCloseModal" class="btn-action">Отмена</button>
+                <button id="btnSaveEdit" class="btn-action btn-edit">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/neutralino.js"></script>
+    <script type="module" src="js/db_indexeddb.js"></script>
+    <script type="module" src="js/ticket.js"></script>
+    <script type="module" src="js/main.js"></script>
+
+    <script type="module">
+        import { loadTickets, loadClientsForDropdown, createTicket, updateTicket, deleteTicket } from './js/ticket.js';
+
+        if (typeof Neutralino !== 'undefined') Neutralino.init();
+
+        window.renderTicketTable = renderTicketTable;
+        window.deleteTicketById = deleteTicketById;
+        window.editTicket = editTicket;
+        window.closeEditModal = closeEditModal;
+        window.saveEditTicket = saveEditTicket;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await waitForDatabase();
+            await loadAndRender();
+            setupEventDelegation();
+            populateClientDropdowns();
+        });
+
+        async function waitForDatabase() {
+            if (window.isDatabaseReady) return;
+            return new Promise(resolve => {
+                const check = () => window.isDatabaseReady ? resolve() : setTimeout(check, 50);
+                check();
+            });
+        }
+
+        async function loadAndRender() {
+            try {
+                const tickets = await loadTickets();
+                renderTicketTable(tickets);
+            } catch (error) { console.error('Error loading tickets:', error); }
+        }
+
+        async function populateClientDropdowns() {
+            const clients = await loadClientsForDropdown();
+            const mainSelect = document.getElementById('ticketClient');
+            const editSelect = document.getElementById('editClient');
+            
+            // Сохраняем первые 2 опции
+            const specialOptions = mainSelect.innerHTML;
+            
+            const clientOptions = clients.map(c => 
+                `<option value="${c.id}">${c.name} (${c.phone || c.email || 'Нет контакта'})</option>`
+            ).join('');
+            
+            mainSelect.innerHTML = specialOptions + clientOptions;
+            editSelect.innerHTML = '<option value="empty">Пусто</option>' + clientOptions;
+        }
+
+        // Обработчик формы
+        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnAddTicket');
+            if (btn.disabled) return;
+            btn.disabled = true; btn.textContent = '⏳ Создание...';
+
+            try {
+                const formData = {
+                    client_id: document.getElementById('ticketClient').value,
+                    type: document.getElementById('ticketType').value,
+                    contact: document.getElementById('ticketContact').value,
+                    description: document.getElementById('ticketDesc').value,
+                    status: document.getElementById('ticketStatus').value
+                };
+
+                // Обработка "+Создать клиента"
+                if (formData.client_id === 'new') {
+                    if (confirm('Перейти на страницу создания клиента?')) {
+                        window.location.href = 'clients.html';
+                        return;
+                    } else {
+                        formData.client_id = 'empty'; // Если отказался
+                    }
+                }
+
+                await createTicket(formData);
+                if (window.saveDataToFile) await window.saveDataToFile();
+                
+                e.target.reset();
+                const tickets = await loadTickets();
+                renderTicketTable(tickets);
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            } finally {
+                btn.disabled = false; btn.textContent = 'Создать обращение';
+            }
+        });
+
+        function renderTicketTable(tickets) {
+            const tbody = document.querySelector('#ticketList tbody');
+            if (!tbody) return;
+            if (tickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">Нет обращений</td></tr>';
+                return;
+            }
+
+            // Для отображения имён клиентов
+            loadClientsForDropdown().then(clients => {
+                const clientMap = {};
+                clients.forEach(c => clientMap[c.id] = c.name);
+
+                tbody.innerHTML = tickets.map(t => {
+                    const statusClass = t.status === 'open' ? 'status-open' : (t.status === 'done' ? 'status-done' : 'status-archive');
+                    const statusLabel = t.status === 'open' ? 'Открыта' : (t.status === 'done' ? 'Выполнена' : 'Архив');
+                    const clientName = t.client_id ? (clientMap[t.client_id] || 'Удалён') : 'Не указан';
+                    
+                    return `
+                    <tr data-ticket-id="${t.id}">
+                        <td style="padding: 8px;">${t.id}</td>
+                        <td style="padding: 8px;">${clientName}</td>
+                        <td style="padding: 8px;">${t.type}</td>
+                        <td style="padding: 8px;">${t.contact || '-'}</td>
+                        <td style="padding: 8px;">${t.description?.substring(0, 40)}${t.description?.length > 40 ? '...' : ''}</td>
+                        <td style="padding: 8px;">${new Date(t.created_at).toLocaleDateString()}</td>
+                        <td style="padding: 8px;"><span class="${statusClass}">${statusLabel}</span></td>
+                        <td style="padding: 8px;">
+                            <button class="btn-action btn-edit" data-action="edit">✏️</button>
+                            <button class="btn-action btn-delete" data-action="delete">🗑️</button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            });
+        }
+
+        function setupEventDelegation() {
+            document.getElementById('ticketList').addEventListener('click', async (e) => {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn) return;
+                const row = btn.closest('tr');
+                const id = parseInt(row?.dataset?.ticketId);
+                const action = btn.dataset.action;
+                if (!id) return;
+
+                try {
+                    if (action === 'edit') editTicket(id);
+                    else if (action === 'delete') await deleteTicketById(id);
+                } catch (error) { alert('Ошибка: ' + error.message); }
+            });
+        }
+
+        async function deleteTicketById(id) {
+            if (!confirm('Удалить это обращение?')) return;
+            await deleteTicket(id);
+            if (window.saveDataToFile) await window.saveDataToFile();
+            const tickets = await loadTickets();
+            renderTicketTable(tickets);
+        }
+
+        async function editTicket(id) {
+            const ticket = await loadTickets().then(t => t.find(x => x.id === id));
+            if (!ticket) return;
+            document.getElementById('editTicketId').value = id;
+            document.getElementById('editClient').value = ticket.client_id || 'empty';
+            document.getElementById('editType').value = ticket.type;
+            document.getElementById('editContact').value = ticket.contact;
+            document.getElementById('editDesc').value = ticket.description;
+            document.getElementById('editStatus').value = ticket.status;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+        async function saveEditTicket() {
+            const id = parseInt(document.getElementById('editTicketId').value);
+            const data = {
+                client_id: document.getElementById('editClient').value,
+                type: document.getElementById('editType').value,
+                contact: document.getElementById('editContact').value,
+                description: document.getElementById('editDesc').value,
+                status: document.getElementById('editStatus').value
+            };
+            try {
+                await updateTicket(id, data);
+                if (window.saveDataToFile) await window.saveDataToFile();
+                closeEditModal();
+                renderTicketTable(await loadTickets());
+            } catch (error) { alert('Ошибка: ' + error.message); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btnCloseModal')?.addEventListener('click', closeEditModal);
+            document.getElementById('btnSaveEdit')?.addEventListener('click', saveEditTicket);
+            document.getElementById('editModal')?.addEventListener('click', e => e.target.id === 'editModal' && closeEditModal());
+        });
+    </script>
+</body>
+</html>

@@ -136,48 +136,28 @@ window.handleDeleteClient = async function(id) {
 
 window.saveDataToFile = async function() {
     try {
-        console.log('💾 Starting full backup...');
-        
-        // Экспортируем ВСЕ таблицы
         const clients = await getAllItems('clients');
         const products = await getAllItems('products');
+        const tickets = await getAllItems('tickets'); // ← НОВОЕ
         
         const backup = {
-            version: 2,
+            version: 3,
             exported_at: new Date().toISOString(),
             stores: [
-                {
-                    store: 'clients',
-                    timestamp: new Date().toISOString(),
-                    items: clients
-                },
-                {
-                    store: 'products',
-                    timestamp: new Date().toISOString(),
-                    items: products
-                }
-                // Добавьте новые таблицы здесь
+                { store: 'clients', items: clients },
+                { store: 'products', items: products },
+                { store: 'tickets', items: tickets } // ← НОВОЕ
             ]
         };
         
-        const jsonData = JSON.stringify(backup, null, 2);
         const filePath = 'crm_data/backup.json';
-        
-        try {
-            await Neutralino.filesystem.createDirectory('crm_data');
-        } catch (e) {
-            // Directory already exists
-        }
-        
-        await Neutralino.filesystem.writeFile(filePath, jsonData);
-        console.log(`💾 Backup saved: ${clients.length} clients, ${products.length} products`);
+        try { await Neutralino.filesystem.createDirectory('crm_data'); } catch(e){}
+        await Neutralino.filesystem.writeFile(filePath, JSON.stringify(backup));
+        console.log(`💾 Backup saved: ${clients.length} clients, ${products.length} products, ${tickets.length} tickets`);
         return true;
-        
-    } catch (error) {
-        console.error('❌ Error saving backup:', error);
-        return false;
-    }
+    } catch (error) { console.error('Backup error:', error); return false; }
 };
+
 
 // Загрузка данных из файла при старте
 // В main.js
@@ -186,46 +166,18 @@ window.saveDataToFile = async function() {
 window.loadDataFromFile = async function() {
     try {
         const filePath = 'crm_data/backup.json';
-        
-        // Проверяем, существует ли файл
-        try {
-            await Neutralino.filesystem.getStats(filePath);
-        } catch (e) {
-            console.log('📁 Backup file not found (normal for first run)');
-            return;
-        }
+        try { await Neutralino.filesystem.getStats(filePath); } catch(e) { return; }
         
         const jsonData = await Neutralino.filesystem.readFile(filePath);
         const backup = JSON.parse(jsonData);
         
-        console.log('📦 Loading backup from:', backup.exported_at);
-        
-        // Импортируем каждую таблицу из бэкапа
-        if (backup.stores && Array.isArray(backup.stores)) {
-            for (const storeData of backup.stores) {
-                try {
-                    await importStoreFromJSON(storeData.store, JSON.stringify(storeData));
-                    console.log(`✅ Restored "${storeData.store}" (${storeData.items?.length || 0} items)`);
-                } catch (error) {
-                    console.error(`❌ Error restoring "${storeData.store}":`, error);
-                }
-            }
-        } else if (backup.clients) {
-            // Старый формат бэкапа (только clients)
-            await importStoreFromJSON('clients', JSON.stringify({
-                store: 'clients',
-                items: backup.clients
-            }));
-            console.log('✅ Restored "clients" (old format)');
+        for (const storeData of backup.stores) {
+            await importStoreFromJSON(storeData.store, JSON.stringify(storeData));
+            console.log(`✅ Restored "${storeData.store}"`);
         }
-        
         window.isDatabaseReady = true;
         document.dispatchEvent(new CustomEvent('dbReady'));
-        console.log('✅ Database restored from backup');
-        
-    } catch (error) {
-        console.error('❌ Error loading backup:', error);
-    }
+    } catch (error) { console.error('Restore error:', error); }
 };
 // Обработчик закрытия окна
 async function onWindowClose() {
