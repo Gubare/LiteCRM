@@ -1,1 +1,57 @@
-{"version":1,"timestamp":"2026-05-01T09:46:17.408Z","clients":[{"name":"Петр","phone":"0987654321","email":"tutut@gmail","created_at":"2026-04-30T22:19:41.130Z","id":9},{"name":"Петр","phone":"12456","email":"","created_at":"2026-05-01T09:36:45.689Z","updated_at":"2026-05-01T09:38:00.376Z","id":10},{"name":"Петр","phone":"","email":"","created_at":"2026-05-01T09:38:05.424Z","id":11}]}
+{
+  "version": 2,
+  "exported_at": "2026-05-01T12:18:05.538Z",
+  "stores": [
+    {
+      "store": "clients",
+      "timestamp": "2026-05-01T12:18:05.538Z",
+      "items": [
+        {
+          "name": "Петр",
+          "phone": "098765432111",
+          "email": "tutut@gmail",
+          "created_at": "2026-05-01T11:14:28.934Z",
+          "id": 2,
+          "updated_at": "2026-05-01T12:18:02.788Z"
+        },
+        {
+          "name": "Петр",
+          "phone": "",
+          "email": "",
+          "created_at": "2026-05-01T12:18:05.526Z",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "store": "products",
+      "timestamp": "2026-05-01T12:18:05.538Z",
+      "items": [
+        {
+          "category": "Телефон",
+          "name": "А62",
+          "description": "",
+          "price": 9999.97,
+          "quantity": 12,
+          "is_active": true,
+          "sku": "ТЕ-1",
+          "created_at": "2026-05-01T11:15:03.408Z",
+          "updated_at": "2026-05-01T12:11:17.421Z",
+          "id": 1
+        },
+        {
+          "category": "Телефон",
+          "name": "А61",
+          "description": "",
+          "price": 11,
+          "quantity": 29,
+          "is_active": true,
+          "sku": "ТЕ-2",
+          "created_at": "2026-05-01T12:17:11.559Z",
+          "updated_at": "2026-05-01T12:17:23.005Z",
+          "id": 2
+        }
+      ]
+    }
+  ]
+}

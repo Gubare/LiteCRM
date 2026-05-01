@@ -8,6 +8,8 @@ import {
     updateClient as dbUpdateClient 
 } from './db_indexeddb.js';
 
+const STORE_NAME = 'clients';
+
 export async function handleClientFormSubmit(formData) {
     try {
         // Создаём клиента через IndexedDB

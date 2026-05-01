@@ -6,13 +6,16 @@ import {
     initDatabase, 
     getDbInstance, 
     createClient, 
+    exportAllData,
     getAllClients, 
     deleteClient,
     clearAllClients,
     exportToJSON,
     importFromJSON, 
     exportDatabase,
+    importStoreFromJSON, 
     updateClient,
+    getAllItems,
     importDatabase
 } from './db_indexeddb.js';
 
@@ -131,55 +134,99 @@ window.handleDeleteClient = async function(id) {
     }
 };
 
-// Сохранение данных в файл при закрытии
-async function saveDataToFile() {
+window.saveDataToFile = async function() {
     try {
-        console.log('💾 Starting data export...');
-        const jsonData = await window.exportToJSON();
+        console.log('💾 Starting full backup...');
         
-        console.log('📁 Preparing to write file...');
+        // Экспортируем ВСЕ таблицы
+        const clients = await getAllItems('clients');
+        const products = await getAllItems('products');
+        
+        const backup = {
+            version: 2,
+            exported_at: new Date().toISOString(),
+            stores: [
+                {
+                    store: 'clients',
+                    timestamp: new Date().toISOString(),
+                    items: clients
+                },
+                {
+                    store: 'products',
+                    timestamp: new Date().toISOString(),
+                    items: products
+                }
+                // Добавьте новые таблицы здесь
+            ]
+        };
+        
+        const jsonData = JSON.stringify(backup, null, 2);
         const filePath = 'crm_data/backup.json';
         
-        // Создаём папку
         try {
             await Neutralino.filesystem.createDirectory('crm_data');
-            console.log('📂 Directory created/exists');
         } catch (e) {
-            console.log('📂 Directory already exists');
+            // Directory already exists
         }
         
-        // Записываем файл
-        console.log('✍️ Writing file:', filePath);
         await Neutralino.filesystem.writeFile(filePath, jsonData);
-        console.log('✅ Data saved to file:', filePath);
-        
-        // Проверяем, что файл создан
-        try {
-            const stats = await Neutralino.filesystem.getStats(filePath);
-            console.log('📊 File stats:', stats);
-        } catch (e) {
-            console.warn('⚠️ Could not get file stats:', e);
-        }
+        console.log(`💾 Backup saved: ${clients.length} clients, ${products.length} products`);
+        return true;
         
     } catch (error) {
-        console.error('❌ Error saving to file:', error);
-        throw error;
+        console.error('❌ Error saving backup:', error);
+        return false;
     }
-}
+};
 
 // Загрузка данных из файла при старте
-async function loadDataFromFile() {
+// В main.js
+
+// Загрузка данных из файла бэкапа
+window.loadDataFromFile = async function() {
     try {
         const filePath = 'crm_data/backup.json';
+        
+        // Проверяем, существует ли файл
+        try {
+            await Neutralino.filesystem.getStats(filePath);
+        } catch (e) {
+            console.log('📁 Backup file not found (normal for first run)');
+            return;
+        }
+        
         const jsonData = await Neutralino.filesystem.readFile(filePath);
-        await importFromJSON(jsonData);
-        console.log('✅ Данные загружены из файла');
+        const backup = JSON.parse(jsonData);
+        
+        console.log('📦 Loading backup from:', backup.exported_at);
+        
+        // Импортируем каждую таблицу из бэкапа
+        if (backup.stores && Array.isArray(backup.stores)) {
+            for (const storeData of backup.stores) {
+                try {
+                    await importStoreFromJSON(storeData.store, JSON.stringify(storeData));
+                    console.log(`✅ Restored "${storeData.store}" (${storeData.items?.length || 0} items)`);
+                } catch (error) {
+                    console.error(`❌ Error restoring "${storeData.store}":`, error);
+                }
+            }
+        } else if (backup.clients) {
+            // Старый формат бэкапа (только clients)
+            await importStoreFromJSON('clients', JSON.stringify({
+                store: 'clients',
+                items: backup.clients
+            }));
+            console.log('✅ Restored "clients" (old format)');
+        }
+        
+        window.isDatabaseReady = true;
+        document.dispatchEvent(new CustomEvent('dbReady'));
+        console.log('✅ Database restored from backup');
         
     } catch (error) {
-        console.log('📁 Файл резервной копии не найден (это нормально при первом запуске)');
+        console.error('❌ Error loading backup:', error);
     }
-}
-
+};
 // Обработчик закрытия окна
 async function onWindowClose() {
     console.log('🔄 Application closing, saving data...');
