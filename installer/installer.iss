@@ -1,7 +1,7 @@
 [Setup]
 AppName=CRM для малого бизнеса
 AppVersion=1.0.0
-AppPublisher=Your Name
+AppPublisher=Artic Gubare
 DefaultDirName={autopf}\CRMApp
 DefaultGroupName=CRM App
 OutputDir=..\output\installer

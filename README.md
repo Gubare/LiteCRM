@@ -1,15 +1,137 @@
-# neutralinojs-minimal
+# CRM Desktop для микро-бизнеса
 
-The default template for a Neutralinojs app. It's possible to use your favorite frontend framework by using [these steps](https://neutralino.js.org/docs/getting-started/using-frontend-libraries).
+Легковесное десктопное приложение для управления клиентами, товарами и обращениями. Создано на базе NeutralinoJS с использованием веб-технологий, что обеспечивает низкие системные требования и высокую скорость работы.
 
-## Contributors
+##  Стек технологий
 
-[![Contributors](https://contrib.rocks/image?repo=neutralinojs/neutralinojs-minimal)](https://github.com/neutralinojs/neutralinojs-minimal/graphs/contributors)
+| Слой            | Технология                         | Назначение                                                            |
+| --------------- | ---------------------------------- | --------------------------------------------------------------------- |
+| **Runtime**     | **NeutralinoJS**                   | Оболочка десктопного приложения, доступ к нативному API (файлы, окна) |
+| **Frontend**    | **HTML5, CSS3, Vanilla JS (ES6+)** | Интерфейс и логика без тяжелых фреймворков                            |
+| **База данных** | **IndexedDB**                      | Локальное хранение данных (клиенты, товары, заявки)                   |
+| **Бэкап**       | **JSON + Filesystem API**          | Экспорт/импорт данных в файл `backup.json`                            |
+| **Сборка**      | **Neu CLI + Inno Setup**           | Создание исполняемого файла и установщика `.exe`                      |
 
-## License
+---
 
-[MIT](LICENSE)
+## Начало работы
 
-## Icon credits
+### 1. Требования для разработки и запуска
 
-- `trayIcon.png` - Made by [Freepik](https://www.freepik.com) and downloaded from [Flaticon](https://www.flaticon.com)
+Предварительно необходимо убедиться, что уже установлены:
+
+- [Node.js](https://nodejs.org/) (рекомендуется LTS версия)
+- Git
+Убедится в этом можно, выполнив в командной строке:
+```bash
+node -v
+git -v
+```
+В случае получения информации о текущей версии, можно переходить к следующим этапам, иначе необходимо установить зависимости или настроить их видимость для системы
+### 2. Установка зависимостей
+
+Для дальнейшей работы сперва необходимо клонировать репозиторий с открытым исходным кодом и установить необходимые пакеты для работы с Нейтралино. Общий размер не превышает 50 Мб.
+```bash
+# 1. Клонирование репозитория
+git clone https://github.com/ваш-логин/ваш-репозиторий.git
+cd ваш-репозиторий
+
+# 2. Установка зависимостей (Neu CLI и др.)
+npm install
+
+# 3. Глобальная установка CLI Neutralino (если еще не установлена)
+npm install -g @neutralinojs/neu
+```
+### 3. Запуск приложения (Режим разработки)
+
+Всё готово и можно запустить приложение в режиме отладки (с консолью разработчика). 
+```bash
+neu run
+```
+Для отключения или включения режима разработки, необходимо изменить одну строку в файле `neutralino.config.json` . Ниже представлено место, где конкретно необходимо менять флаг true(Включить режим разработки), false(выключить режим разработки).
+```text
+  ...
+- "modes": {
+
+    "window": {
+
+      "title": "my-crm-neutralino",
+
+      "width": 800,
+
+      "height": 500,
+
+      "minWidth": 400,
+
+      "minHeight": 200,
+
+      "center": true,
+
+      "fullScreen": false,
+
+      "alwaysOnTop": false,
+
+      "icon": "/resources/icons/appIcon.png",
+
+      "enableInspector": true, //<--- Место изменения флага
+
+      "borderless": false,
+
+      "maximize": false,
+
+      "hidden": false,
+
+      "resizable": true,
+
+      "exitProcessOnClose": false
+
+    },
+   ...
+```
+## Сборка дистрибутива (Windows)
+
+Для создания установщика `.exe` необходимо выполнить два этапа: сборку ресурсов Neutralino и компиляцию через Inno Setup.
+
+### Шаг 1: Сборка ресурсов проекта
+
+Выполните команду для сборки оптимизированной версии приложения:
+```bash
+neu build --release
+```
+_После выполнения в папке `bin/crm-app/` появятся файлы приложения._
+
+### Шаг 2: Создание установщика (Inno Setup)
+
+Для создания полноценного установщика используется **Inno Setup**.
+
+1. **Скачайте и установите Inno Setup:**
+    - Скачать: [https://jrsoftware.org/isdl.php](https://jrsoftware.org/isdl.php)
+    - Установите в стандартную директорию (обычно `C:\Program Files (x86)\Inno Setup 6`).
+2. **Скомпилируйте скрипт установщика:**
+    
+    Откройте командную строку (CMD или PowerShell) в корне проекта и выполните:
+```bash
+"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/installer.iss
+```
+	Если путь к Inno Setup отличается, укажите его полностью.
+1. **Готовый файл:** Файл `CRM-Setup-x.x.x.exe` появится в папке `output/installer/`.
+## Структура проекта
+```text
+.
+├── resources/            # Ресурсы приложения (HTML, CSS, JS)
+│   ├── index.html        # Главная страница
+│   ├── clients.html      # Управление клиентами
+│   ├── products.html     # Управление товарами
+│   ├── tickets.html      # Управление обращениями
+│   └── js/               # Скрипты
+│       ├── db_indexeddb.js # Ядро базы данных
+│       ├── main.js         # Инициализация
+│       └── ...
+├── installer/            # Скрипты для Inno Setup
+│   └── installer.iss     # Конфигурация установщика
+├── neutralino.config.json# Конфигурация Neutralino
+└── package.json          # Зависимости проекта
+```
+##  Лицензия
+
+MIT License.

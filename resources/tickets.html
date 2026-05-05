@@ -19,10 +19,10 @@
 </head>
 <body>
     <nav>
-        <a href="index.html">🏠 Главная</a>
-        <a href="clients.html">👥 Клиенты</a>
-        <a href="products.html">📦 Товары</a>
-        <a href="tickets.html">🎫 Обращения</a>
+        <a href="index.html">Главная</a>
+        <a href="clients.html">Клиенты</a>
+        <a href="products.html">Товары</a>
+        <a href="tickets.html">Обращения</a>
     </nav>
 
     <h1>Управление обращениями</h1>
@@ -33,7 +33,7 @@
             <div>
                 <label>Клиент:</label>
                 <select id="ticketClient" class="full-width" required>
-                    <option value="empty">🔘 Оставить пустым (быстро)</option>
+                    <option value="empty">Оставить пустым</option>
                     <option value="new">➕ Создать нового клиента</option>
                     <!-- Клиенты загрузятся сюда -->
                 </select>
@@ -41,10 +41,10 @@
             <div>
                 <label>Тип обращения:</label>
                 <select id="ticketType" class="full-width" required>
-                    <option value="Вопрос">❓ Вопрос</option>
-                    <option value="Жалоба">️ Жалоба</option>
-                    <option value="Заказ">🛒 Заказ</option>
-                    <option value="Консультация">💬 Консультация</option>
+                    <option value="Вопрос">Вопрос</option>
+                    <option value="Жалоба">️Жалоба</option>
+                    <option value="Заказ">Заказ</option>
+                    <option value="Консультация">Консультация</option>
                 </select>
             </div>
         </div>
@@ -56,9 +56,9 @@
             <div>
                 <label>Статус:</label>
                 <select id="ticketStatus" class="full-width">
-                    <option value="open">🟡 Открыта</option>
-                    <option value="done">🟢 Выполнена</option>
-                    <option value="archive"> Архив</option>
+                    <option value="open">Открыта</option>
+                    <option value="done">Выполнена</option>
+                    <option value="archive">Архив</option>
                 </select>
             </div>
         </div>
@@ -235,8 +235,8 @@
                         <td style="padding: 8px;">${new Date(t.created_at).toLocaleDateString()}</td>
                         <td style="padding: 8px;"><span class="${statusClass}">${statusLabel}</span></td>
                         <td style="padding: 8px;">
-                            <button class="btn-action btn-edit" data-action="edit">✏️</button>
-                            <button class="btn-action btn-delete" data-action="delete">🗑️</button>
+                            <button class="btn-action btn-edit" data-action="edit">Изм.</button>
+                            <button class="btn-action btn-delete" data-action="delete">Удалить</button>
                         </td>
                     </tr>`;
                 }).join('');

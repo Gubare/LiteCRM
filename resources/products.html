@@ -7,10 +7,10 @@
 </head>
 <body>
     <nav>
-        <a href="index.html">🏠 Главная</a>
-        <a href="clients.html">👥 Клиенты</a>
-        <a href="products.html">📦 Товары</a>
-        <a href="tickets.html">🎫 Обращения</a>
+        <a href="index.html">Главная</a>
+        <a href="clients.html">Клиенты</a>
+        <a href="products.html">Товары</a>
+        <a href="tickets.html">Обращения</a>
     </nav>
     
     <h1>Управление товарами</h1>
@@ -26,8 +26,8 @@
             <input type="number" id="productPrice" name="price" placeholder="Цена *" step="0.01" min="0" required>
             <input type="number" id="productQuantity" name="quantity" placeholder="Количество *" min="0" required>
             <select id="productStatus" name="is_active">
-                <option value="true">✅ В продаже</option>
-                <option value="false">❌ Снят с продажи</option>
+                <option value="true">В продаже</option>
+                <option value="false">Снят с продажи</option>
             </select>
         </div>
         <button type="submit" id="btnAddProduct" class="btn-action btn-edit">Добавить товар</button>
@@ -89,8 +89,8 @@
             <div style="margin: 10px 0;">
                 <label>Статус:</label>
                 <select id="editStatus">
-                    <option value="true">✅ В продаже</option>
-                    <option value="false">❌ Снят с продажи</option>
+                    <option value="true">В продаже</option>
+                    <option value="false">Снят с продажи</option>
                 </select>
             </div>
             <div style="text-align: right; margin-top: 15px;">
@@ -160,7 +160,7 @@
             if (btn.disabled) return;
             
             btn.disabled = true;
-            btn.textContent = '⏳ Добавление...';
+            btn.textContent = 'Добавление...';
             
             try {
                 const formData = {
@@ -209,10 +209,10 @@
                     <td>${p.name || ''}</td>
                     <td>${p.price?.toFixed(2) || '0.00'} ₽</td>
                     <td>${p.quantity || 0}</td>
-                    <td>${p.is_active ? '✅' : '❌'}</td>
+                    <td>${p.is_active ? 'В продаже' : 'Снят'}</td>
                     <td>
-                        <button class="btn-action btn-edit" data-action="edit">✏️</button>
-                        <button class="btn-action btn-delete" data-action="delete">🗑️</button>
+                        <button class="btn-action btn-edit" data-action="edit">Изм.</button>
+                        <button class="btn-action btn-delete" data-action="delete">Удалить</button>
                     </td>
                 </tr>
             `).join('');
