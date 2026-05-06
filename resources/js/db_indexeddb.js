@@ -1,7 +1,7 @@
 // resources/js/db_indexeddb.js
 
 const DB_NAME = 'CRM_Database';
-const DB_VERSION = 3; // Увеличиваем версию для добавления новых хранилищ!
+const DB_VERSION = 5; // Увеличиваем версию для добавления новых хранилищ!
 const STORE_NAME = 'clients'; 
 let db = null;
 
@@ -26,7 +26,7 @@ export function initDatabase() {
                 store.createIndex('sku', 'sku', { unique: true });
             }
 
-            // 3. Tickets (НОВОЕ)
+            // 3. Tickets
             if (!database.objectStoreNames.contains('tickets')) {
                 const store = database.createObjectStore('tickets', { keyPath: 'id', autoIncrement: true });
                 store.createIndex('client_id', 'client_id', { unique: false });
@@ -34,7 +34,35 @@ export function initDatabase() {
                 store.createIndex('type', 'type', { unique: false });
                 console.log('✅ Store "tickets" created');
             }
+
+            // === Продажи (единичные сделки) ===
+            if (!database.objectStoreNames.contains('sales')) {
+                const salesStore = database.createObjectStore('sales', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                salesStore.createIndex('product_id', 'product_id', { unique: false });
+                salesStore.createIndex('client_id', 'client_id', { unique: false });
+                salesStore.createIndex('transaction_date', 'transaction_date', { unique: false });
+                salesStore.createIndex('type', 'type', { unique: false }); // sale, writeoff, restock
+                salesStore.createIndex('is_bulk', 'is_bulk', { unique: false });
+                console.log('✅ Store "sales" created');
+            }
+
+            // НОВОЕ: Пакетные корректировки (списание/поступление за период) ===
+            if (!database.objectStoreNames.contains('bulk_adjustments')) {
+                const bulkStore = database.createObjectStore('bulk_adjustments', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                bulkStore.createIndex('product_id', 'product_id', { unique: false });
+                bulkStore.createIndex('period_start', 'period_start', { unique: false });
+                bulkStore.createIndex('period_end', 'period_end', { unique: false });
+                bulkStore.createIndex('type', 'type', { unique: false }); // writeoff, restock
+                console.log('✅ Store "bulk_adjustments" created');
+            }
         };
+
 
         request.onsuccess = (e) => { db = e.target.result; resolve(db); };
         request.onerror = (e) => reject(e.target.error);
@@ -46,111 +74,6 @@ export function initDatabase() {
 export function getDbInstance() {
     return db;
 }
-
-// // Добавить клиента
-// export function createClient(name, phone, email) {
-//     return new Promise((resolve, reject) => {
-//         if (!db) {
-//             reject(new Error('База данных не инициализирована'));
-//             return;
-//         }
-
-//         const transaction = db.transaction([STORE_NAME], 'readwrite');
-//         const store = transaction.objectStore(STORE_NAME);
-
-//         const client = {
-//             name: name,
-//             phone: phone || '',
-//             email: email || '',
-//             created_at: new Date().toISOString()
-//         };
-
-//         const request = store.add(client);
-
-//         request.onsuccess = function(event) {
-//             const id = event.target.result;
-//             console.log('Клиент создан с ID:', id);
-//             resolve(id);
-//         };
-
-//         request.onerror = function(event) {
-//             console.error('Ошибка добавления клиента:', event.target.error);
-//             reject(event.target.error);
-//         };
-//     });
-// }
-
-// // Получить всех клиентов
-// export function getAllClients() {
-//     return new Promise((resolve, reject) => {
-//         if (!db) {
-//             reject(new Error('База данных не инициализирована'));
-//             return;
-//         }
-
-//         const transaction = db.transaction([STORE_NAME], 'readonly');
-//         const store = transaction.objectStore(STORE_NAME);
-//         const request = store.getAll();
-
-//         request.onsuccess = function(event) {
-//             const clients = event.target.result;
-//             resolve(clients);
-//         };
-
-//         request.onerror = function(event) {
-//             console.error('Ошибка получения клиентов:', event.target.error);
-//             reject(event.target.error);
-//         };
-//     });
-// }
-
-// // Удалить клиента (для будущего использования)
-// export function deleteClient(id) {
-//     return new Promise((resolve, reject) => {
-//         if (!db) {
-//             reject(new Error('База данных не инициализирована'));
-//             return;
-//         }
-
-//         const transaction = db.transaction([STORE_NAME], 'readwrite');
-//         const store = transaction.objectStore(STORE_NAME);
-//         const request = store.delete(id);
-
-//         request.onsuccess = function() {
-//             console.log('Клиент удалён');
-//             resolve();
-//         };
-
-//         request.onerror = function(event) {
-//             console.error('Ошибка удаления клиента:', event.target.error);
-//             reject(event.target.error);
-//         };
-//     });
-// }
-
-// // Очистить всё хранилище (для тестов)
-// export function clearAllClients() {
-//     return new Promise((resolve, reject) => {
-//         if (!db) {
-//             reject(new Error('База данных не инициализирована'));
-//             return;
-//         }
-
-//         const transaction = db.transaction([STORE_NAME], 'readwrite');
-//         const store = transaction.objectStore(STORE_NAME);
-//         const request = store.clear();
-
-//         request.onsuccess = function() {
-//             console.log('Все клиенты удалены');
-//             resolve();
-//         };
-
-//         request.onerror = function(event) {
-//             console.error('Ошибка очистки:', event.target.error);
-//             reject(event.target.error);
-//         };
-//     });
-// }
 
 // Экспорт всех данных для бэкапа
 export function exportDatabase() {
@@ -219,12 +142,12 @@ export function importDatabase(jsonData) {
 export function exportToJSON() {
     return new Promise((resolve, reject) => {
         if (!db) {
-            console.error('❌ Database not initialized');
+            console.error('Database not initialized');
             reject(new Error('База данных не инициализирована'));
             return;
         }
         
-        console.log('📦 Exporting data to JSON...');
+        console.log('Exporting data to JSON...');
         
         const transaction = db.transaction([STORE_NAME], 'readonly');
         const store = transaction.objectStore(STORE_NAME);
@@ -237,14 +160,14 @@ export function exportToJSON() {
                 clients: event.target.result
             };
             
-            console.log('💾 Exported', data.clients.length, 'clients to JSON');
+            console.log('Exported', data.clients.length, 'clients to JSON');
             console.log('Data:', JSON.stringify(data, null, 2));
             
             resolve(JSON.stringify(data));
         };
         
         request.onerror = function(event) {
-            console.error('❌ Export error:', event.target.error);
+            console.error('Export error:', event.target.error);
             reject(event.target.error);
         };
     });
@@ -288,53 +211,6 @@ export function importFromJSON(jsonData) {
         }
     });
 }
-
-// // Обновить клиента
-// export function updateClient(id, data) {
-//     return new Promise((resolve, reject) => {
-//         if (!db) {
-//             reject(new Error('База данных не инициализирована'));
-//             return;
-//         }
-
-//         const transaction = db.transaction([STORE_NAME], 'readwrite');
-//         const store = transaction.objectStore(STORE_NAME);
-        
-//         // Сначала получаем существующую запись
-//         const getRequest = store.get(id);
-        
-//         getRequest.onsuccess = function(event) {
-//             const client = event.target.result;
-//             if (!client) {
-//                 reject(new Error('Клиент не найден'));
-//                 return;
-//             }
-            
-//             // Обновляем поля
-//             const updatedClient = {
-//                 ...client,
-//                 ...data,
-//                 updated_at: new Date().toISOString()
-//             };
-            
-//             // Сохраняем
-//             const request = store.put(updatedClient);
-            
-//             request.onsuccess = function() {
-//                 console.log('✅ Клиент обновлён в БД');
-//                 resolve(id);
-//             };
-            
-//             request.onerror = function(event) {
-//                 reject(event.target.error);
-//             };
-//         };
-        
-//         getRequest.onerror = function(event) {
-//             reject(event.target.error);
-//         };
-//     });
-// }
 
 // === УНИВЕРСАЛЬНЫЕ ФУНКЦИИ ===
 
@@ -400,7 +276,7 @@ export function updateItem(storeName, id, data) {
         const transaction = db.transaction([storeName], 'readwrite');
         const store = transaction.objectStore(storeName);
 
-        // Сначала получаем старую запись, чтобы сохранить id
+        // Сначала необходимо получить старую запись, чтобы сохранить id
         const getRequest = store.get(id);
 
         getRequest.onsuccess = function(event) {
@@ -450,7 +326,7 @@ export function generateSKU(category, id = null) {
     }
     
     // Если id ещё нет (при создании), возвращаем шаблон
-    // Реальный SKU установим после получения autoIncrement id
+    // Реальный SKU будет установлен после получения autoIncrement id
     return `${prefix}-NEW`;
 }
 
@@ -514,14 +390,18 @@ export function exportAllData() {
     return Promise.all([
         getAllItems('clients'),
         getAllItems('products'),
-        getAllItems('tickets') // ← ДОБАВИЛИ
-    ]).then(([clients, products, tickets]) => JSON.stringify({
+        getAllItems('tickets'),
+        getAllItems('sales'),
+        getAllItems('bulk_adjustments')
+    ]).then(([clients, products, tickets, sales, bulk]) => JSON.stringify({
         version: DB_VERSION,
         exported_at: new Date().toISOString(),
         stores: [
             { store: 'clients', items: clients },
             { store: 'products', items: products },
-            { store: 'tickets', items: tickets } // ← ДОБАВИЛИ
+            { store: 'tickets', items: tickets },
+            { store: 'sales', items: sales },
+            { store: 'bulk_adjustments', items: bulk }
         ]
     }));
 }
@@ -587,4 +467,129 @@ export function getClientById(id) {
 
 export function clearAllClients() {
     return clearStore('clients');
+}
+
+// === СПЕЦИФИЧНЫЕ ФУНКЦИИ ДЛЯ ПРОДАЖ ===
+
+// Создать единичную сделку
+export async function createSale(data) {
+    const sale = {
+        client_id: data.client_id === 'empty' ? null : parseInt(data.client_id),
+        product_id: parseInt(data.product_id),
+        quantity: parseInt(data.quantity),
+        unit_price: parseFloat(data.unit_price),
+        total_amount: parseFloat(data.quantity) * parseFloat(data.unit_price),
+        transaction_date: data.transaction_date || new Date().toISOString(),
+        comment: data.comment || '',
+        type: data.type || 'sale', // sale, writeoff, restock
+        is_bulk: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+    
+    const id = await addItem('sales', sale);
+    
+    // Обновляем остаток товара
+    await updateProductStock(data.product_id, data.type === 'restock' ? +sale.quantity : -sale.quantity);
+    
+    return id;
+}
+
+// Создать пакетную корректировку
+export async function createBulkAdjustment(data) {
+    const adjustment = {
+        product_id: parseInt(data.product_id),
+        quantity: parseInt(data.quantity),
+        period_start: data.period_start,
+        period_end: data.period_end,
+        type: data.type, // writeoff, restock
+        comment: data.comment || '',
+        registered_at: new Date().toISOString()
+    };
+    
+    const id = await addItem('bulk_adjustments', adjustment);
+    
+    // Обновляем остаток товара
+    await updateProductStock(data.product_id, data.type === 'restock' ? +adjustment.quantity : -adjustment.quantity);
+    
+    return id;
+}
+
+// Обновить остаток товара (вспомогательная функция)
+async function updateProductStock(productId, quantityChange) {
+    const product = await getItemById('products', productId);
+    if (!product) return;
+    
+    const newQuantity = Math.max(0, (product.quantity || 0) + quantityChange);
+    
+    await updateItem('products', productId, {
+        quantity: newQuantity,
+        updated_at: new Date().toISOString()
+    });
+}
+
+// Получить все продажи с пагинацией
+export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}) {
+    const allSales = await getAllItems('sales');
+    const allBulk = await getAllItems('bulk_adjustments');
+    
+    // Объединяем и нормализуем данные для отображения
+    let combined = [
+        ...allSales.map(s => ({ ...s, source: 'single', tag: s.type })),
+        ...allBulk.map(b => ({ 
+            ...b, 
+            source: 'bulk', 
+            tag: b.type,
+            transaction_date: b.period_start,
+            total_amount: null,
+            unit_price: null,
+            client_id: null
+        }))
+    ];
+    
+    // Применяем фильтры
+    if (filters.type) {
+        combined = combined.filter(item => item.tag === filters.type);
+    }
+    if (filters.product_id) {
+        combined = combined.filter(item => item.product_id === parseInt(filters.product_id));
+    }
+    if (filters.date_from) {
+        combined = combined.filter(item => new Date(item.transaction_date) >= new Date(filters.date_from));
+    }
+    if (filters.date_to) {
+        combined = combined.filter(item => new Date(item.transaction_date) <= new Date(filters.date_to));
+    }
+    
+    // Сортировка по дате (новые сверху)
+    combined.sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date));
+    
+    // Пагинация
+    const total = combined.length;
+    const start = (page - 1) * pageSize;
+    const items = combined.slice(start, start + pageSize);
+    
+    return {
+        items,
+        pagination: {
+            current_page: page,
+            page_size: pageSize,
+            total_items: total,
+            total_pages: Math.ceil(total / pageSize)
+        }
+    };
+}
+
+// Получить товары для выпадающего списка (без описания)
+export async function getProductsForDropdown() {
+    const products = await getAllItems('products');
+    return products.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        sku: p.sku,
+        price: p.price,
+        quantity: p.quantity,
+        is_active: p.is_active
+    }));
 }

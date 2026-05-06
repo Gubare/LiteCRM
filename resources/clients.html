@@ -36,12 +36,8 @@
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html">Главная</a>
-        <a href="clients.html">Клиенты</a>
-        <a href="products.html">Товары</a>
-        <a href="tickets.html">Обращения</a>
-    </nav>
+    <div id="nav-container"></div>
+
     
     <h1>Список клиентов</h1>
     
@@ -152,7 +148,8 @@
                 console.error('Ошибка:', error);
                 alert('Ошибка: ' + error.message);
             }
-        }, { once: false }); // Уберите или оставьте false
+        }, { once: false }); // Можно установить true или оставить false
+
         // Рендер таблицы с кнопками
         function renderClientTable(clients) {
             const tbody = document.querySelector('#clientList tbody');
@@ -181,7 +178,7 @@
             `).join('');
         }
         
-                // Удаление клиента
+        // Удаление клиента
         window.deleteClientById = async function(id) {
             if (!confirm('Вы уверены, что хотите удалить этого клиента?')) return;
             
@@ -210,13 +207,13 @@
                 document.getElementById('editModal').style.display = 'block';
             };
             
-            // Закрытие модального окна (теперь без window.)
+            // Закрытие модального окна
             function closeEditModal() {
                 document.getElementById('editModal').style.display = 'none';
             }
         
-            //Cохранение редактирования клиента
-    // Сохранение изменений (теперь без window.)
+    //Cохранение редактирования клиента
+    // Сохранение изменений
     async function saveEditClient() {
         const id = parseInt(document.getElementById('editClientId').value);
         const updatedData = {
@@ -247,8 +244,8 @@
             alert('Ошибка обновления: ' + error.message);
         }
     }
-            // !!! Добавляем обработчики событий после загрузки DOM
-    document.addEventListener('DOMContentLoaded', () => {
+        // Добавляем обработчики событий после загрузки DOM
+        document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btnCloseModal').addEventListener('click', closeEditModal);
         document.getElementById('btnSaveEdit').addEventListener('click', saveEditClient);
         
@@ -260,7 +257,7 @@
         });
     });
 
-        // Делаем функции глобальными
+            // Делаем функции глобальными
             window.updateClient = updateClient;
             window.deleteClientById = deleteClientById;
             window.editClient = editClient;

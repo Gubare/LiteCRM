@@ -107,7 +107,7 @@ function renderClientTable(clients) {
                 <button onclick="window.handleDeleteClient(${client.id})" 
                         style="color: #ef4444; cursor: pointer; border: 1px solid #ef4444; 
                                border-radius: 4px; padding: 4px 8px; background: #fff;">
-                    🗑️ Удалить
+                    Удалить
                 </button>
             </td>
         </tr>
@@ -120,7 +120,7 @@ window.handleDeleteClient = async function(id) {
     
     try {
         await deleteClient(id);
-        console.log('✅ Клиент удалён из IndexedDB');
+        console.log('✅ The client has been removed from IndexedDB');
         
         // Сохраняем бэкап сразу после удаления
         await saveDataToFile();
@@ -129,35 +129,59 @@ window.handleDeleteClient = async function(id) {
         const clients = await getAllClients();
         window.renderClientTable(clients);
     } catch (error) {
-        console.error('❌ Ошибка удаления:', error);
+        console.error('❌ Deletion error:', error);
         alert('Не удалось удалить клиента: ' + error.message);
     }
 };
 
 window.saveDataToFile = async function() {
     try {
-        const clients = await getAllItems('clients');
-        const products = await getAllItems('products');
-        const tickets = await getAllItems('tickets'); // ← НОВОЕ
-        
-        const backup = {
-            version: 3,
-            exported_at: new Date().toISOString(),
-            stores: [
-                { store: 'clients', items: clients },
-                { store: 'products', items: products },
-                { store: 'tickets', items: tickets } // ← НОВОЕ
-            ]
-        };
-        
+        const backup = await exportAllData(); // Уже включает sales и bulk_adjustments
         const filePath = 'crm_data/backup.json';
         try { await Neutralino.filesystem.createDirectory('crm_data'); } catch(e){}
-        await Neutralino.filesystem.writeFile(filePath, JSON.stringify(backup));
-        console.log(`💾 Backup saved: ${clients.length} clients, ${products.length} products, ${tickets.length} tickets`);
+        await Neutralino.filesystem.writeFile(filePath, backup);
+        console.log('Full backup saved');
         return true;
-    } catch (error) { console.error('Backup error:', error); return false; }
+    } catch (error) {
+        console.error('Backup error:', error);
+        return false;
+    }
 };
 
+// Функция для загрузки навигации
+export async function loadNavigation(selector = '#nav-container') {
+    try {
+        const response = await fetch('partials/nav.html');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const html = await response.text();
+        const container = document.querySelector(selector);
+        
+        if (container) {
+            container.innerHTML = html;
+            
+            // Подсветка активной ссылки
+            highlightActiveLink();
+        }
+    } catch (error) {
+        console.error('Failed to load navigation:', error);
+        // Фолбэк: если не загрузилось, скрываем контейнер
+        const container = document.querySelector(selector);
+        if (container) container.style.display = 'none';
+    }
+}
+
+// Подсветка текущей страницы в меню
+function highlightActiveLink() {
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.main-nav a').forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('active');
+            link.style.fontWeight = 'bold';
+            link.style.color = '#3b82f6';
+        }
+    });
+}
 
 // Загрузка данных из файла при старте
 // В main.js
@@ -181,7 +205,7 @@ window.loadDataFromFile = async function() {
 };
 // Обработчик закрытия окна
 async function onWindowClose() {
-    console.log('🔄 Application closing, saving data...');
+    console.log('Application closing, saving data...');
     
     try {
         // Сохраняем данные перед закрытием
@@ -224,58 +248,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.renderClientTable = renderClientTable;
         window.exportDatabase = exportDatabase;
         window.importDatabase = importDatabase;
-        
-        // Дублируется из других файлов
-        // // 3. Обработка формы клиентов (если есть на странице)
-        // const clientForm = document.getElementById('clientForm');
-        // if (clientForm) {
-        //     clientForm.addEventListener('submit', async (e) => {
-        //         e.preventDefault();
                 
-        //         try {
-        //             const formData = new FormData(e.target);
-        //             const name = formData.get('name');
-        //             const phone = formData.get('phone');
-        //             const email = formData.get('email');
-                    
-        //             if (!name) {
-        //                 alert('Имя клиента обязательно');
-        //                 return;
-        //             }
-                    
-        //             // Добавляем клиента через IndexedDB
-        //             const clientId = await createClient(name, phone, email);
-                    
-        //             // Показываем сообщение
-        //             const messageEl = document.getElementById('message');
-        //             if (messageEl) {
-        //                 messageEl.textContent = `Клиент создан с ID: ${clientId}`;
-        //                 messageEl.style.color = 'green';
-        //             }
-                    
-        //             // Очищаем форму
-        //             e.target.reset();
-                    
-        //             // Перезагружаем список клиентов
-        //             const clients = await getAllClients();
-        //             if (typeof window.renderClientTable === 'function') {
-        //                 window.renderClientTable(clients);
-        //             }
-                    
-        //             console.log('Client created:', clientId);
-                    
-        //         } catch (error) {
-        //             console.error('Error creating client:', error);
-        //             const messageEl = document.getElementById('message');
-        //             if (messageEl) {
-        //                 messageEl.textContent = 'Ошибка: ' + error.message;
-        //                 messageEl.style.color = 'red';
-        //             }
-        //         }
-        //     });
-        // }
-        
-        // 4. Загрузка списка клиентов (если таблица есть на странице)
+        // Загрузка списка клиентов (если таблица есть на странице)
         const clientListTable = document.getElementById('clientList');
         if (clientListTable) {
             try {
@@ -291,16 +265,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         
-        console.log("✅ Приложение запущено успешно!");
+        console.log("✅ The application has been launched successfully!");
         
     } catch (error) {
-        console.error("❌ Ошибка инициализации приложения:", error);
+        console.error("❌ Application initialization error:", error);
         if (typeof Neutralino !== 'undefined' && Neutralino.os) {
             Neutralino.os.showMessageBox('Ошибка запуска', 
                 'Не удалось инициализировать приложение: ' + error.message);
         }
     }
-    
+        if (document.getElementById('nav-container')) {
+        await loadNavigation();
+    }
     // Display app information
     showInfo();
 });
