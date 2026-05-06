@@ -14,6 +14,11 @@ let currentPage = 1;
 let currentPageSize = 10;
 let currentFilters = {};
 
+function goToPage(newPage) {
+    currentPage = newPage;
+    loadSalesTable(); // Перезагружаем таблицу с новым currentPage
+}
+
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
@@ -81,19 +86,22 @@ async function populateDropdowns() {
 }
 
 // === ЗАГРУЗКА ТАБЛИЦЫ ===
-async function loadSalesTable() {
+async function loadSalesTable(customSort = null) {
     const tbody = document.getElementById('salesTableBody');
     tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">Загрузка...</td></tr>';
     
+    const sortValue = customSort || document.getElementById('sortSelect').value;
+    
     try {
-        const result = await getSalesPaginated(currentPage, currentPageSize, currentFilters);
+        const result = await getSalesPaginated(currentPage, currentPageSize, currentFilters, sortValue);
         renderSalesTable(result.items);
-        renderPagination(result.pagination);
+        
+        // goToPage передаётся как обработчик клика
+        renderPagination(result.pagination, goToPage); 
+        
     } catch (error) {
         console.error('Error loading sales:', error);
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444; padding: 20px;">
-            ❌ Ошибка загрузки: ${error.message}
-        </td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444;">Ошибка: ${error.message}</td></tr>`;
     }
 }
 
@@ -240,6 +248,13 @@ function setupEventListeners() {
             }
         }
     });
+
+    // Обработчик сортировки
+    document.getElementById('sortSelect').addEventListener('change', (e) => {
+        // При смене сортировки сбрасываем на 1 страницу и перезагружаем
+        currentPage = 1;
+        loadSalesTable(e.target.value); 
+    });
 }
 
 // === ОБРАБОТКА ФОРМ ===
@@ -257,18 +272,27 @@ async function handleSingleSaleSubmit() {
         type: document.getElementById('saleType').value
     };
     
-    if (!formData.product_id) { showToast('⚠️ Выберите товар'); return; }
+    if (!formData.product_id) { 
+        showToast('⚠️ Выберите товар'); 
+        return; 
+    }
     
-    if (formData.type === 'writeoff' && !await confirmModal(
-        'Подтверждение списания',
-        `Вы действительно хотите списать ${formData.quantity} ед. товара?`
-    )) { return; }
+    // Подтверждение для списаний
+    if (formData.type === 'writeoff') {
+        const confirmed = await confirmModal(
+            'Подтверждение списания',
+            `Вы действительно хотите списать ${formData.quantity} ед. товара?`
+        );
+        if (!confirmed) return;
+    }
     
-    btn.disabled = true; btn.textContent = '⏳ Обработка...';
+    btn.disabled = true; 
+    btn.textContent = '⏳ Обработка...';
     
     try {
-        await createSale(formData);
+        await createSale(formData); // Ошибки обрабатываются внутри createSale
         if (window.saveDataToFile) await window.saveDataToFile();
+        
         showToast('✅ Сделка зарегистрирована');
         
         document.getElementById('singleSaleForm').reset();
@@ -276,11 +300,13 @@ async function handleSingleSaleSubmit() {
         
         await populateDropdowns();
         loadSalesTable();
+        
     } catch (error) {
-        console.error('Error creating sale:', error);
-        showToast('❌ Ошибка: ' + error.message);
+        // Ошибка уже показана пользователю в createSale
+        console.error('Sale failed:', error);
     } finally {
-        btn.disabled = false; btn.textContent = 'Зарегистрировать сделку';
+        btn.disabled = false; 
+        btn.textContent = 'Зарегистрировать сделку';
     }
 }
 
@@ -313,7 +339,7 @@ async function handleBulkAdjustmentSubmit() {
         
         document.getElementById('bulkAdjustmentForm').reset();
         document.getElementById('bulkDate').value = new Date().toISOString().slice(0, 16);
-        
+
         await populateDropdowns();
         loadSalesTable();
     } catch (error) {

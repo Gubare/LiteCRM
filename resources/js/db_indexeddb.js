@@ -1,5 +1,5 @@
 // resources/js/db_indexeddb.js
-
+import { showErrorWithRetry, executeWithRetry } from './error-handler.js';
 const DB_NAME = 'CRM_Database';
 const DB_VERSION = 5; // Увеличиваем версию для добавления новых хранилищ!
 const STORE_NAME = 'clients'; 
@@ -252,19 +252,46 @@ export function getAllItems(storeName) {
 export function getItemById(storeName, id) {
     return new Promise((resolve, reject) => {
         if (!db) {
+            console.error('❌ Database not initialized in getItemById');
             reject(new Error('База данных не инициализирована'));
             return;
         }
 
+        console.log(`🔍 getItemById: store=${storeName}, id=${id}, type=${typeof id}`);
+
         const transaction = db.transaction([storeName], 'readonly');
         const store = transaction.objectStore(storeName);
+        
+        // Пробуем получить по ID (и как число, и как строку)
         const request = store.get(id);
 
-        request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => reject(e.target.error);
+        request.onsuccess = function(event) {
+            let result = event.target.result;
+            console.log('📦 getItemById result:', result);
+            
+            // Если не нашли по прямому ID, ищем перебором
+            if (!result) {
+                console.log(`⚠️ Not found by direct get(), trying getAll...`);
+                getAllItems(storeName).then(items => {
+                    // Ищем с приведением типов
+                    const found = items.find(item => {
+                        const itemId = item.id;
+                        return itemId == id || itemId === String(id) || String(itemId) === String(id);
+                    });
+                    console.log('🔍 Found by getAll:', found);
+                    resolve(found);
+                }).catch(reject);
+            } else {
+                resolve(result);
+            }
+        };
+
+        request.onerror = function(event) {
+            console.error('❌ getItemById error:', event.target.error);
+            reject(event.target.error);
+        };
     });
 }
-
 // Обновить запись
 export function updateItem(storeName, id, data) {
     return new Promise((resolve, reject) => {
@@ -472,64 +499,202 @@ export function clearAllClients() {
 // === СПЕЦИФИЧНЫЕ ФУНКЦИИ ДЛЯ ПРОДАЖ ===
 
 // Создать единичную сделку
-export async function createSale(data) {
-    const sale = {
-        client_id: data.client_id === 'empty' ? null : parseInt(data.client_id),
-        product_id: parseInt(data.product_id),
-        quantity: parseInt(data.quantity),
-        unit_price: parseFloat(data.unit_price),
-        total_amount: parseFloat(data.quantity) * parseFloat(data.unit_price),
-        transaction_date: data.transaction_date || new Date().toISOString(),
-        comment: data.comment || '',
-        type: data.type || 'sale', // sale, writeoff, restock
-        is_bulk: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    };
+export async function createSale(data, retry = true) {
+    console.log('💰 Creating sale:', data);
     
-    const id = await addItem('sales', sale);
-    
-    // Обновляем остаток товара
-    await updateProductStock(data.product_id, data.type === 'restock' ? +sale.quantity : -sale.quantity);
-    
-    return id;
+    try {
+        // Проверяем существование товара ПЕРЕД созданием продажи
+        const product = await getItemById('products', parseInt(data.product_id));
+        
+        if (!product) {
+            const errorMsg = `Товар с ID ${data.product_id} не найден в базе. ` +
+                           `Возможно, он был удалён. Проверьте таблицу товаров.`;
+            
+            if (retry) {
+                // Пробуем показать ошибку с возможностью повтора
+                throw new Error(errorMsg);
+            } else {
+                // Если уже была попытка — просто выбрасываем
+                throw new Error(errorMsg);
+            }
+        }
+        
+        // Проверяем, достаточно ли товара на складе (для продаж и списаний)
+        if (data.type === 'sale' || data.type === 'writeoff') {
+            const requestedQty = parseInt(data.quantity);
+            const availableQty = product.quantity || 0;
+            
+            if (requestedQty > availableQty) {
+                throw new Error(
+                    `Недостаточно товара "${product.name}" на складе. ` +
+                    `Запрошено: ${requestedQty}, доступно: ${availableQty}`
+                );
+            }
+        }
+        
+        const sale = {
+            client_id: data.client_id === 'empty' ? null : parseInt(data.client_id),
+            product_id: parseInt(data.product_id),
+            quantity: parseInt(data.quantity),
+            unit_price: parseFloat(data.unit_price),
+            total_amount: parseFloat(data.quantity) * parseFloat(data.unit_price),
+            transaction_date: data.transaction_date || new Date().toISOString(),
+            comment: data.comment || '',
+            type: data.type || 'sale',
+            is_bulk: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        // Создаём запись о продаже
+        const id = await addItem('sales', sale);
+        console.log('✅ Sale created with id:', id);
+        
+        // Обновляем остаток товара
+        const quantityChange = data.type === 'restock' 
+            ? +sale.quantity
+            : -sale.quantity;
+        
+        const stockUpdated = await updateProductStock(
+            parseInt(data.product_id),
+            quantityChange
+        );
+        
+        if (!stockUpdated) {
+            // Откатываем продажу, если не удалось обновить остаток
+            await deleteItem('sales', id);
+            throw new Error('Не удалось обновить остаток товара. Продажа отменена.');
+        }
+        
+        return id;
+        
+    } catch (error) {
+        console.error('❌ Error in createSale:', error);
+        
+        if (retry) {
+            // Показываем окно с ошибкой и возможностью повтора
+            // Но не бесконечно — только один раз
+            await showErrorWithRetry(
+                error.message,
+                () => createSale(data, false) // Повтор без показа окна
+            );
+        }
+        
+        throw error;
+    }
 }
 
 // Создать пакетную корректировку
-export async function createBulkAdjustment(data) {
-    const adjustment = {
-        product_id: parseInt(data.product_id),
-        quantity: parseInt(data.quantity),
-        period_start: data.period_start,
-        period_end: data.period_end,
-        type: data.type, // writeoff, restock
-        comment: data.comment || '',
-        registered_at: new Date().toISOString()
-    };
+export async function createBulkAdjustment(data, retry = true) {
+    console.log('📦 Creating bulk adjustment:', data);
     
-    const id = await addItem('bulk_adjustments', adjustment);
-    
-    // Обновляем остаток товара
-    await updateProductStock(data.product_id, data.type === 'restock' ? +adjustment.quantity : -adjustment.quantity);
-    
-    return id;
+    try {
+        // Проверяем существование товара
+        const product = await getItemById('products', parseInt(data.product_id));
+        
+        if (!product) {
+            throw new Error(`Товар с ID ${data.product_id} не найден в базе.`);
+        }
+        
+        // Для списаний проверяем остаток
+        if (data.type === 'writeoff') {
+            const requestedQty = parseInt(data.quantity);
+            const availableQty = product.quantity || 0;
+            
+            if (requestedQty > availableQty) {
+                throw new Error(
+                    `Недостаточно товара "${product.name}" для списания. ` +
+                    `Запрошено: ${requestedQty}, доступно: ${availableQty}`
+                );
+            }
+        }
+        
+        const adjustment = {
+            product_id: parseInt(data.product_id),
+            quantity: parseInt(data.quantity),
+            period_start: data.period_start,
+            period_end: data.period_end,
+            type: data.type,
+            comment: data.comment || '',
+            registered_at: new Date().toISOString()
+        };
+        
+        const id = await addItem('bulk_adjustments', adjustment);
+        console.log('✅ Bulk adjustment created with id:', id);
+        
+        // Обновляем остаток
+        const quantityChange = data.type === 'restock' 
+            ? +adjustment.quantity 
+            : -adjustment.quantity;
+        
+        const stockUpdated = await updateProductStock(
+            parseInt(data.product_id), 
+            quantityChange
+        );        
+        if (!stockUpdated) {
+            await deleteItem('bulk_adjustments', id);
+            throw new Error('Не удалось обновить остаток товара. Корректировка отменена.');
+        }
+        
+        return id;
+        
+    } catch (error) {
+        console.error('❌ Error in createBulkAdjustment:', error);
+        
+        if (retry) {
+            await showErrorWithRetry(
+                error.message,
+                () => createBulkAdjustment(data, false)
+            );
+        }
+        
+        throw error;
+    }
 }
 
 // Обновить остаток товара (вспомогательная функция)
 async function updateProductStock(productId, quantityChange) {
-    const product = await getItemById('products', productId);
-    if (!product) return;
+    // 🔥 ВАЖНО: Приводим к числу!
+    const numericId = typeof productId === 'number' ? productId : parseInt(productId);
     
-    const newQuantity = Math.max(0, (product.quantity || 0) + quantityChange);
+    console.log(`🔄 Updating stock: product_id=${numericId} (was ${productId}), change=${quantityChange}`);
     
-    await updateItem('products', productId, {
-        quantity: newQuantity,
-        updated_at: new Date().toISOString()
-    });
+    if (!db) {
+        console.error('❌ Database not initialized in updateProductStock');
+        return false;
+    }
+    
+    try {
+        // Ищем по ЧИСЛУ, не по строке
+        const product = await getItemById('products', numericId);
+        console.log('📦 Current product:', product);
+        
+        if (!product) {
+            console.error(`❌ Product with id=${numericId} not found`);
+            return false;
+        }
+        
+        const currentQty = product.quantity || 0;
+        const newQuantity = Math.max(0, currentQty + quantityChange);
+        
+        console.log(`📊 Quantity: ${currentQty} ${quantityChange >= 0 ? '+' : ''}${quantityChange} = ${newQuantity}`);
+        
+        await updateItem('products', numericId, {
+            ...product,
+            quantity: newQuantity,
+            updated_at: new Date().toISOString()
+        });
+        
+        console.log('✅ Product stock updated successfully');
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Error in updateProductStock:', error);
+        return false;
+    }
 }
-
 // Получить все продажи с пагинацией
-export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}) {
+export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, sortBy = 'date_desc') {
     const allSales = await getAllItems('sales');
     const allBulk = await getAllItems('bulk_adjustments');
     
@@ -562,22 +727,34 @@ export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}) {
     }
     
     // Сортировка по дате (новые сверху)
-    combined.sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date));
+    combined.sort((a, b) => {
+        switch (sortBy) {
+            case 'date_asc':
+                return new Date(a.transaction_date) - new Date(b.transaction_date);
+            case 'amount_desc':
+                return (b.total_amount || 0) - (a.total_amount || 0);
+            case 'amount_asc':
+                return (a.total_amount || 0) - (b.total_amount || 0);
+            case 'date_desc':
+            default:
+                return new Date(b.transaction_date) - new Date(a.transaction_date);
+        }
+    });
     
     // Пагинация
     const total = combined.length;
     const start = (page - 1) * pageSize;
     const items = combined.slice(start, start + pageSize);
     
-    return {
-        items,
-        pagination: {
+    return { 
+        items, pagination: { 
             current_page: page,
-            page_size: pageSize,
-            total_items: total,
-            total_pages: Math.ceil(total / pageSize)
-        }
-    };
+             page_size: pageSize,
+              total_items: total,
+               total_pages: Math.ceil(total / pageSize)
+            } 
+        };
+
 }
 
 // Получить товары для выпадающего списка (без описания)

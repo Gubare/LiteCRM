@@ -156,3 +156,27 @@ body {
     color: white;
     font-weight: 600;
 }
+
+/* Стили для модального окна ошибок */
+#errorModal .modal-content {
+    border: 2px solid #ef4444;
+    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3);
+}
+
+#errorModal h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#errorModalSupport {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#errorModalSupport:hover {
+    background: #e2e8f0;
+}

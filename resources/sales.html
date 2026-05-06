@@ -57,14 +57,7 @@
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html">🏠 Главная</a>
-        <a href="clients.html">👥 Клиенты</a>
-        <a href="products.html">📦 Товары</a>
-        <a href="tickets.html">🎫 Обращения</a>
-        <a href="reports.html">📈 Отчёты</a>
-        <a href="sales.html">💰 Продажи</a>
-    </nav>
+    <div id="nav-container"></div>
 
     <div class="sales-container">
         <h1>💰 Управление продажами</h1>
@@ -184,7 +177,7 @@
                 </select>
                 <input type="date" id="filterDateFrom" placeholder="С">
                 <input type="date" id="filterDateTo" placeholder="По">
-                <button id="btnApplyFilters" class="btn-primary" style="width: auto; padding: 6px 12px; margin: 0;">Фильтр</button>
+                <button id="btnApplyFilters" class="btn-primary" style="width: auto; padding: 6px 12px; margin: 0;">Применить фильтры</button>
                 <button id="btnResetFilters" style="padding: 6px 12px; border: 1px solid #cbd5e1; background: white; border-radius: 4px; cursor: pointer;">Сброс</button>
             </div>
             <div class="pagination-controls">
@@ -195,6 +188,15 @@
                     <option value="20">20</option>
                     <option value="50">50</option>
                 </select>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-left: 20px;">
+                    <label style="font-size: 13px;">Сортировать:</label>
+                    <select id="sortSelect" class="page-size-select">
+                        <option value="date_desc">Сначала новые</option>
+                        <option value="date_asc">Сначала старые</option>
+                        <option value="amount_desc">По сумме (убыв.)</option>
+                        <option value="amount_asc">По сумме (возр.)</option>
+                    </select>
+                </div>
             </div>
         </div>
         
@@ -233,6 +235,7 @@
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
     <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/error-handler.js"></script>
     <script type="module" src="js/sales.js"></script>
 </body>
 </html>
