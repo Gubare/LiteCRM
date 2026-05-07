@@ -127,36 +127,80 @@ body {
         @media (max-width: 900px) {
             .dashboard-grid { grid-template-columns: 1fr; }
         }
+/* === БОКОВАЯ ПАНЕЛЬ === */
 .main-nav {
-    background: #1e293b;
-    padding: 12px 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: #0f172a;
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-    border-radius: 0 0 8px 8px;
+    flex-direction: column;
+    padding: 20px 0;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+    transition: width 0.3s ease;
 }
 
 .main-nav a {
-    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #94a3b8;
     text-decoration: none;
     font-size: 14px;
-    padding: 6px 12px;
-    border-radius: 4px;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    white-space: nowrap;
+    cursor: default;
 }
 
-.main-nav a:hover {
+.main-nav a:hover, .main-nav a.active {
+    background: #1e293b;
+    color: #fff;
+    border-left: 3px solid #3b82f6;
+    cursor: default;
+}
+
+.nav-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* === ОСНОВНОЙ КОНТЕНТ === */
+.page-content {
+    margin-left: 240px;
+    padding: 20px 30px;
+    transition: margin-left 0.3s ease;
+}
+
+/* === РЕЖИМ "ТОЛЬКО ИКОНКИ" === */
+body.nav-icons-only .main-nav {
+    width: 70px;
+}
+
+body.nav-icons-only .main-nav a {
+    justify-content: center;
+    padding: 15px 0;
+    border-left: none;
+}
+
+body.nav-icons-only .main-nav a:hover {
+    border-left: none;
     background: #334155;
-    color: white;
 }
 
-.main-nav a.active {
-    background: #3b82f6;
-    color: white;
-    font-weight: 600;
+body.nav-icons-only .nav-text {
+    display: none;
 }
 
+body.nav-icons-only .page-content {
+    margin-left: 70px;
+}
 /* Стили для модального окна ошибок */
 #errorModal .modal-content {
     border: 2px solid #ef4444;

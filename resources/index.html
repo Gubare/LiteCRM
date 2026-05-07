@@ -7,6 +7,7 @@
   </head>
   <body>
     <div id="nav-container"></div>
+    <main class="page-content">
     <div id="neutralinoapp">
       <h1>NeutralinoJs</h1>
       <div id="info"></div>
@@ -14,7 +15,7 @@
       <img src="/icons/logo.gif" alt="Neutralinojs" />
       <div>
         <button onclick="testSave()">Тестовое сохранение</button>
-
+</main>
 <script>
 async function testSave() {
     console.log('Manual save test...');
@@ -35,9 +36,8 @@ async function testSave() {
         because `neu update` typically downloads it.
         Avoid copy-pasting it. 
         -->
-    <script src="/js/neutralino.js"></script>
-    <script src="/js/sql-wasm.js"></script>
-    <!-- Your app's source files -->
-   <script type="module" src="js/main.js"></script>
+  <script src="/js/neutralino.js"></script>
+  <script src="/js/sql-wasm.js"></script>
+  <script type="module" src="js/main.js"></script>
   </body>
 </html>

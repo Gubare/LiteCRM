@@ -6,6 +6,7 @@ import {
     createSale, 
     createBulkAdjustment, 
     getSalesPaginated,
+    updateClientMetrics,
     getAllItems
 } from './db_indexeddb.js';
 
@@ -290,11 +291,16 @@ async function handleSingleSaleSubmit() {
     btn.textContent = '⏳ Обработка...';
     
     try {
-        await createSale(formData); // Ошибки обрабатываются внутри createSale
+        await createSale(formData);
+        
+        // 🔥 Обновляем метрики клиента
+        if (formData.client_id && formData.client_id !== 'empty' && formData.client_id !== 'new') {
+            const saleAmount = parseFloat(formData.unit_price) * parseInt(formData.quantity);
+            await updateClientMetrics(formData.client_id, saleAmount, 1);
+        }
+        
         if (window.saveDataToFile) await window.saveDataToFile();
-        
-        showToast('✅ Сделка зарегистрирована');
-        
+        showToast('✅ Сделка зарегистрирована');        
         document.getElementById('singleSaleForm').reset();
         document.getElementById('saleDate').value = new Date().toISOString().slice(0, 16);
         

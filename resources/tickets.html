@@ -19,9 +19,10 @@
 </head>
 <body>
     <div id="nav-container"></div>
+    <main class="page-content">
 
     <h1>Управление обращениями</h1>
-
+    
     <!-- Форма создания -->
     <form id="ticketForm" style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
         <div class="grid-2">
@@ -63,9 +64,9 @@
         </div>
         <button type="submit" id="btnAddTicket" class="btn-action btn-edit" style="margin-top: 10px;">Создать обращение</button>
     </form>
-
+    
     <div id="message"></div>
-
+    
     <!-- Таблица -->
     <table id="ticketList" style="width: 100%; border-collapse: collapse;">
         <thead>
@@ -82,7 +83,7 @@
         </thead>
         <tbody></tbody>
     </table>
-
+    
     <!-- Модальное окно редактирования -->
     <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
         <div style="background: white; margin: 50px auto; padding: 20px; border-radius: 8px; width: 600px; max-width: 95%;">
@@ -108,12 +109,13 @@
             </div>
         </div>
     </div>
-
+</main>
+    
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
     <script type="module" src="js/ticket.js"></script>
     <script type="module" src="js/main.js"></script>
-
+    
     <script type="module">
         import { loadTickets, loadClientsForDropdown, createTicket, updateTicket, deleteTicket } from './js/ticket.js';
 
@@ -232,10 +234,15 @@
                         <td style="padding: 8px;">
                             <button class="btn-action btn-edit" data-action="edit">Изм.</button>
                             <button class="btn-action btn-delete" data-action="delete">Удалить</button>
+                            <button onclick="sendEmailToClient('client@mail.ru', 'Счет №1', 'Добрый день, вот ваш счет...')">✉️ Написать</button>
                         </td>
                     </tr>`;
                 }).join('');
             });
+        }
+        function sendEmailToClient(email, subject, body) {
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            Neutralino.os.open(mailtoLink);
         }
 
         function setupEventDelegation() {

@@ -38,7 +38,7 @@
 <body>
     <div id="nav-container"></div>
 
-    
+    <main class="page-content">
     <h1>Список клиентов</h1>
     
     <h2>Добавить клиента</h2>
@@ -53,15 +53,19 @@
     
     <h2>Все клиенты</h2>
     <table id="clientList">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Имя</th>
-                <th>Телефон</th>
-                <th>Email</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Телефон</th>
+            <th>Email</th>
+            <th>Покупки</th>
+            <th>Общая сумма</th>
+            <th>Ср. чек</th>
+            <th>Сегмент</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
         <tbody></tbody>
     </table>
 
@@ -89,11 +93,12 @@
         </div>
     </div>
 </div>
-
+</main>
     <!-- Подключаем скрипты -->
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
     <script type="module" src="js/client.js"></script>
+        <script type="module" src="js/analytics.js"></script>
     <!-- main.js подключаем, но рендеринг будет в этом файле -->
     <script type="module" src="js/main.js"></script>
     
@@ -151,33 +156,73 @@
         }, { once: false }); // Можно установить true или оставить false
 
         // Рендер таблицы с кнопками
+        import { calculateClientDisplayData } from './js/client.js';
         function renderClientTable(clients) {
             const tbody = document.querySelector('#clientList tbody');
             if (!tbody) return;
             
             if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">Нет клиентов</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10">Нет клиентов</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = clients.map(client => `
+            // Проверяем, включены ли подсказки
+            const showTooltips = localStorage.getItem('crm_showCategoryTooltips') !== 'false';
+            
+            const fmt = (num) => num.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
+            
+            tbody.innerHTML = clients.map(client => {
+                const metrics = calculateClientDisplayData(client);
+                
+                // Создаём HTML для бейджа сегмента с опциональной подсказкой
+                const segmentHtml = showTooltips 
+                    ? `<span title="${metrics.segmentTooltip}" style="cursor: help;">
+                        ${metrics.segment} ℹ️
+                    </span>`
+                    : metrics.segment;
+                
+                // Создаём HTML для звёздочки "Новый" (если есть)
+                const newBadgeHtml = metrics.newBadge 
+                    ? `<span title="${metrics.newBadge.tooltip}" 
+                            style="background: ${metrics.newBadge.color}; color: white; 
+                                padding: 4px 8px; border-radius: 12px; 
+                                font-size: 11px; font-weight: 500;
+                                cursor: help; display: inline-flex; align-items: center; gap: 4px; margin-left: 6px;">
+                            ${metrics.newBadge.icon} Новый
+                    </span>`
+                    : '';
+                
+                return `
                 <tr>
                     <td>${client.id}</td>
-                    <td>${client.name || ''}</td>
-                    <td>${client.phone || ''}</td>
-                    <td>${client.email || ''}</td>
+                    <td><strong>${client.name || ''}</strong></td>
+                    <td>${client.phone || '—'}</td>
+                    <td>${client.email || '—'}</td>
+                    <td style="text-align: center;">${metrics.count}</td>
+                    <td style="text-align: right;">${fmt(metrics.total)}</td>
+                    <td style="text-align: right; font-weight: 500;">${fmt(metrics.avgCheck)}</td>
                     <td>
-                        <button class="btn-action btn-edit" onclick="window.editClient(${client.id}, '${client.name}', '${client.phone}', '${client.email}')">
-                            Изм.
-                        </button>
-                        <button class="btn-action btn-delete" onclick="window.deleteClientById(${client.id})">
-                            Удалить
-                        </button>
+                        <span style="
+                            background: ${metrics.segmentColor};
+                            color: white;
+                            padding: 4px 10px;
+                            border-radius: 12px;
+                            font-size: 11px;
+                            font-weight: 500;
+                            display: inline-block;
+                        ">
+                            ${segmentHtml}
+                        </span>
+                        ${newBadgeHtml}
+                    </td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="window.editClient(${client.id}, '${client.name}', '${client.phone}', '${client.email}')">✏️</button>
+                        <button class="btn-action btn-delete" onclick="window.deleteClientById(${client.id})">🗑️</button>
                     </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
         }
-        
         // Удаление клиента
         window.deleteClientById = async function(id) {
             if (!confirm('Вы уверены, что хотите удалить этого клиента?')) return;

@@ -148,40 +148,16 @@ window.saveDataToFile = async function() {
     }
 };
 
-// Функция для загрузки навигации
-export async function loadNavigation(selector = '#nav-container') {
-    try {
-        const response = await fetch('partials/nav.html');
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const html = await response.text();
-        const container = document.querySelector(selector);
-        
-        if (container) {
-            container.innerHTML = html;
-            
-            // Подсветка активной ссылки
-            highlightActiveLink();
-        }
-    } catch (error) {
-        console.error('Failed to load navigation:', error);
-        // Фолбэк: если не загрузилось, скрываем контейнер
-        const container = document.querySelector(selector);
-        if (container) container.style.display = 'none';
-    }
-}
-
-// Подсветка текущей страницы в меню
-function highlightActiveLink() {
-    const currentPage = window.location.pathname.split('/').pop();
-    document.querySelectorAll('.main-nav a').forEach(link => {
-        if (link.getAttribute('href') === currentPage) {
-            link.classList.add('active');
-            link.style.fontWeight = 'bold';
-            link.style.color = '#3b82f6';
-        }
-    });
-}
+// export function navigateTo(page) {
+//     // Используем Neutralino для навигации (без показа URL в статус-баре)
+//     if (typeof Neutralino !== 'undefined' && Neutralino.os) {
+//         // Для десктопного приложения
+//         window.location.href = page;
+//     } else {
+//         // Фолбэк для браузера
+//         window.location.href = page;
+//     }
+// }
 
 // Загрузка данных из файла при старте
 // В main.js
@@ -238,7 +214,7 @@ if(NL_OS != "Darwin") {
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('main.js: DOMContentLoaded');
-    
+    applyNavSettings();
     try {
         // Инициализация IndexedDB
         await initDatabase();
@@ -280,6 +256,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Display app information
     showInfo();
 });
+
+// Функция для загрузки навигации
+export async function loadNavigation(selector = '#nav-container') {
+    try {
+        const response = await fetch('partials/nav.html');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const html = await response.text();
+        const container = document.querySelector(selector);
+        
+        if (container) {
+            container.innerHTML = html;
+            
+            // Подсветка активной ссылки
+            highlightActiveLink();
+        }
+    } catch (error) {
+        console.error('Failed to load navigation:', error);
+        // Фолбэк: если не загрузилось, скрываем контейнер
+        const container = document.querySelector(selector);
+        if (container) container.style.display = 'none';
+    }
+}
+
+// Подсветка текущей страницы в меню
+function highlightActiveLink() {
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.main-nav a').forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('active');
+            link.style.fontWeight = 'bold';
+            link.style.color = '#3b82f6';
+        }
+    });
+}
+
+export function applyNavSettings() {
+    const showText = localStorage.getItem('crm_showNavText') !== 'false';
+    if (!showText) {
+        document.body.classList.add('nav-icons-only');
+    } else {
+        document.body.classList.remove('nav-icons-only');
+    }
+}
+
 
 // Делаем функции доступными глобально
 window.exportToJSON = exportToJSON;

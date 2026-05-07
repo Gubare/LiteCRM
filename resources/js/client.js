@@ -76,3 +76,50 @@ export function getClientById(id) {
     console.warn('getClientById not implemented for IndexedDB');
     return null;
 }
+
+// Рассчёт метрик и сегмента для отображения
+export function calculateClientDisplayData(client) {
+    const total = client.total_spent || 0;
+    const count = client.purchase_count || 0;
+    const avgCheck = count > 0 ? total / count : 0;
+
+    // Определение основной категории (сегмента)
+    let segment = 'Обычный';
+    let segmentColor = '#6b7280'; // Серый
+    let segmentTooltip = 'Стандартный клиент';
+
+    // Логика сегментации по активности
+    if (count === 0) {
+        segment = 'Потенциальный';
+        segmentColor = '#94a3b8';
+        segmentTooltip = 'Клиент без покупок';
+    } else if (count >= 10 || total >= 150000) {
+        segment = 'VIP';
+        segmentColor = '#8b5cf6';
+        segmentTooltip = 'VIP клиент (10+ покупок или 150к+ ₽)';
+    } else if (count >= 3) {
+        segment = 'Постоянный';
+        segmentColor = '#3b82f6';
+        segmentTooltip = 'Постоянный клиент (3+ покупки)';
+    }
+
+    // Отдельно проверяем "Нового" клиента (< 30 дней)
+    const daysSinceReg = (Date.now() - new Date(client.created_at).getTime()) / (1000 * 60 * 60 * 24);
+    const isNew = daysSinceReg <= 30;
+    const newBadge = isNew ? {
+        icon: '⭐',
+        tooltip: 'Новый клиент (менее 30 дней с регистрации)',
+        color: '#f59e0b'
+    } : null;
+
+    return {
+        total,
+        count,
+        avgCheck,
+        segment,
+        segmentColor,
+        segmentTooltip,
+        newBadge,
+        isNew
+    };
+}

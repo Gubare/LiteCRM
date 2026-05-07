@@ -467,14 +467,34 @@ export function getAllClients() {
     return getAllItems('clients');
 }
 
-export function createClient(name, phone, email) {
+export async function createClient(name, phone, email) {
     const client = {
-        name: name,
+        name,
         phone: phone || '',
         email: email || '',
-        created_at: new Date().toISOString()
+        total_spent: 0,       
+        purchase_count: 0,   
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
     };
-    return addItem('clients', client);
+    return await addItem('clients', client);
+}
+
+// Функция обновления метрик клиента (вызывается из sales.js)
+export async function updateClientMetrics(clientId, saleAmount, countChange = 1) {
+    // Игнорируем пустые или служебные ID
+    if (!clientId || clientId === 'empty' || clientId === 'new') return;
+    
+    const id = parseInt(clientId);
+    const client = await getItemById('clients', id);
+    if (!client) return;
+
+    await updateItem('clients', id, {
+        ...client,
+        total_spent: (client.total_spent || 0) + saleAmount,
+        purchase_count: (client.purchase_count || 0) + countChange,
+        updated_at: new Date().toISOString()
+    });
 }
 
 export function deleteClient(id) {

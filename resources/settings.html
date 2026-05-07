@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Настройки - CRM</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .settings-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .settings-section { 
+            background: white; border: 1px solid #e2e8f0; 
+            border-radius: 8px; padding: 20px; margin-bottom: 20px;
+        }
+        .settings-section h2 { margin-top: 0; color: #1e293b; font-size: 18px; }
+        .setting-item { 
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 0; border-bottom: 1px solid #f1f5f9;
+        }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-info h3 { margin: 0 0 5px 0; font-size: 14px; color: #334155; }
+        .setting-info p { margin: 0; font-size: 12px; color: #64748b; }
+        .toggle-switch {
+            position: relative; width: 50px; height: 26px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .3s; border-radius: 26px;
+        }
+        .toggle-slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 3px; bottom: 3px; background-color: white;
+            transition: .3s; border-radius: 50%;
+        }
+        input:checked + .toggle-slider { background-color: #3b82f6; }
+        input:checked + .toggle-slider:before { transform: translateX(24px); }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+<div id="nav-container"></div>
+<main class="page-content">
+
+    <div class="settings-container">
+        <h1>⚙️ Настройки приложения</h1>
+        
+        <!-- Секция: Интерфейс -->
+        <div class="settings-section">
+            <h2>Интерфейс</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Подсказки по категориям клиентов</h3>
+                    <p>Показывать всплывающие подсказки с описанием сегментов</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleTooltips" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="setting-item" style="opacity: 0.6; pointer-events: none;">
+                <div class="setting-info">
+                    <h3>Тёмная тема</h3>
+                    <p>Скоро будет доступна</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" disabled>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Названия в меню</h3>
+                    <p>Показывать текст рядом с иконками в боковой панели</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleNavText" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Секция: Данные -->
+        <div class="settings-section">
+            <h2>Данные</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Автосохранение</h3>
+                    <p>Автоматическое сохранение бэкапа при каждом изменении</p>
+                </div>
+                <span style="color: #10b981; font-weight: 500; font-size: 13px;">✅ Включено</span>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Экспорт данных</h3>
+                    <p>Скачать резервную копию всех данных</p>
+                </div>
+                <button id="btnExport" class="btn-primary" style="width: auto; padding: 8px 16px;">
+                    Скачать бэкап
+                </button>
+            </div>
+        </div>
+        
+        <!-- Секция: О приложении -->
+        <div class="settings-section">
+            <h2>О приложении</h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>CRM для малого бизнеса</h3>
+                    <p>Версия 1.1.0 | NeutralinoJS + IndexedDB</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</main>
+    <script src="js/neutralino.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module">
+        if (typeof Neutralino !== 'undefined') Neutralino.init();
+        
+        // Загрузка настроек при старте
+        document.addEventListener('DOMContentLoaded', () => {
+            // Подсказки
+            const showTooltips = localStorage.getItem('crm_showCategoryTooltips') !== 'false';
+            document.getElementById('toggleTooltips').checked = showTooltips;
+            
+            // Обработчик переключения
+            document.getElementById('toggleTooltips').addEventListener('change', (e) => {
+                localStorage.setItem('crm_showCategoryTooltips', e.target.checked);
+                
+                // Показываем уведомление
+                showToast(e.target.checked 
+                    ? 'Подсказки включены' 
+                    : 'Подсказки отключены'
+                );
+                
+                // Если мы на странице клиентов - обновляем таблицу
+                if (window.renderClientTable && typeof window.loadClientList === 'function') {
+                    window.loadClientList().then(clients => {
+                        window.renderClientTable(clients);
+                    });
+                }
+            });
+            
+            // Экспорт данных
+            document.getElementById('btnExport').addEventListener('click', async () => {
+                try {
+                    if (window.saveDataToFile) {
+                        await window.saveDataToFile();
+                        showToast('✅ Бэкап сохранён в папке crm_data/');
+                    } else {
+                        showToast('⚠️ Функция экспорта временно недоступна');
+                    }
+                } catch (error) {
+                    showToast('❌ Ошибка экспорта: ' + error.message);
+                }
+            });
+        });
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; bottom: 20px; right: 20px;
+                background: #1e293b; color: white;
+                padding: 12px 20px; border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000; animation: slideIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Добавляем анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.getElementById('toggleNavText').addEventListener('change', (e) => {
+            const show = e.target.checked;
+            localStorage.setItem('crm_showNavText', show);
+            
+            if (show) {
+                document.body.classList.remove('nav-icons-only');
+            } else {
+                document.body.classList.add('nav-icons-only');
+            }
+            
+            showToast(show ? '✅ Названия включены' : '🔘 Только иконки');
+        });
+    </script>
+</body>
+</html>
