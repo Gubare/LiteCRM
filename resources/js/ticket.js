@@ -1,6 +1,6 @@
 // resources/js/ticket.js
 import { getAllItems, addItem, updateItem, deleteItem } from './db_indexeddb.js';
-
+import { getSetting } from './settings-manager.js';
 const TICKET_STORE = 'tickets';
 const CLIENT_STORE = 'clients';
 

@@ -33,10 +33,19 @@
             background: #3b82f6;
             color: white;
         }
+        
     </style>
 </head>
 <body>
-    <div id="nav-container"></div>
+<nav class="main-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
+    <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
+    <a href="products.html"><span class="nav-icon">📦</span> <span class="nav-text">Товары</span></a>
+    <a href="tickets.html"><span class="nav-icon">🎫</span> <span class="nav-text">Обращения</span></a>
+    <a href="reports.html"><span class="nav-icon">📈</span> <span class="nav-text">Отчёты</span></a>
+    <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
+    <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
+</nav>
 
     <main class="page-content">
     <h1>Список клиентов</h1>
@@ -52,7 +61,7 @@
     <div id="message"></div>
     
     <h2>Все клиенты</h2>
-    <table id="clientList">
+<table id="clientList">
     <thead>
         <tr>
             <th>ID</th>
@@ -66,8 +75,9 @@
             <th>Действия</th>
         </tr>
     </thead>
-        <tbody></tbody>
-    </table>
+    <tbody></tbody>
+</table>
+
 
 <!-- Модальное окно для редактирования -->
 <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
@@ -105,22 +115,23 @@
     <!-- Логика страницы клиентов -->
     <script type="module">
         import { loadClientList, handleClientFormSubmit, deleteClient, updateClient } from './js/client.js';
-        
+        import { calculateClientDisplayData } from './js/client.js';
         // Инициализация Neutralino
         if (typeof Neutralino !== 'undefined') {
             Neutralino.init();
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            // Ждём инициализации БД из main.js
-            setTimeout(async () => {
-                try {
+            // Ждём готовности БД
+            if (window.isDatabaseReady) {
+                const clients = await loadClientList();
+                renderClientTable(clients);
+            } else {
+                document.addEventListener('dbReady', async () => {
                     const clients = await loadClientList();
                     renderClientTable(clients);
-                } catch (error) {
-                    console.error('Error loading clients:', error);
-                }
-            }, 100);
+                }, { once: true });
+            }
         });
         
         document.getElementById('clientForm').addEventListener('submit', async (e) => {
@@ -156,51 +167,52 @@
         }, { once: false }); // Можно установить true или оставить false
 
         // Рендер таблицы с кнопками
-        import { calculateClientDisplayData } from './js/client.js';
         function renderClientTable(clients) {
             const tbody = document.querySelector('#clientList tbody');
             if (!tbody) return;
             
             if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10">Нет клиентов</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 60px; color: #94a3b8; font-size: 14px;">📭 Нет клиентов. Добавьте первого!</td></tr>';
                 return;
             }
             
-            // Проверяем, включены ли подсказки
             const showTooltips = localStorage.getItem('crm_showCategoryTooltips') !== 'false';
-            
             const fmt = (num) => num.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
             
             tbody.innerHTML = clients.map(client => {
                 const metrics = calculateClientDisplayData(client);
                 
-                // Создаём HTML для бейджа сегмента с опциональной подсказкой
                 const segmentHtml = showTooltips 
                     ? `<span title="${metrics.segmentTooltip}" style="cursor: help;">
-                        ${metrics.segment} ℹ️
+                        ${metrics.segment}
                     </span>`
                     : metrics.segment;
                 
-                // Создаём HTML для звёздочки "Новый" (если есть)
                 const newBadgeHtml = metrics.newBadge 
                     ? `<span title="${metrics.newBadge.tooltip}" 
                             style="background: ${metrics.newBadge.color}; color: white; 
                                 padding: 4px 8px; border-radius: 12px; 
                                 font-size: 11px; font-weight: 500;
-                                cursor: help; display: inline-flex; align-items: center; gap: 4px; margin-left: 6px;">
+                                cursor: help; display: inline-flex; align-items: center; gap: 4px;">
                             ${metrics.newBadge.icon} Новый
                     </span>`
                     : '';
                 
+                // Обрезаем длинные email и телефоны
+                const truncate = (text, maxLen = 20) => {
+                    if (!text || text === '—') return '—';
+                    return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+                };
+                
                 return `
                 <tr>
-                    <td>${client.id}</td>
-                    <td><strong>${client.name || ''}</strong></td>
-                    <td>${client.phone || '—'}</td>
-                    <td>${client.email || '—'}</td>
-                    <td style="text-align: center;">${metrics.count}</td>
-                    <td style="text-align: right;">${fmt(metrics.total)}</td>
-                    <td style="text-align: right; font-weight: 500;">${fmt(metrics.avgCheck)}</td>
+                    <td style="font-weight: 500; color: #64748b;">${client.id}</td>
+                    <td><strong style="color: #0f172a;">${client.name || '—'}</strong></td>
+                    <td style="font-family: monospace; color: #475569;">${truncate(client.phone, 15)}</td>
+                    <td style="color: #475569;">${truncate(client.email, 25)}</td>
+                    <td style="text-align: center; font-weight: 500;">${metrics.count}</td>
+                    <td style="text-align: right; font-weight: 600; color: #0f172a;">${fmt(metrics.total)}</td>
+                    <td style="text-align: right; font-weight: 600; color: #3b82f6;">${fmt(metrics.avgCheck)}</td>
                     <td>
                         <span style="
                             background: ${metrics.segmentColor};
@@ -210,14 +222,17 @@
                             font-size: 11px;
                             font-weight: 500;
                             display: inline-block;
+                            white-space: nowrap;
                         ">
                             ${segmentHtml}
                         </span>
-                        ${newBadgeHtml}
+                        ${newBadgeHtml ? `<span style="margin-left: 4px;">${newBadgeHtml}</span>` : ''}
                     </td>
                     <td>
-                        <button class="btn-action btn-edit" onclick="window.editClient(${client.id}, '${client.name}', '${client.phone}', '${client.email}')">✏️</button>
-                        <button class="btn-action btn-delete" onclick="window.deleteClientById(${client.id})">🗑️</button>
+                        <button class="btn-action btn-edit" onclick="window.editClient(${client.id}, '${client.name}', '${client.phone}', '${client.email}')" 
+                                style="padding: 6px 10px; font-size: 13px;" title="Редактировать">✏️</button>
+                        <button class="btn-action btn-delete" onclick="window.deleteClientById(${client.id})" 
+                                style="padding: 6px 10px; font-size: 13px;" title="Удалить">🗑️</button>
                     </td>
                 </tr>
                 `;
@@ -290,7 +305,36 @@
         }
     }
         // Добавляем обработчики событий после загрузки DOM
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+                const showText = localStorage.getItem('crm_showNavText') !== 'false';
+                if (!showText) {
+                    document.body.classList.add('nav-icons-only');
+                }
+            const loadingOverlay = document.getElementById('tableLoading');
+    
+            try {
+                // Ждём БД
+                if (!window.isDatabaseReady) {
+                    await new Promise(resolve => {
+                        document.addEventListener('dbReady', resolve, { once: true });
+                    });
+                }
+                
+                const clients = await loadClientList();
+                renderClientTable(clients);
+                
+                // Скрываем заглушку
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('hidden');
+                    setTimeout(() => loadingOverlay.remove(), 300);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                if (loadingOverlay) {
+                    loadingOverlay.innerHTML = '<p style="color: #ef4444;">❌ Ошибка загрузки</p>';
+                }
+            }
         document.getElementById('btnCloseModal').addEventListener('click', closeEditModal);
         document.getElementById('btnSaveEdit').addEventListener('click', saveEditClient);
         

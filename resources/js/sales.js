@@ -9,7 +9,7 @@ import {
     updateClientMetrics,
     getAllItems
 } from './db_indexeddb.js';
-
+import { getSetting } from './settings-manager.js';
 // === СОСТОЯНИЕ СТРАНИЦЫ ===
 let currentPage = 1;
 let currentPageSize = 10;
@@ -88,78 +88,104 @@ async function populateDropdowns() {
 
 // === ЗАГРУЗКА ТАБЛИЦЫ ===
 async function loadSalesTable(customSort = null) {
-    const tbody = document.getElementById('salesTableBody');
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">Загрузка...</td></tr>';
+    const tbody = document.querySelector('#salesTable tbody');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">⏳ Загрузка...</td></tr>';
+    }
     
     const sortValue = customSort || document.getElementById('sortSelect').value;
     
     try {
         const result = await getSalesPaginated(currentPage, currentPageSize, currentFilters, sortValue);
         renderSalesTable(result.items);
+        renderPagination(result.pagination, goToPage);
         
-        // goToPage передаётся как обработчик клика
-        renderPagination(result.pagination, goToPage); 
+        // 🔥 Показываем таблицу
+        const table = document.getElementById('salesTable');
+        if (table) table.classList.add('loaded');
         
     } catch (error) {
         console.error('Error loading sales:', error);
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444;">Ошибка: ${error.message}</td></tr>`;
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444;">❌ Ошибка: ${error.message}</td></tr>`;
+        }
     }
 }
-
 // === РЕНДЕР ТАБЛИЦЫ ===
 function renderSalesTable(items) {
-    const tbody = document.getElementById('salesTableBody');
-    
-    if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #64748b;">Нет данных</td></tr>';
+    // используем правильный ID
+    const tbody = document.querySelector('#salesTable tbody');
+    const shouldAnimate = localStorage.getItem('crm_animateRows') !== 'false';
+    if (!tbody) {
+        console.error('❌ Table body not found! Check HTML structure.');
         return;
     }
     
-    Promise.all([getAllItems('products'), getAllItems('clients')]).then(([products, clients]) => {
+    if (items.length === 0) {
+        //Показываем сообщение, когда нет данных
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #94a3b8;">📭 Нет записей</td></tr>';
+        return;
+    }
+    
+    // Загружаем данные товаров и клиентов
+    Promise.all([
+        getAllItems('products'),
+        getAllItems('clients')
+    ]).then(([products, clients]) => {
         const productMap = {};
         const clientMap = {};
         products.forEach(p => productMap[p.id] = p);
         clients.forEach(c => clientMap[c.id] = c);
         
-        tbody.innerHTML = items.map(item => {
+        tbody.innerHTML = items.map((item, index) => {
             const product = productMap[item.product_id];
-            const client = item.client_id ? clientMap[item.client_id] : null;
+            const client = item.client_id ? (clientMap[item.client_id]?.name || 'ID:' + item.client_id) : '—';
+
+            const commentText = item.comment || '—';
+            const commentDisplay = commentText === '—' ? '—' : (commentText.length > 20 ? commentText.substring(0, 20) + '...' : commentText);
+            // Добавляем клик только если есть комментарий
+            const commentHtml = commentText !== '—' 
+
+                ? `<span class="comment-cell" onclick="viewComment(\`${item.comment.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)" title="Нажмите для просмотра">${commentDisplay}</span>`
+                : `<span style="color: #cbd5e1;">—</span>`;
+            // Цвет суммы
+            const isPositive = item.type === 'restock';
+            const sumClass = isPositive ? 'color: #166534;' : 'color: #991b1b;';
+            const sumSign = isPositive ? '+' : '';
             
-            const qtyDisplay = item.source === 'bulk' 
-                ? `${item.quantity}` 
-                : `${item.quantity} × ${item.unit_price?.toFixed(2) || 0}₽`;
+            // Бейдж типа
+            let typeBadge = 'badge-gray';
+            if (item.type === 'sale') typeBadge = 'badge-success';
+            if (item.type === 'writeoff') typeBadge = 'badge-danger';
+            if (item.type === 'restock') typeBadge = 'badge-info';
             
-            const amountDisplay = item.total_amount 
-                ? `<span class="${item.type === 'restock' ? 'amount-positive' : 'amount-negative'}">
-                    ${item.type === 'restock' ? '+' : '-'}${item.total_amount.toFixed(2)}₽
-                  </span>`
-                : '—';
-            
-            const tags = [
-                `<span class="tag tag-${item.tag}">${getTagLabel(item.tag)}</span>`,
-                `<span class="tag ${item.source === 'bulk' ? 'tag-bulk' : 'tag-single'}">
-                    ${item.source === 'bulk' ? 'периодичная' : 'единичная'}
-                </span>`
-            ].join('');
-            
+            const animStyle = shouldAnimate 
+                ? `class="table-row-animate" style="animation-delay: ${index * 0.04}s;"` 
+                : '';
+
+
             return `
-            <tr>
-                <td><strong>${item.id}</strong></td>
-                <td>${product ? `${product.sku} ${product.name}` : `ID:${item.product_id}`}</td>
-                <td>${client ? client.name : (item.client_id ? 'Удалён' : '—')}</td>
-                <td>${qtyDisplay}</td>
-                <td>${amountDisplay}</td>
-                <td>${formatDate(item.transaction_date)}</td>
-                <td>${getTagLabel(item.tag)}</td>
-                <td>${tags}</td>
+            <tr ${animStyle}>
+                <td><strong>#${item.id}</strong></td>
+                <td>${product ? `${product.sku} ${product.name}` : '-'}</td>
+                <td>${client}</td>
+                <td style="text-align: center;">${item.quantity}</td>
+                <td style="text-align: right; font-weight: 600; ${sumClass}">${sumSign}${item.total_amount?.toFixed(2) || 0} ₽</td>
+                <td>${new Date(item.transaction_date).toLocaleDateString()}</td>
+                <td><span class="badge ${typeBadge}">${item.type}</span></td>
                 <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    ${item.comment || '—'}
+                    ${commentHtml}
+                </td>
+                <td style="text-align: center; white-space: nowrap;">
+                    <button class="btn-action-icon" onclick="openEditSale(${item.id})" title="Редактировать">✏️</button>
+                    <button class="btn-action-icon delete" onclick="window.deleteSaleById(${item.id})" title="Удалить">🗑️</button>
                 </td>
             </tr>`;
         }).join('');
+
+        
     });
 }
-
 // === РЕНДЕР ПАГИНАЦИИ (ПЕРЕИСПОЛЬЗУЕМАЯ ФУНКЦИЯ) ===
 export function renderPagination({ current_page, total_pages, total_items, page_size }, onPageChange) {
     const container = document.getElementById('pagination');
@@ -197,11 +223,13 @@ function setupEventListeners() {
     document.getElementById('singleSaleForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         await handleSingleSaleSubmit();
+        closeModal('singleSaleModal');
     });
     
     document.getElementById('bulkAdjustmentForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         await handleBulkAdjustmentSubmit();
+        closeModal('bulkAdjustmentModal');
     });
     
     document.getElementById('pageSize').addEventListener('change', (e) => {
@@ -255,6 +283,29 @@ function setupEventListeners() {
         // При смене сортировки сбрасываем на 1 страницу и перезагружаем
         currentPage = 1;
         loadSalesTable(e.target.value); 
+    });
+
+
+    // Переключение между комментарием и периодом
+    document.getElementById('bulkPeriodToggle').addEventListener('change', function() {
+        const commentContainer = document.getElementById('bulkCommentContainer');
+        const periodContainer = document.getElementById('bulkPeriodContainer');
+        const commentInput = document.getElementById('bulkComment');
+        const periodFromInput = document.getElementById('bulkPeriodFrom');
+        const periodToInput = document.getElementById('bulkPeriodTo');
+        
+        if (this.checked) {
+            // Показываем период, скрываем комментарий
+            commentContainer.style.display = 'none';
+            periodContainer.style.display = 'block';
+            commentInput.value = ''; // Очищаем комментарий
+        } else {
+            // Показываем комментарий, скрываем период
+            periodContainer.style.display = 'none';
+            commentContainer.style.display = 'block';
+            periodFromInput.value = '';
+            periodToInput.value = '';
+        }
     });
 }
 
@@ -320,41 +371,87 @@ async function handleBulkAdjustmentSubmit() {
     const btn = document.getElementById('btnBulkAdjustment');
     if (btn.disabled) return;
     
+    const isPeriodEnabled = document.getElementById('bulkPeriodToggle').checked;
+    
+    // Формируем комментарий
+    let comment = '';
+    if (isPeriodEnabled) {
+        const periodFrom = document.getElementById('bulkPeriodFrom').value;
+        const periodTo = document.getElementById('bulkPeriodTo').value;
+        
+        if (!periodFrom || !periodTo) {
+            showToast('⚠️ Укажите обе даты периода (С и ПО)');
+            return;
+        }
+        
+        if (new Date(periodFrom) > new Date(periodTo)) {
+            showToast('⚠️ Дата "С" не может быть позже даты "ПО"');
+            return;
+        }
+        
+        // Форматируем как текст для сохранения
+        const fromFormatted = new Date(periodFrom).toLocaleDateString('ru-RU');
+        const toFormatted = new Date(periodTo).toLocaleDateString('ru-RU');
+        comment = `Период: с ${fromFormatted} по ${toFormatted}`;
+    } else {
+        comment = document.getElementById('bulkComment').value;
+    }
+    
     const formData = {
         product_id: document.getElementById('bulkProduct').value,
         quantity: document.getElementById('bulkQty').value,
-        period_start: document.getElementById('bulkPeriod').value || new Date().toISOString(),
+        period_start: document.getElementById('bulkDate').value || new Date().toISOString(),
         period_end: null,
         type: document.getElementById('bulkType').value,
-        comment: document.getElementById('bulkComment').value
+        comment: comment
     };
     
-    if (!formData.product_id) { showToast('⚠️ Выберите товар'); return; }
+    if (!formData.product_id) {
+        showToast('⚠️ Выберите товар');
+        return;
+    }
     
-    if (formData.type === 'writeoff' && !await confirmModal(
-        'Подтверждение пакетного списания',
-        `Списать ${formData.quantity} ед. за период "${formData.period_start || 'не указан'}"?`
-    )) { return; }
+    // Подтверждение для списаний
+    if (formData.type === 'writeoff') {
+        const confirmed = await confirmModal(
+            'Подтверждение пакетного списания',
+            `Списать ${formData.quantity} ед. товара?`
+        );
+        if (!confirmed) return;
+    }
     
-    btn.disabled = true; btn.textContent = '⏳ Обработка...';
+    btn.disabled = true;
+    btn.textContent = '⏳ Обработка...';
     
     try {
         await createBulkAdjustment(formData);
         if (window.saveDataToFile) await window.saveDataToFile();
+        
         showToast('✅ Корректировка зарегистрирована');
         
+        // Сброс формы
         document.getElementById('bulkAdjustmentForm').reset();
         document.getElementById('bulkDate').value = new Date().toISOString().slice(0, 16);
-
+        document.getElementById('bulkPeriodToggle').checked = false;
+        document.getElementById('bulkCommentContainer').style.display = 'block';
+        document.getElementById('bulkPeriodContainer').style.display = 'none';
+        
+        // Если модальное окно открыто - закрываем
+        closeModal('bulkAdjustmentModal');
+        
+        // Обновление
         await populateDropdowns();
         loadSalesTable();
+        
     } catch (error) {
         console.error('Error creating bulk adjustment:', error);
         showToast('❌ Ошибка: ' + error.message);
     } finally {
-        btn.disabled = false; btn.textContent = 'Зарегистрировать корректировку';
+        btn.disabled = false;
+        btn.textContent = 'Зарегистрировать корректировку';
     }
 }
+
 
 // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
 function formatDate(isoString) {
@@ -393,6 +490,20 @@ function confirmModal(title, message) {
         document.getElementById('modalCancel').addEventListener('click', onCancel);
     });
 }
+
+// Удаление записи о продаже
+window.deleteSaleById = async function(id) {
+    if (!confirm('Удалить эту запись?')) return;
+    
+    try {
+        await deleteItem('sales', id);
+        if (window.saveDataToFile) await window.saveDataToFile();
+        loadSalesTable();
+        showToast('✅ Запись удалена');
+    } catch (error) {
+        showToast('❌ Ошибка: ' + error.message);
+    }
+};
 
 // === ЭКСПОРТ ДЛЯ ПЕРЕИСПОЛЬЗОВАНИЯ ===
 export { loadSalesTable, populateDropdowns };

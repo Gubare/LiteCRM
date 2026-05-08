@@ -18,7 +18,15 @@
     </style>
 </head>
 <body>
-    <div id="nav-container"></div>
+    <nav class="main-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
+    <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
+    <a href="products.html"><span class="nav-icon">📦</span> <span class="nav-text">Товары</span></a>
+    <a href="tickets.html"><span class="nav-icon">🎫</span> <span class="nav-text">Обращения</span></a>
+    <a href="reports.html"><span class="nav-icon">📈</span> <span class="nav-text">Отчёты</span></a>
+    <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
+    <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
+</nav>
     <main class="page-content">
 
     <h1>Управление обращениями</h1>
@@ -68,21 +76,22 @@
     <div id="message"></div>
     
     <!-- Таблица -->
-    <table id="ticketList" style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="background: #f3f4f6; text-align: left;">
-                <th style="padding: 8px;">ID</th>
-                <th style="padding: 8px;">Клиент</th>
-                <th style="padding: 8px;">Тип</th>
-                <th style="padding: 8px;">Контакт</th>
-                <th style="padding: 8px;">Описание</th>
-                <th style="padding: 8px;">Дата</th>
-                <th style="padding: 8px;">Статус</th>
-                <th style="padding: 8px;">Действия</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<h2>Все обращения</h2>
+<table id="ticketList" class="crm-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Клиент</th>
+            <th>Тип</th>
+            <th>Контакт</th>
+            <th>Описание</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
     
     <!-- Модальное окно редактирования -->
     <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
@@ -207,38 +216,37 @@
         function renderTicketTable(tickets) {
             const tbody = document.querySelector('#ticketList tbody');
             if (!tbody) return;
+            
             if (tickets.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">Нет обращений</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: #94a3b8;">📭 Нет обращений</td></tr>';
                 return;
             }
-
-            // Для отображения имён клиентов
-            loadClientsForDropdown().then(clients => {
-                const clientMap = {};
-                clients.forEach(c => clientMap[c.id] = c.name);
-
-                tbody.innerHTML = tickets.map(t => {
-                    const statusClass = t.status === 'open' ? 'status-open' : (t.status === 'done' ? 'status-done' : 'status-archive');
-                    const statusLabel = t.status === 'open' ? 'Открыта' : (t.status === 'done' ? 'Выполнена' : 'Архив');
-                    const clientName = t.client_id ? (clientMap[t.client_id] || 'Удалён') : 'Не указан';
-                    
-                    return `
-                    <tr data-ticket-id="${t.id}">
-                        <td style="padding: 8px;">${t.id}</td>
-                        <td style="padding: 8px;">${clientName}</td>
-                        <td style="padding: 8px;">${t.type}</td>
-                        <td style="padding: 8px;">${t.contact || '-'}</td>
-                        <td style="padding: 8px;">${t.description?.substring(0, 40)}${t.description?.length > 40 ? '...' : ''}</td>
-                        <td style="padding: 8px;">${new Date(t.created_at).toLocaleDateString()}</td>
-                        <td style="padding: 8px;"><span class="${statusClass}">${statusLabel}</span></td>
-                        <td style="padding: 8px;">
-                            <button class="btn-action btn-edit" data-action="edit">Изм.</button>
-                            <button class="btn-action btn-delete" data-action="delete">Удалить</button>
-                            <button onclick="sendEmailToClient('client@mail.ru', 'Счет №1', 'Добрый день, вот ваш счет...')">✉️ Написать</button>
-                        </td>
-                    </tr>`;
-                }).join('');
-            });
+            
+            tbody.innerHTML = tickets.map(t => {
+                let statusClass = 'badge-gray';
+                if (t.status === 'open') statusClass = 'badge-warning';
+                if (t.status === 'done') statusClass = 'badge-success';
+                if (t.status === 'archive') statusClass = 'badge-info';
+                
+                const statusLabel = {open: 'Открыта', done: 'Выполнена', archive: 'Архив'}[t.status];
+                
+                return `
+                <tr>
+                    <td><strong>#${t.id}</strong></td>
+                    <td>${t.client_id ? (window.clientsCache?.[t.client_id]?.name || 'ID:' + t.client_id) : '—'}</td>
+                    <td>${t.type}</td>
+                    <td>${t.contact || '—'}</td>
+                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${t.description}">
+                        ${t.description || '—'}
+                    </td>
+                    <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                    <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+                    <td style="text-align: center;">
+                        <button class="btn-action-icon" onclick="window.editTicket(${t.id})">✏️</button>
+                        <button class="btn-action-icon delete" onclick="window.deleteTicketById(${t.id})">🗑️</button>
+                    </td>
+                </tr>`;
+            }).join('');
         }
         function sendEmailToClient(email, subject, body) {
             const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -301,6 +309,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+                const showText = localStorage.getItem('crm_showNavText') !== 'false';
+            if (!showText) {
+                document.body.classList.add('nav-icons-only');
+            }
             document.getElementById('btnCloseModal')?.addEventListener('click', closeEditModal);
             document.getElementById('btnSaveEdit')?.addEventListener('click', saveEditTicket);
             document.getElementById('editModal')?.addEventListener('click', e => e.target.id === 'editModal' && closeEditModal());

@@ -148,16 +148,6 @@ window.saveDataToFile = async function() {
     }
 };
 
-// export function navigateTo(page) {
-//     // Используем Neutralino для навигации (без показа URL в статус-баре)
-//     if (typeof Neutralino !== 'undefined' && Neutralino.os) {
-//         // Для десктопного приложения
-//         window.location.href = page;
-//     } else {
-//         // Фолбэк для браузера
-//         window.location.href = page;
-//     }
-// }
 
 // Загрузка данных из файла при старте
 // В main.js
@@ -224,22 +214,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.renderClientTable = renderClientTable;
         window.exportDatabase = exportDatabase;
         window.importDatabase = importDatabase;
-                
-        // Загрузка списка клиентов (если таблица есть на странице)
-        const clientListTable = document.getElementById('clientList');
-        if (clientListTable) {
-            try {
-                const clients = await getAllClients();
-                
-                if (typeof window.renderClientTable === 'function') {
-                    window.renderClientTable(clients);
-                }
-                
-                console.log(`Loaded ${clients.length} clients`);
-            } catch (error) {
-                console.error('Error loading clients:', error);
-            }
-        }
         
         console.log("✅ The application has been launched successfully!");
         

@@ -48,10 +48,18 @@
     </style>
 </head>
 <body>
-    <div id="nav-container"></div>
+    <nav class="main-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
+    <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
+    <a href="products.html"><span class="nav-icon">📦</span> <span class="nav-text">Товары</span></a>
+    <a href="tickets.html"><span class="nav-icon">🎫</span> <span class="nav-text">Обращения</span></a>
+    <a href="reports.html"><span class="nav-icon">📈</span> <span class="nav-text">Отчёты</span></a>
+    <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
+    <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
+</nav>
 <main class="page-content">
     <div class="reports-container">
-        <h1>📊 Статистика и отчёты</h1>
+        <h1>Статистика и отчёты</h1>
         
         <!-- Панель выбора -->
         <div class="selector-panel">
@@ -73,7 +81,7 @@
 
         <!-- Доп. информация -->
         <div id="extraInfo" style="background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 13px; color: #475569;">
-            <strong>💡 Подсказка:</strong> Данные рассчитываются на основе локальной базы. 
+            <strong>!</strong> Данные рассчитываются на основе локальной базы. 
             Для актуальной статистики нажмите "Обновить" после добавления новых записей.
         </div>
     </div>
@@ -88,7 +96,13 @@
         import { REPORTS_CONFIG } from './js/reports-config.js';
 
         if (typeof Neutralino !== 'undefined') Neutralino.init();
-
+        // Применяем настройки сразу после загрузки DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            const showText = localStorage.getItem('crm_showNavText') !== 'false';
+            if (!showText) {
+                document.body.classList.add('nav-icons-only');
+            }
+        });
         let currentStore = 'clients';
         let isCalculating = false;
 

@@ -1,5 +1,5 @@
 // resources/js/client.js
-
+import { getSetting } from './settings-manager.js';
 // Импортируем функции из db.js
 import { 
     getAllClients, 

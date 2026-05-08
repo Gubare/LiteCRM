@@ -6,7 +6,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="nav-container"></div>
+    <nav class="main-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
+    <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
+    <a href="products.html"><span class="nav-icon">📦</span> <span class="nav-text">Товары</span></a>
+    <a href="tickets.html"><span class="nav-icon">🎫</span> <span class="nav-text">Обращения</span></a>
+    <a href="reports.html"><span class="nav-icon">📈</span> <span class="nav-text">Отчёты</span></a>
+    <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
+    <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
+</nav>
     <main class="page-content">
     <h1>Управление товарами</h1>
     
@@ -30,10 +38,16 @@
     </form>
     
     <div id="message"></div>
-    
+    <!-- Заглушка загрузки товаров -->
+    <div id="productsLoading" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-icon"></div>
+            <p>Загрузка товаров...</p>
+        </div>
+    </div>
     <!-- Таблица товаров -->
-    <h2>Список товаров</h2>
-    <table id="productList">
+    <h2>Все товары</h2>
+    <table id="productList" class="crm-table">
         <thead>
             <tr>
                 <th>SKU</th>
@@ -193,26 +207,29 @@
             if (!tbody) return;
             
             if (products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">Нет товаров</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 40px; color: #94a3b8;">📭 Нет товаров</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = products.map(p => `
-                <tr data-product-id="${p.id}">
-                    <td><strong>${p.sku || '-'}</strong></td>
-                    <td>${p.category || ''}</td>
-                    <td>${p.name || ''}</td>
-                    <td>${p.price?.toFixed(2) || '0.00'} ₽</td>
-                    <td>${p.quantity || 0}</td>
-                    <td>${p.is_active ? 'В продаже' : 'Снят'}</td>
-                    <td>
-                        <button class="btn-action btn-edit" data-action="edit">Изм.</button>
-                        <button class="btn-action btn-delete" data-action="delete">Удалить</button>
+            tbody.innerHTML = products.map(p => {
+                const statusClass = p.is_active ? 'badge-success' : 'badge-gray';
+                const statusText = p.is_active ? 'В продаже' : 'Снят';
+                
+                return `
+                <tr>
+                    <td><strong style="font-family: monospace;">${p.sku || '-'}</strong></td>
+                    <td>${p.category || '-'}</td>
+                    <td><strong>${p.name || '-'}</strong></td>
+                    <td style="text-align: right;">${p.price?.toFixed(2) || '0.00'} ₽</td>
+                    <td style="text-align: center; font-weight: 500;">${p.quantity || 0}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td style="text-align: center;">
+                        <button class="btn-action-icon" onclick="window.editProduct(${p.id}, '${p.category}', '${p.name}', '${p.description}', '${p.price}', '${p.quantity}', '${p.is_active}', '${p.sku}')">✏️</button>
+                        <button class="btn-action-icon delete" onclick="window.deleteProductById(${p.id})">🗑️</button>
                     </td>
-                </tr>
-            `).join('');
-        }
-        
+                </tr>`;
+            }).join('');
+        }        
         // Делегирование событий
         function setupEventDelegation() {
             document.getElementById('productList')?.addEventListener('click', async (e) => {
@@ -297,6 +314,10 @@
         
         // Обработчики модального окна
         document.addEventListener('DOMContentLoaded', () => {
+                const showText = localStorage.getItem('crm_showNavText') !== 'false';
+                if (!showText) {
+                    document.body.classList.add('nav-icons-only');
+                }
             document.getElementById('btnCloseModal')?.addEventListener('click', closeEditModal);
             document.getElementById('btnSaveEdit')?.addEventListener('click', saveEditProduct);
             document.getElementById('editModal')?.addEventListener('click', (e) => {
@@ -309,6 +330,12 @@
                 const sku = generateSKU(e.target.value, id);
                 document.getElementById('editSku').value = sku;
             });
+
+            const prodLoading = document.getElementById('productsLoading');
+            if (prodLoading) {
+                prodLoading.classList.add('hidden');
+                setTimeout(() => prodLoading.remove(), 300);
+            }
         });
     </script>
 </body>

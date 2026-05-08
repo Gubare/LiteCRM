@@ -8,7 +8,7 @@ import {
     createProduct,
     generateSKU
 } from './db_indexeddb.js';
-
+import { getSetting } from './settings-manager.js';
 const STORE_NAME = 'products';
 
 // Загрузить все товары

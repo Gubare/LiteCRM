@@ -1,5 +1,5 @@
 // resources/js/analytics.js
-
+import { getSetting } from './settings-manager.js';
 // RFM-сегментация клиентов
 export function rfmSegmentation(clients, sales) {
     // Подсчёт метрики для каждого клиента

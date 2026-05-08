@@ -37,11 +37,19 @@
 </head>
 <body>
     <!-- Навигация -->
-<div id="nav-container"></div>
+<nav class="main-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
+    <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
+    <a href="products.html"><span class="nav-icon">📦</span> <span class="nav-text">Товары</span></a>
+    <a href="tickets.html"><span class="nav-icon">🎫</span> <span class="nav-text">Обращения</span></a>
+    <a href="reports.html"><span class="nav-icon">📈</span> <span class="nav-text">Отчёты</span></a>
+    <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
+    <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
+</nav>
 <main class="page-content">
 
     <div class="settings-container">
-        <h1>⚙️ Настройки приложения</h1>
+        <h1>Настройки приложения</h1>
         
         <!-- Секция: Интерфейс -->
         <div class="settings-section">
@@ -78,6 +86,19 @@
                     <span class="toggle-slider"></span>
                 </label>
             </div>
+
+            <div class="setting-item">
+            <div class="setting-info">
+                <h3>Анимация появления записей</h3>
+                <p>Строки в таблицах появляются поочередно с задержкой</p>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggleRowAnimation" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+
         </div>
         
         <!-- Секция: Данные -->
@@ -123,6 +144,10 @@
         
         // Загрузка настроек при старте
         document.addEventListener('DOMContentLoaded', () => {
+                const showText = localStorage.getItem('crm_showNavText') !== 'false';
+                if (!showText) {
+                    document.body.classList.add('nav-icons-only');
+                }
             // Подсказки
             const showTooltips = localStorage.getItem('crm_showCategoryTooltips') !== 'false';
             document.getElementById('toggleTooltips').checked = showTooltips;
@@ -203,6 +228,17 @@
             
             showToast(show ? '✅ Названия включены' : '🔘 Только иконки');
         });
+
+        // Загрузка состояния при старте
+        const animateRows = localStorage.getItem('crm_animateRows') !== 'false';
+        document.getElementById('toggleRowAnimation').checked = animateRows;
+
+        // Обработчик переключения
+        document.getElementById('toggleRowAnimation').addEventListener('change', (e) => {
+            localStorage.setItem('crm_animateRows', e.target.checked);
+            showToast(e.target.checked ? '✅ Анимация включена' : '❌ Анимация выключена');
+        });
     </script>
+    
 </body>
 </html>
