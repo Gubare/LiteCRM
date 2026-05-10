@@ -1,6 +1,7 @@
 {
-  "ui.showTooltips": false,
+  "ui.showTooltips": true,
   "ui.darkMode": false,
   "ui.showNavText": true,
-  "ui.animateRows": false
+  "ui.animateRows": true,
+  "ui.selectionModifier": "ctrl"
 }

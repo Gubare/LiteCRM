@@ -714,14 +714,27 @@ async function updateProductStock(productId, quantityChange) {
     }
 }
 // Получить все продажи с пагинацией
-export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, sortBy = 'date_desc') {
-    const allSales = await getAllItems('sales');
-    const allBulk = await getAllItems('bulk_adjustments');
+export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, sortBy = 'date_desc', recordType = 'sales') {
+    let allSales = [];
+    let allBulk = [];
     
-    // Объединяем и нормализуем данные для отображения
-    let combined = [
-        ...allSales.map(s => ({ ...s, source: 'single', tag: s.type })),
-        ...allBulk.map(b => ({ 
+    // 🔥 Загружаем только нужную таблицу (или обе, если нужно)
+    if (recordType === 'sales' || recordType === 'all') {
+        allSales = await getAllItems('sales');
+    }
+    if (recordType === 'bulk' || recordType === 'all') {
+        allBulk = await getAllItems('bulk_adjustments');
+    }
+    
+    // Объединяем с меткой источника
+    let combined = [];
+    
+    if (recordType === 'sales' || recordType === 'all') {
+        combined = combined.concat(allSales.map(s => ({ ...s, source: 'single', tag: s.type })));
+    }
+    
+    if (recordType === 'bulk' || recordType === 'all') {
+        combined = combined.concat(allBulk.map(b => ({ 
             ...b, 
             source: 'bulk', 
             tag: b.type,
@@ -729,10 +742,10 @@ export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, s
             total_amount: null,
             unit_price: null,
             client_id: null
-        }))
-    ];
+        })));
+    }
     
-    // Применяем фильтры
+    // Применяем фильтры (как было раньше)
     if (filters.type) {
         combined = combined.filter(item => item.tag === filters.type);
     }
@@ -746,7 +759,7 @@ export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, s
         combined = combined.filter(item => new Date(item.transaction_date) <= new Date(filters.date_to));
     }
     
-    // Сортировка по дате (новые сверху)
+    // Сортировка
     combined.sort((a, b) => {
         switch (sortBy) {
             case 'date_asc':
@@ -766,17 +779,16 @@ export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, s
     const start = (page - 1) * pageSize;
     const items = combined.slice(start, start + pageSize);
     
-    return { 
-        items, pagination: { 
+    return {
+        items,
+        pagination: {
             current_page: page,
-             page_size: pageSize,
-              total_items: total,
-               total_pages: Math.ceil(total / pageSize)
-            } 
-        };
-
+            page_size: pageSize,
+            total_items: total,
+            total_pages: Math.ceil(total / pageSize)
+        }
+    };
 }
-
 // Получить товары для выпадающего списка (без описания)
 export async function getProductsForDropdown() {
     const products = await getAllItems('products');

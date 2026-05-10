@@ -18,7 +18,7 @@ import {
     getAllItems,
     importDatabase
 } from './db_indexeddb.js';
-
+import { loadSettings, getSetting } from './settings-manager.js';
 // import { startVoiceInput } from './voice-input.js'
 /*
     Function to display information about the Neutralino app.
@@ -204,7 +204,13 @@ if(NL_OS != "Darwin") {
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('main.js: DOMContentLoaded');
-    applyNavSettings();
+    await loadSettings();
+
+
+    if (!getSetting('ui.showNavText')) {
+        document.body.classList.add('nav-icons-only');
+    }
+
     try {
         // Инициализация IndexedDB
         await initDatabase();

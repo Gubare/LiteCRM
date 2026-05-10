@@ -564,24 +564,49 @@ body.nav-icons-only .nav-text {
     }
 }
 
-/* Серые квадраты-заглушки */
+/* === ЗАГЛУШКИ ПАГИНАЦИИ === */
 .pag-placeholder {
     width: 32px;
     height: 32px;
-    background: #cbd5e1;
-    border-radius: 4px;
+    background: transparent; /* Полностью невидима, но занимает место */
     display: inline-block;
+    border-radius: 4px;
 }
 
-/* Имитация активной страницы */
-.pag-placeholder.active {
-    background: #3b82f6;
-}
-
-/* Плавное исчезновение (опционально) */
+/* Контейнер не должен менять высоту при подгрузке */
 #pagination {
-    transition: opacity 0.1s;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
+
+/* === АНИМАЦИЯ КНОПОК === */
+.pagination button {
+    opacity: 0; /* Скрыты до старта анимации */
+    animation: fadeInPag 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Каскадная задержка: каждая следующая кнопка появляется чуть позже */
+.pagination button:nth-child(1) { animation-delay: 0.04s; }
+.pagination button:nth-child(2) { animation-delay: 0.08s; }
+.pagination button:nth-child(3) { animation-delay: 0.12s; }
+.pagination button:nth-child(4) { animation-delay: 0.16s; }
+.pagination button:nth-child(5) { animation-delay: 0.20s; }
+.pagination button:nth-child(6) { animation-delay: 0.24s; }
+.pagination button:nth-child(7) { animation-delay: 0.28s; }
+
+@keyframes fadeInPag {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 /* Фиксированный размер только для кнопок внутри модальных окон */
 .modal-window .btn-primary {
     width: 100%;
@@ -647,4 +672,136 @@ html, body {
 .table-row-animate {
     opacity: 0; /* Скрыто до начала анимации */
     animation: rowSlideIn 0.3s ease-out forwards; /* forwards сохраняет конечное состояние */
+}
+
+/* 📦 REUSABLE: Стили выделения строк */
+.crm-table tbody tr {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.crm-table tbody tr:hover {
+    background: #f8fafc;
+}
+.crm-table tbody tr.selected {
+    background: #eff6ff !important;
+    outline: 1px solid #3b82f6;
+    outline-offset: -1px;
+}
+
+/* 📦 REUSABLE: Панель массовых действий */
+.bulk-action-bar {
+    display: none; /* Скрыта по умолчанию */
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    margin: 0 0 15px 0;
+    font-size: 14px;
+}
+.bulk-action-bar.visible {
+    display: flex;
+    animation: fadeIn 0.5s ease;
+}
+.bulk-action-bar .count-badge {
+    background: #3b82f6;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 12px;
+}
+.bulk-action-bar button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* 📦 REUSABLE: Кастомное контекстное меню (ПКМ) */
+.ctx-menu {
+    position: fixed;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    min-width: 180px;
+    z-index: 9999;
+    overflow: hidden;
+    animation: ctxFadeIn 0.12s ease;
+    display: none;
+}
+.ctx-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #334155;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+.ctx-menu-item:hover {
+    background: #f8fafc;
+}
+.ctx-menu-item.danger {
+    color: #dc2626;
+}
+.ctx-menu-item.danger:hover {
+    background: #fef2f2;
+}
+.ctx-menu-item:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.ctx-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 4px 0;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ctxFadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+
+/* Контрастный фильтр типа записей */
+
+.record-type-filter select {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: rgb(0, 0, 0);
+    /* border: none; */
+    padding: 8px 16px;
+    border-radius: 6px;
+    /* font-weight: 600; */
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transition: all 0.2s;
+    min-width: 200px;
+}
+
+.record-type-filter select:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.record-type-filter select option {
+    background: white;
+    color: #334155;
+    padding: 8px;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .record-type-filter {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+    .record-type-filter select {
+        width: 100%;
+    }
 }

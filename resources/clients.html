@@ -106,6 +106,7 @@
 </main>
     <!-- Подключаем скрипты -->
     <script src="js/neutralino.js"></script>
+    <script type="module" src="js/settings-manager.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
     <script type="module" src="js/client.js"></script>
         <script type="module" src="js/analytics.js"></script>
@@ -116,6 +117,7 @@
     <script type="module">
         import { loadClientList, handleClientFormSubmit, deleteClient, updateClient } from './js/client.js';
         import { calculateClientDisplayData } from './js/client.js';
+        import { getSetting } from './js/settings-manager.js';
         // Инициализация Neutralino
         if (typeof Neutralino !== 'undefined') {
             Neutralino.init();
@@ -172,11 +174,11 @@
             if (!tbody) return;
             
             if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 60px; color: #94a3b8; font-size: 14px;">📭 Нет клиентов. Добавьте первого!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 60px; color: #94a3b8; font-size: 14px;">Нет клиентов. Добавьте первого!</td></tr>';
                 return;
             }
             
-            const showTooltips = localStorage.getItem('crm_showCategoryTooltips') !== 'false';
+            const showTooltips = getSetting('ui.showTooltips');
             const fmt = (num) => num.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
             
             tbody.innerHTML = clients.map(client => {

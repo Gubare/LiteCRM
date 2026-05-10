@@ -98,6 +98,16 @@
             </label>
         </div>
 
+        <div class="setting-item">
+            <div class="setting-info">
+                <h3>Модификатор выделения</h3>
+                <p>Клавиша для добавления нескольких записей</p>
+            </div>
+            <select id="selectionModifier" class="form-control" style="width: 130px; height: 38px;">
+                <option value="shift">Shift</option>
+                <option value="ctrl">Ctrl / Cmd</option>
+            </select>
+        </div>
 
         </div>
         
@@ -143,34 +153,50 @@
         if (typeof Neutralino !== 'undefined') Neutralino.init();
         
         // Загрузка настроек при старте
-        document.addEventListener('DOMContentLoaded', () => {
-                const showText = localStorage.getItem('crm_showNavText') !== 'false';
-                if (!showText) {
-                    document.body.classList.add('nav-icons-only');
-                }
-            // Подсказки
-            const showTooltips = localStorage.getItem('crm_showCategoryTooltips') !== 'false';
-            document.getElementById('toggleTooltips').checked = showTooltips;
-            
-            // Обработчик переключения
-            document.getElementById('toggleTooltips').addEventListener('change', (e) => {
-                localStorage.setItem('crm_showCategoryTooltips', e.target.checked);
-                
-                // Показываем уведомление
-                showToast(e.target.checked 
-                    ? 'Подсказки включены' 
-                    : 'Подсказки отключены'
-                );
-                
-                // Если мы на странице клиентов - обновляем таблицу
-                if (window.renderClientTable && typeof window.loadClientList === 'function') {
-                    window.loadClientList().then(clients => {
-                        window.renderClientTable(clients);
-                    });
-                }
+        import { loadSettings, updateSetting, getSetting } from './js/settings-manager.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Загружаем настройки из файла
+            await loadSettings();
+
+            // 2. Применяем состояние чекбоксов
+            const tooltipsToggle = document.getElementById('toggleTooltips');
+            const navTextToggle = document.getElementById('toggleNavText');
+            const animateToggle = document.getElementById('toggleRowAnimation');
+            const modSelect = document.getElementById('selectionModifier');
+            const savedModifier = getSetting('ui.selectionModifier') || 'shift';
+            modSelect.value = savedModifier;
+
+            // Устанавливаем галочки согласно файлу настроек
+            tooltipsToggle.checked = getSetting('ui.showTooltips');
+            navTextToggle.checked = getSetting('ui.showNavText');
+            animateToggle.checked = getSetting('ui.animateRows');
+
+            modSelect.addEventListener('change', async (e) => {
+                await updateSetting('ui.selectionModifier', e.target.value);
+                showToast(`✅ Выделение теперь по клавише ${e.target.value.toUpperCase()}`);
             });
-            
-            // Экспорт данных
+            // Подсказки
+            tooltipsToggle.addEventListener('change', async (e) => {
+                await updateSetting('ui.showTooltips', e.target.checked);
+                showToast(e.target.checked ? '✅ Подсказки включены' : '❌ Подсказки выключены');
+            });
+
+            // Текст в меню
+            navTextToggle.addEventListener('change', async (e) => {
+                await updateSetting('ui.showNavText', e.target.checked);
+                // Применяем визуально сразу
+                if(e.target.checked) document.body.classList.remove('nav-icons-only');
+                else document.body.classList.add('nav-icons-only');
+                showToast(e.target.checked ? '✅ Текст меню включен' : '🔘 Только иконки');
+            });
+
+            // Анимация строк
+            animateToggle.addEventListener('change', async (e) => {
+                await updateSetting('ui.animateRows', e.target.checked);
+                showToast(e.target.checked ? '✅ Анимация включена' : '❌ Анимация выключена');
+            });
+                    // Экспорт данных
             document.getElementById('btnExport').addEventListener('click', async () => {
                 try {
                     if (window.saveDataToFile) {
@@ -202,6 +228,16 @@
             }, 3000);
         }
         
+        // Настройка модификатора выделения
+        const modSelect = document.getElementById('selectionModifier');
+        modSelect.value = localStorage.getItem('ui.selectionModifier') || 'shift';
+
+        modSelect.addEventListener('change', (e) => {
+            localStorage.setItem('ui.selectionModifier', e.target.value);
+            showToast(`✅ Выделение теперь работает по клавише ${e.target.value.toUpperCase()}`);
+        });
+
+
         // Добавляем анимации
         const style = document.createElement('style');
         style.textContent = `

@@ -75,9 +75,6 @@
     <button class="btn-primary" onclick="openModal('singleSaleModal')" style="flex: 1; padding: 15px; font-size: 15px;">
         Единичная сделка
     </button>
-    <button class="btn-primary" onclick="openModal('bulkAdjustmentModal')" style="flex: 1; padding: 15px; font-size: 15px;">
-        Пакетное списание/поступление
-    </button>
 </div>
 
 <!-- Модальное окно: Единичная сделка -->
@@ -87,132 +84,89 @@
             Нажмите Esc или в любое место за пределами окна, чтобы закрыть
         </div>
         <h3>🧾 Единичная сделка</h3>
-        <form id="singleSaleForm">
-            <div class="form-row">
-                <div>
-                    <label>Клиент:</label>
-                    <select id="saleClient" class="form-control">
-                        <option value="empty">🔘 Не указан</option>
-                        <option value="new">➕ Создать клиента</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Товар:</label>
-                    <select id="saleProduct" class="form-control" required>
-                        <option value="">Выберите товар...</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div>
-                    <label>Количество:</label>
-                    <input type="number" id="saleQty" class="form-control" min="1" value="1" required>
-                </div>
-                <div>
-                    <label>Цена за ед.:</label>
-                    <input type="number" id="salePrice" class="form-control" step="0.01" min="0" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div>
-                    <label>Тип операции:</label>
-                    <select id="saleType" class="form-control">
-                        <option value="sale">🟢 Продажа (-)</option>
-                        <option value="writeoff">🔴 Списание (-)</option>
-                        <option value="restock">🔵 Поступление (+)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Дата сделки:</label>
-                    <input type="datetime-local" id="saleDate" class="form-control">
-                </div>
-            </div>
-            <div class="form-row full">
-                <div>
-                    <label>Комментарий:</label>
-                    <input type="text" id="saleComment" class="form-control" placeholder="Необязательно">
-                </div>
-            </div>
-            <button type="submit" id="btnSingleSale" class="btn-primary" style="margin-top: 15px;">Зарегистрировать сделку</button>
-        </form>
-    </div>
-</div>
-
-<!-- Модальное окно: Пакетная корректировка -->
-<div id="bulkAdjustmentModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'bulkAdjustmentModal')">
-    <div class="modal-window" onclick="event.stopPropagation()">
-        <div class="modal-hint">
-            💡 Нажмите в любое место за пределами окна, чтобы закрыть
-        </div>
-        <h3>📦 Пакетное списание/поступление</h3>
-<form id="bulkAdjustmentForm">
+<form id="singleSaleForm">
     <div class="form-row">
         <div>
+            <label>Клиент:</label>
+            <select id="saleClient" class="form-control">
+                <option value="empty">🔘 Не указан</option>
+                <option value="new">➕ Создать клиента</option>
+            </select>
+        </div>
+        <div>
             <label>Товар:</label>
-            <select id="bulkProduct" class="form-control" required>
+            <select id="saleProduct" class="form-control" required>
                 <option value="">Выберите товар...</option>
             </select>
         </div>
+    </div>
+    <div class="form-row">
         <div>
             <label>Количество:</label>
-            <input type="number" id="bulkQty" class="form-control" min="1" required>
+            <input type="number" id="saleQty" class="form-control" min="1" value="1" required>
+        </div>
+        <div>
+            <label>Цена за ед.:</label>
+            <input type="number" id="salePrice" class="form-control" step="0.01" min="0" required>
         </div>
     </div>
-    
     <div class="form-row">
         <div>
             <label>Тип операции:</label>
-            <select id="bulkType" class="form-control">
-                <option value="writeoff">Списание (-)</option>
-                <option value="restock">Поступление (+)</option>
+            <select id="saleType" class="form-control">
+                <option value="sale">🟢 Продажа (-)</option>
+                <option value="writeoff">🔴 Списание (-)</option>
+                <option value="restock">🔵 Поступление (+)</option>
             </select>
         </div>
         <div>
-            <label>Дата регистрации:</label>
-            <input type="datetime-local" id="bulkDate" class="form-control">
+            <label>Дата сделки:</label>
+            <input type="datetime-local" id="saleDate" class="form-control">
         </div>
     </div>
     
-    <!-- Чекбокс "Задать период" -->
+    <!-- 🔥 НОВЫЙ БЛОК: Период -->
     <div class="form-row full" style="margin: 15px 0;">
         <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #f8fafc; border-radius: 6px;">
-            <input type="checkbox" id="bulkPeriodToggle" style="width: 18px; height: 18px; cursor: pointer;">
-            <label for="bulkPeriodToggle" style="margin: 0; cursor: pointer; font-weight: 500; color: #334155;">
-                Задать период списания?
+            <input type="checkbox" id="salePeriodToggle" style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="salePeriodToggle" style="margin: 0; cursor: pointer; font-weight: 500; color: #334155;">
+                📅 Задать период операции
             </label>
         </div>
     </div>
     
-    <!-- Обычное поле комментария (показывается когда период выключен) -->
-    <div id="bulkCommentContainer" class="form-row full">
+    <!-- Обычный комментарий -->
+    <div id="saleCommentContainer" class="form-row full">
         <div>
             <label>Комментарий:</label>
-            <input type="text" id="bulkComment" class="form-control" placeholder="Причина корректировки">
+            <input type="text" id="saleComment" class="form-control" placeholder="Необязательно">
         </div>
     </div>
     
-    <!-- Контейнер периода (показывается когда чекбокс активен) -->
-    <div id="bulkPeriodContainer" class="form-row full" style="display: none;">
+    <!-- Контейнер периода -->
+    <div id="salePeriodContainer" class="form-row full" style="display: none;">
         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px solid #bae6fd;">
             <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #0369a1;">
-                ПЕРИОД СПИСАНИЯ
+                📆 ПЕРИОД ОПЕРАЦИИ
             </label>
             <div class="form-row" style="margin-bottom: 0;">
                 <div>
                     <label style="font-size: 12px; color: #64748b;">С:</label>
-                    <input type="date" id="bulkPeriodFrom" class="form-control">
+                    <input type="date" id="salePeriodFrom" class="form-control">
                 </div>
                 <div>
                     <label style="font-size: 12px; color: #64748b;">ПО:</label>
-                    <input type="date" id="bulkPeriodTo" class="form-control">
+                    <input type="date" id="salePeriodTo" class="form-control">
                 </div>
             </div>
         </div>
     </div>
     
-    <button type="submit" id="btnBulkAdjustment" class="btn-primary" style="margin-top: 15px;">Зарегистрировать корректировку</button>
-</form>    </div>
+    <button type="submit" id="btnSingleSale" class="btn-primary" style="margin-top: 15px;">Зарегистрировать сделку</button>
+</form>
 </div>
+</div>
+
 
         <!-- Фильтры и пагинация -->
         <div class="table-toolbar">
@@ -238,6 +192,15 @@
                     <button id="btnApplyFilters" class="btn-primary" style="width: auto; padding: 8px 20px; white-space: nowrap;">Применить</button>
                     <button id="btnResetFilters" class="btn-action" style="width: auto; padding: 8px 20px; white-space: nowrap;">Сброс</button>
                 </div>
+            </div>
+
+
+            <!-- Фильтр типа записей -->
+            <div class="record-type-filter">
+                <select id="recordTypeFilter" class="form-control" onchange="handleRecordTypeChange(this.value)">
+                    <option value="sales" selected> Обычные сделки</option>
+                    <option value="bulk"> Пакетные корректировки</option>
+                </select>
             </div>
 
             <!-- Правая часть: Пагинация и сортировка -->
@@ -270,7 +233,27 @@
                 <div class="pag-placeholder"></div>
             </div>
             <span id="paginationInfo" style="font-size: 13px; color: #64748b; margin-left: 15px; align-self: center;"></span>
-        </div>        
+        </div>
+        
+        <!-- Панель массовых действий -->
+        <div id="bulkActionBar" class="bulk-action-bar">
+            <span>Выбрано записей: <span class="count-badge" id="selectedCount">0</span></span>
+            <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="editSelected()">✏️ Изменить</button>
+            <button id="btnBulkDelete" class="btn-action-icon delete" onclick="deleteSelected()">🗑️ Удалить</button>
+            <button class="btn-action-icon" onclick="clearSelection()" style="margin-left:auto; font-size:12px; color:#64748b;">✕ Снять выделение</button>
+        </div>
+
+        <!-- Контекстное меню (ПКМ) -->
+        <div id="ctxMenu" class="ctx-menu">
+            <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()">
+                <span>✏️</span> Редактировать
+            </button>
+            <div class="ctx-divider"></div>
+            <button class="ctx-menu-item danger" id="ctxDelete" onclick="ctxDeleteAction()">
+                <span>🗑️</span> Удалить
+            </button>
+        </div>
+
         <!-- Таблица -->
         <table id="salesTable" class="crm-table">
             <thead>
@@ -283,7 +266,7 @@
                     <th>Дата</th>
                     <th>Тип</th>
                     <th>Коммент.</th>
-                    <th>Действия</th>
+                    <!-- <th>Действия</th> -->
                 </tr>
             </thead>
             <tbody></tbody>
@@ -322,26 +305,15 @@
 </div>
 
 <!-- === МОДАЛЬНОЕ ОКНО: РЕДАКТИРОВАНИЕ СДЕЛКИ === -->
+<!-- Модальное окно редактирования сделки -->
 <div id="editSaleModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'editSaleModal')">
-    <div class="modal-window" style="max-width: 600px;" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h3 style="margin: 0;">✏️ Редактирование сделки</h3>
-        </div>
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-hint">💡 Нажмите вне окна, чтобы закрыть</div>
+        <h3>✏️ Редактирование сделки</h3>
         <form id="editSaleForm">
             <input type="hidden" id="editSaleId">
-            <!-- Поля только для чтения -->
+            
             <div class="form-row">
-                <div>
-                    <label>Товар:</label>
-                    <input type="text" id="editSaleProductName" class="form-control" readonly style="background: #f1f5f9; cursor: not-allowed;">
-                </div>
-                <div>
-                    <label>Клиент:</label>
-                    <input type="text" id="editSaleClientName" class="form-control" readonly style="background: #f1f5f9; cursor: not-allowed;">
-                </div>
-            </div>
-            <!-- Редактируемые поля -->
-            <div class="form-row" style="margin-top: 15px;">
                 <div>
                     <label>Количество:</label>
                     <input type="number" id="editSaleQty" class="form-control" required>
@@ -351,13 +323,15 @@
                     <input type="number" id="editSalePrice" class="form-control" step="0.01" required>
                 </div>
             </div>
-            <div class="form-row full" style="margin-top: 15px;">
+            
+            <div class="form-row full">
                 <div>
                     <label>Дата:</label>
                     <input type="datetime-local" id="editSaleDate" class="form-control">
                 </div>
             </div>
-            <div class="form-row full" style="margin-top: 15px;">
+            
+            <div class="form-row full">
                 <div>
                     <label>Комментарий:</label>
                     <textarea id="editSaleComment" class="form-control" rows="3"></textarea>
@@ -366,7 +340,7 @@
             
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button type="button" class="btn-action" onclick="closeModal('editSaleModal')" style="flex: 1;">Отмена</button>
-                <button type="submit" class="btn-primary" style="flex: 1;">Сохранить изменения</button>
+                <button type="submit" class="btn-primary" style="flex: 1;">Сохранить</button>
             </div>
         </form>
     </div>
@@ -379,6 +353,27 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('nav-icons-only');
     }
 });
+
+// Переключение между комментарием и периодом
+document.getElementById('salePeriodToggle').addEventListener('change', function() {
+    const commentContainer = document.getElementById('saleCommentContainer');
+    const periodContainer = document.getElementById('salePeriodContainer');
+    const commentInput = document.getElementById('saleComment');
+    const periodFromInput = document.getElementById('salePeriodFrom');
+    const periodToInput = document.getElementById('salePeriodTo');
+    
+    if (this.checked) {
+        commentContainer.style.display = 'none';
+        periodContainer.style.display = 'block';
+        commentInput.value = '';
+    } else {
+        periodContainer.style.display = 'none';
+        commentContainer.style.display = 'block';
+        periodFromInput.value = '';
+        periodToInput.value = '';
+    }
+});
+
 
 // Открытие модального окна
 function openModal(modalId) {
@@ -426,63 +421,32 @@ function viewComment(text) {
     openModal('viewCommentModal');
 }
 
-// === РЕДАКТИРОВАНИЕ СДЕЛКИ ===
-
-// 1. Открытие окна редактирования
-async function openEditSale(saleId) {
-    const item = await getItemById('sales', saleId);
-    if (!item) return;
-
-    const products = await getAllItems('products');
-    const clients = await getAllItems('clients');
-
-    // Заполняем "Read Only" поля (названия)
-    const product = products.find(p => p.id == item.product_id);
-    document.getElementById('editSaleProductName').value = product ? `${product.sku} ${product.name}` : `ID: ${item.product_id}`;
-
-    const client = clients.find(c => c.id == item.client_id);
-    document.getElementById('editSaleClientName').value = item.client_id ? (client?.name || `ID: ${item.client_id}`) : '—';
-
-    // Заполняем редактируемые поля
-    document.getElementById('editSaleId').value = item.id;
-    document.getElementById('editSaleQty').value = item.quantity;
-    document.getElementById('editSalePrice').value = item.unit_price;
-    document.getElementById('editSaleComment').value = item.comment || '';
-    
-    // Форматируем дату для input datetime-local
-    const dateObj = new Date(item.transaction_date);
-    dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());
-    document.getElementById('editSaleDate').value = dateObj.toISOString().slice(0, 16);
-
-    openModal('editSaleModal');
-}
-
-// 2. Обработчик сохранения изменений
+//  Обработчик сохранения изменений
 document.getElementById('editSaleForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const id = parseInt(document.getElementById('editSaleId').value);
-    const newQty = parseInt(document.getElementById('editSaleQty').value);
-    const newPrice = parseFloat(document.getElementById('editSalePrice').value);
-    const newComment = document.getElementById('editSaleComment').value;
-    const newDate = document.getElementById('editSaleDate').value;
-
-    // Обновляем запись в БД (используем updateItem)
-    await updateItem('sales', id, {
-        quantity: newQty,
-        unit_price: newPrice,
-        total_amount: newQty * newPrice, // Пересчитываем сумму
-        transaction_date: newDate,
-        comment: newComment,
+    const newData = {
+        quantity: parseInt(document.getElementById('editSaleQty').value),
+        unit_price: parseFloat(document.getElementById('editSalePrice').value),
+        transaction_date: document.getElementById('editSaleDate').value,
+        comment: document.getElementById('editSaleComment').value,
         updated_at: new Date().toISOString()
-    });
-
-    // Сохраняем бэкап
-    if (window.saveDataToFile) await window.saveDataToFile();
+    };
     
-    closeModal('editSaleModal');
-    showToast('✅ Сделка обновлена');
-    loadSalesTable(); // Обновляем таблицу
+    // Пересчитываем сумму
+    newData.total_amount = newData.quantity * newData.unit_price;
+    
+    try {
+        await updateItem('sales', id, newData);
+        if (window.saveDataToFile) await window.saveDataToFile();
+        
+        closeModal('editSaleModal');
+        showToast('✅ Изменения сохранены');
+        window.loadSalesTable();
+    } catch (err) {
+        showToast('❌ Ошибка сохранения: ' + err.message);
+    }
 });
 
 
