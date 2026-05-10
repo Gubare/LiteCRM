@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Календарь - CRM</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+        <nav class="main-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
+    <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
+    <a href="products.html"><span class="nav-icon">📦</span> <span class="nav-text">Товары</span></a>
+    <a href="tickets.html"><span class="nav-icon">🎫</span> <span class="nav-text">Обращения</span></a>
+    <a href="reports.html"><span class="nav-icon">📈</span> <span class="nav-text">Отчёты</span></a>
+    <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
+    <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
+    <a href="calendar.html"><span class="nav-icon">📅</span> <span class="nav-text">Календарь</span></a>
+  </nav>
+
+    <main class="page-content">
+        <div class="calendar-container">
+            <h1>Календарь</h1>
+            
+            <!-- Шапка -->
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button onclick="changeMonth(-1)">‹</button>
+                    <div class="calendar-title" id="calendarTitle" onclick="toggleMonthSelect()">
+                        Май 2026
+                    </div>
+                    <button onclick="changeMonth(1)">›</button>
+                    <select id="monthSelect" style="display: none; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;" onchange="jumpToMonth(this.value)">
+                        <!-- Заполняется JS -->
+                    </select>
+                </div>
+                
+                <div class="calendar-modes">
+                    <button class="mode-btn active" data-mode="notes" onclick="toggleMode('notes')">📝 Заметки</button>
+                    <button class="mode-btn" data-mode="clients" onclick="toggleMode('clients')">👥 Клиенты</button>
+                    <button class="mode-btn" data-mode="sales" onclick="toggleMode('sales')">💰 Продажи</button>
+                    <button class="mode-btn" data-mode="tickets" onclick="toggleMode('tickets')">🎫 Обращения</button>
+                </div>
+            </div>
+            
+            <!-- Сетка календаря -->
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Заполняется JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно заметки -->
+    <div id="noteModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'noteModal')">
+        <div class="note-modal-content" onclick="event.stopPropagation()">
+            <h3 id="noteModalTitle">Заметка</h3>
+            <div style="margin: 15px 0;">
+                <label>Текст заметки:</label>
+                <textarea id="noteText" rows="4" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 8px;" placeholder="Введите текст..."></textarea>
+            </div>
+            <div>
+                <label>Цвет:</label>
+                <div class="color-picker" id="colorPicker">
+                    <div class="color-option selected" style="background: #3b82f6;" data-color="#3b82f6"></div>
+                    <div class="color-option" style="background: #10b981;" data-color="#10b981"></div>
+                    <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></div>
+                    <div class="color-option" style="background: #ef4444;" data-color="#ef4444"></div>
+                    <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+                    <div class="color-option" style="background: #ec4899;" data-color="#ec4899"></div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-action" onclick="deleteNote()" id="btnDeleteNote" style="flex: 1; display: none;">🗑️ Удалить</button>
+                <button class="btn-action" onclick="closeModal('noteModal')" style="flex: 1;">Отмена</button>
+                <button class="btn-primary" onclick="saveNote()" style="flex: 1;">💾 Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/neutralino.js"></script>
+    <script type="module" src="js/db_indexeddb.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/calendar.js"></script>
+</body>
+</html>

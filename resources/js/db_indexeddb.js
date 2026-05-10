@@ -1,7 +1,7 @@
 // resources/js/db_indexeddb.js
 import { showErrorWithRetry, executeWithRetry } from './error-handler.js';
 const DB_NAME = 'CRM_Database';
-const DB_VERSION = 5; // Увеличиваем версию для добавления новых хранилищ!
+const DB_VERSION = 6; // Увеличиваем версию для добавления новых хранилищ!
 const STORE_NAME = 'clients'; 
 let db = null;
 
@@ -49,7 +49,7 @@ export function initDatabase() {
                 console.log('✅ Store "sales" created');
             }
 
-            // НОВОЕ: Пакетные корректировки (списание/поступление за период) ===
+            // Пакетные корректировки (списание/поступление за период) ===
             if (!database.objectStoreNames.contains('bulk_adjustments')) {
                 const bulkStore = database.createObjectStore('bulk_adjustments', { 
                     keyPath: 'id', 
@@ -60,6 +60,13 @@ export function initDatabase() {
                 bulkStore.createIndex('period_end', 'period_end', { unique: false });
                 bulkStore.createIndex('type', 'type', { unique: false }); // writeoff, restock
                 console.log('✅ Store "bulk_adjustments" created');
+            }
+
+            // Календарные заметки
+            if (!database.objectStoreNames.contains('calendar_notes')) {
+                const notesStore = database.createObjectStore('calendar_notes', { keyPath: 'id', autoIncrement: true });
+                notesStore.createIndex('date', 'date', { unique: false });
+                console.log('✅ Store "calendar_notes" created');
             }
         };
 
