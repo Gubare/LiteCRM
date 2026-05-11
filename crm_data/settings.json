@@ -1,7 +1,17 @@
 {
-  "ui.showTooltips": true,
+  "ui.showTooltips": false,
   "ui.darkMode": false,
   "ui.showNavText": true,
   "ui.animateRows": true,
-  "ui.selectionModifier": "ctrl"
+  "ui.selectionModifier": "ctrl",
+  "calendar.workDays": {
+    "0": false,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": false,
+    "6": false
+  },
+  "calendar.canEditSchedule": true
 }

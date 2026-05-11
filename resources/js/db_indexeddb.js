@@ -10,66 +10,45 @@ export function initDatabase() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-        request.onupgradeneeded = function(event) {
-            const database = event.target.result;
-
-            // 1. Clients
-            if (!database.objectStoreNames.contains('clients')) {
-                const store = database.createObjectStore('clients', { keyPath: 'id', autoIncrement: true });
-                store.createIndex('name', 'name', { unique: false });
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            const oldVersion = event.oldVersion;
+            
+            console.log(`🔄 DB upgrade from ${oldVersion} to ${DB_VERSION}`);
+            
+            // Создаём хранилища, если их нет
+            if (!db.objectStoreNames.contains('clients')) {
+                db.createObjectStore('clients', { keyPath: 'id', autoIncrement: true });
+                console.log('✅ Store "clients" created');
             }
-
-            // 2. Products
-            if (!database.objectStoreNames.contains('products')) {
-                const store = database.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-                store.createIndex('category', 'category', { unique: false });
-                store.createIndex('sku', 'sku', { unique: true });
+            
+            if (!db.objectStoreNames.contains('products')) {
+                const products = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                products.createIndex('sku', 'sku', { unique: true });
+                console.log('✅ Store "products" created');
             }
-
-            // 3. Tickets
-            if (!database.objectStoreNames.contains('tickets')) {
-                const store = database.createObjectStore('tickets', { keyPath: 'id', autoIncrement: true });
-                store.createIndex('client_id', 'client_id', { unique: false });
-                store.createIndex('status', 'status', { unique: false });
-                store.createIndex('type', 'type', { unique: false });
+            
+            if (!db.objectStoreNames.contains('tickets')) {
+                db.createObjectStore('tickets', { keyPath: 'id', autoIncrement: true });
                 console.log('✅ Store "tickets" created');
             }
-
-            // === Продажи (единичные сделки) ===
-            if (!database.objectStoreNames.contains('sales')) {
-                const salesStore = database.createObjectStore('sales', { 
-                    keyPath: 'id', 
-                    autoIncrement: true 
-                });
-                salesStore.createIndex('product_id', 'product_id', { unique: false });
-                salesStore.createIndex('client_id', 'client_id', { unique: false });
-                salesStore.createIndex('transaction_date', 'transaction_date', { unique: false });
-                salesStore.createIndex('type', 'type', { unique: false }); // sale, writeoff, restock
-                salesStore.createIndex('is_bulk', 'is_bulk', { unique: false });
+            
+            if (!db.objectStoreNames.contains('sales')) {
+                db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
                 console.log('✅ Store "sales" created');
             }
-
-            // Пакетные корректировки (списание/поступление за период) ===
-            if (!database.objectStoreNames.contains('bulk_adjustments')) {
-                const bulkStore = database.createObjectStore('bulk_adjustments', { 
-                    keyPath: 'id', 
-                    autoIncrement: true 
-                });
-                bulkStore.createIndex('product_id', 'product_id', { unique: false });
-                bulkStore.createIndex('period_start', 'period_start', { unique: false });
-                bulkStore.createIndex('period_end', 'period_end', { unique: false });
-                bulkStore.createIndex('type', 'type', { unique: false }); // writeoff, restock
+            
+            if (!db.objectStoreNames.contains('bulk_adjustments')) {
+                db.createObjectStore('bulk_adjustments', { keyPath: 'id', autoIncrement: true });
                 console.log('✅ Store "bulk_adjustments" created');
             }
-
-            // Календарные заметки
-            if (!database.objectStoreNames.contains('calendar_notes')) {
-                const notesStore = database.createObjectStore('calendar_notes', { keyPath: 'id', autoIncrement: true });
-                notesStore.createIndex('date', 'date', { unique: false });
+            
+            if (!db.objectStoreNames.contains('calendar_notes')) {
+                const notes = db.createObjectStore('calendar_notes', { keyPath: 'id', autoIncrement: true });
+                notes.createIndex('date', 'date', { unique: false });
                 console.log('✅ Store "calendar_notes" created');
             }
         };
-
 
         request.onsuccess = (e) => { db = e.target.result; resolve(db); };
         request.onerror = (e) => reject(e.target.error);
@@ -426,8 +405,9 @@ export function exportAllData() {
         getAllItems('products'),
         getAllItems('tickets'),
         getAllItems('sales'),
-        getAllItems('bulk_adjustments')
-    ]).then(([clients, products, tickets, sales, bulk]) => JSON.stringify({
+        getAllItems('bulk_adjustments'),
+        getAllItems('calendar_notes')
+    ]).then(([clients, products, tickets, sales, bulk, notes]) => JSON.stringify({
         version: DB_VERSION,
         exported_at: new Date().toISOString(),
         stores: [
@@ -435,9 +415,10 @@ export function exportAllData() {
             { store: 'products', items: products },
             { store: 'tickets', items: tickets },
             { store: 'sales', items: sales },
-            { store: 'bulk_adjustments', items: bulk }
+            { store: 'bulk_adjustments', items: bulk },
+            { store: 'calendar_notes', items: notes } 
         ]
-    }));
+    }))
 }
 
 // Импорт данных (универсальный)

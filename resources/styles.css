@@ -902,14 +902,6 @@ html, body {
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
-        .weekday-header {
-            text-align: center;
-            padding: 10px;
-            font-weight: 600;
-            color: #64748b;
-            font-size: 13px;
-        }
-        
         .calendar-day {
             min-height: 100px;
             border: 1px solid #e2e8f0;
@@ -1011,3 +1003,75 @@ html, body {
             border-color: #1e293b;
             transform: scale(1.15);
         }
+
+
+/* === ЗАГОЛОВКИ ДНЕЙ НЕДЕЛИ === */
+.weekday-header {
+    text-align: center;
+    padding: 12px 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.weekday-header.workday {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.weekday-header.weekend {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.weekday-header:hover {
+    filter: brightness(0.95);
+}
+
+.weekday-header:active {
+    transform: scale(0.98);
+}
+
+.weekday-header .edit-icon {
+    display: none;
+    font-size: 10px;
+    opacity: 0.6;
+    margin-left: 4px;
+}
+
+.weekday-header:hover .edit-icon {
+    display: inline;
+}
+
+/* === ЯЧЕЙКИ КАЛЕНДАРЯ === */
+.calendar-day.weekend-col {
+    background: #fef2f2 !important;
+}
+
+.calendar-day.weekend-col:hover {
+    background: #fee2e2 !important;
+}
+
+.calendar-day.weekend-col .day-number {
+    color: #dc2626;
+}
+
+/* Режим только для чтения */
+.weekday-header.readonly {
+    cursor: default !important;
+    opacity: 0.9;
+}
+
+.weekday-header.readonly:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.weekday-header.readonly .edit-icon {
+    display: none !important;
+}

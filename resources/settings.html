@@ -99,18 +99,41 @@
             </label>
         </div>
 
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Модификатор выделения</h3>
+                    <p>Клавиша для добавления нескольких записей</p>
+                </div>
+                <select id="selectionModifier" class="form-control" style="width: 130px; height: 38px;">
+                    <option value="shift">Shift</option>
+                    <option value="ctrl">Ctrl / Cmd</option>
+                </select>
+            </div>
+
+        
+    </div>
+    <div class="settings-section">
+        <h2>Календарь</h2>
+        
         <div class="setting-item">
             <div class="setting-info">
-                <h3>Модификатор выделения</h3>
-                <p>Клавиша для добавления нескольких записей</p>
+                <h3>Редактирование расписания</h3>
+                <p>Разрешить изменять рабочие/выходные дни кликом по заголовкам</p>
             </div>
-            <select id="selectionModifier" class="form-control" style="width: 130px; height: 38px;">
-                <option value="shift">Shift</option>
-                <option value="ctrl">Ctrl / Cmd</option>
-            </select>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggleCalendarEdit">
+                <span class="toggle-slider"></span>
+            </label>
         </div>
-
+        
+        <div class="setting-item">
+            <div class="setting-info">
+                <h3>Сбросить расписание</h3>
+                <p>Вернуть стандартное расписание (Пн-Пт рабочие, Сб-Вс выходные)</p>
+            </div>
+            <button id="btnResetSchedule" class="btn-action" style="padding: 8px 16px;">Сбросить</button>
         </div>
+    </div>
         
         <!-- Секция: Данные -->
         <div class="settings-section">
@@ -211,7 +234,27 @@
                 }
             });
         });
-        
+
+
+        // Настройки календаря
+        const calEditToggle = document.getElementById('toggleCalendarEdit');
+        // calEditToggle.checked = await getSetting('calendar.canEditSchedule') ?? true;
+
+        calEditToggle.checked = getSetting('calendar.canEditSchedule');
+
+        calEditToggle.addEventListener('change', async (e) => {
+            await updateSetting('calendar.canEditSchedule', e.target.checked);
+            showToast(e.target.checked ? 'Редактирование расписания включено' : 'Редактирование расписания заблокировано');
+        });
+
+        document.getElementById('btnResetSchedule').addEventListener('click', async () => {
+            if (!confirm('Сбросить расписание к стандартному (Пн-Пт рабочие)?')) return;
+            
+            const defaultSchedule = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 6: false };
+            await updateSetting('calendar.workDays', defaultSchedule);
+            showToast('Расписание сброшено');
+        });
+                
         function showToast(message) {
             const toast = document.createElement('div');
             toast.style.cssText = `
