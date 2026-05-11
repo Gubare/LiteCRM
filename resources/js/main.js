@@ -19,6 +19,7 @@ import {
     importDatabase
 } from './db_indexeddb.js';
 import { loadSettings, getSetting } from './settings-manager.js';
+import { initLogger } from './logger.js'; 
 // import { startVoiceInput } from './voice-input.js'
 /*
     Function to display information about the Neutralino app.
@@ -214,6 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Инициализация IndexedDB
         await initDatabase();
+        await initLogger();
         console.log('✅ IndexedDB initialized successfully');
         await loadDataFromFile();
         // Делаем функции доступными глобально для других страниц

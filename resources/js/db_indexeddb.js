@@ -1,5 +1,6 @@
 // resources/js/db_indexeddb.js
 import { showErrorWithRetry, executeWithRetry } from './error-handler.js';
+import { logAction } from './logger.js';
 const DB_NAME = 'CRM_Database';
 const DB_VERSION = 6; // Увеличиваем версию для добавления новых хранилищ!
 const STORE_NAME = 'clients'; 
@@ -201,19 +202,20 @@ export function importFromJSON(jsonData) {
 // === УНИВЕРСАЛЬНЫЕ ФУНКЦИИ ===
 
 // Добавить запись в любую таблицу
-export function addItem(storeName, item) {
+export async function addItem(storeName, itemData) {
+    const db = await getDbInstance();
     return new Promise((resolve, reject) => {
-        if (!db) {
-            reject(new Error('База данных не инициализирована'));
-            return;
-        }
-
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.add(item);
-
-        request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => reject(e.target.error);
+        const tx = db.transaction([storeName], 'readwrite');
+        const store = tx.objectStore(storeName);
+        const req = store.add(itemData);
+        
+        req.onsuccess = () => {
+            const newId = req.result;
+            // Логируем создание
+            logAction('create', storeName, newId, itemData);
+            resolve(newId);
+        };
+        req.onerror = () => reject(req.error);
     });
 }
 
@@ -279,55 +281,56 @@ export function getItemById(storeName, id) {
     });
 }
 // Обновить запись
-export function updateItem(storeName, id, data) {
+export async function updateItem(storeName, id, updates) {
+    const db = await getDbInstance();
     return new Promise((resolve, reject) => {
-        if (!db) {
-            reject(new Error('База данных не инициализирована'));
-            return;
-        }
-
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-
-        // Сначала необходимо получить старую запись, чтобы сохранить id
-        const getRequest = store.get(id);
-
-        getRequest.onsuccess = function(event) {
-            const existing = event.target.result;
-            if (!existing) {
-                reject(new Error('Запись не найдена'));
-                return;
-            }
-
-            const updated = { ...existing, ...data, id };
-            const request = store.put(updated);
-
-            request.onsuccess = () => resolve(id);
-            request.onerror = (e) => reject(e.target.error);
+        const tx = db.transaction([storeName], 'readwrite');
+        const store = tx.objectStore(storeName);
+        
+        // Получаем старую версию для лога
+        const getReq = store.get(id);
+        getReq.onsuccess = () => {
+            const oldData = getReq.result || {};
+            const newData = { ...oldData, ...updates, id, updated_at: new Date().toISOString() };
+            
+            const putReq = store.put(newData);
+            putReq.onsuccess = () => {
+                // Логируем изменение (сохраняем новые данные)
+                logAction('update', storeName, id, newData);
+                resolve();
+            };
+            putReq.onerror = () => reject(putReq.error);
         };
-
-        getRequest.onerror = (e) => reject(e.target.error);
+        getReq.onerror = () => reject(getReq.error);
     });
 }
 
 // Удалить запись
-export function deleteItem(storeName, id) {
+export async function deleteItem(storeName, id) {
+    const db = await getDbInstance();
     return new Promise((resolve, reject) => {
-        if (!db) {
-            reject(new Error('База данных не инициализирована'));
-            return;
-        }
-
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.delete(id);
-
-        request.onsuccess = () => resolve();
-        request.onerror = (e) => reject(e.target.error);
+        const tx = db.transaction([storeName], 'readwrite');
+        const store = tx.objectStore(storeName);
+        
+        // Сначала получаем данные перед удалением
+        const getReq = store.get(id);
+        getReq.onsuccess = () => {
+            const deletedData = getReq.result;
+            
+            const req = store.delete(id);
+            req.onsuccess = () => {
+                // Логируем с полными данными удалённой записи
+                logAction('delete', storeName, id, deletedData, {
+                    deletedAt: new Date().toISOString(),
+                    reason: 'User initiated deletion'
+                });
+                resolve();
+            };
+            req.onerror = () => reject(req.error);
+        };
+        getReq.onerror = () => reject(getReq.error);
     });
-}
-
-// === СПЕЦИФИЧНЫЕ ФУНКЦИИ ДЛЯ ТОВАРОВ ===
+}// === СПЕЦИФИЧНЫЕ ФУНКЦИИ ДЛЯ ТОВАРОВ ===
 
 // Генерация SKU: первые 2 буквы категории + "-" + id
 export function generateSKU(category, id = null) {

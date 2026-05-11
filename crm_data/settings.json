@@ -13,5 +13,14 @@
     "5": false,
     "6": false
   },
-  "calendar.canEditSchedule": true
+  "calendar.canEditSchedule": false,
+  "logging": {
+    "cleanupStrategy": "maxEntries",
+    "cleanupTime": {
+      "hour": 0,
+      "minute": 0
+    },
+    "maxEntries": 100,
+    "maxAgeDays": 7
+  }
 }

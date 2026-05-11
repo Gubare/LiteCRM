@@ -158,6 +158,89 @@
             </div>
         </div>
         
+        <!-- Секция: Логирование -->
+        <div class="settings-section">
+            <h2>Логирование</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Стратегия очистки</h3>
+                    <p>Как часто удалять старые записи журнала</p>
+                </div>
+                <select id="logCleanupStrategy" class="form-control" style="width: 200px;">
+                    <option value="none">Не очищать</option>
+                    <option value="daily">Ежедневно</option>
+                    <option value="weekly">Еженедельно (Вс)</option>
+                    <option value="maxEntries">По количеству</option>
+                    <option value="ageBased">По возрасту</option>
+                </select>
+            </div>
+            
+            <!-- Настройки времени (для daily/weekly) -->
+            <div id="logTimeSettings" class="setting-item" style="display: none;">
+                <div class="setting-info">
+                    <h3>Время очистки</h3>
+                    <p>Во сколько выполнять очистку</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="time" id="logCleanupTime" value="00:00" style="padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                </div>
+            </div>
+            
+            <!-- Настройки количества (для maxEntries) -->
+            <div id="logMaxEntriesSettings" class="setting-item" style="display: none;">
+                <div class="setting-info">
+                    <h3>Максимум записей</h3>
+                    <p>Сколько последних операций хранить</p>
+                </div>
+                <select id="logMaxEntries" class="form-control" style="width: 150px;">
+                    <option value="100">100 записей</option>
+                    <option value="500">500 записей</option>
+                    <option value="1000" selected>1000 записей</option>
+                    <option value="5000">5000 записей</option>
+                    <option value="10000">10000 записей</option>
+                </select>
+            </div>
+            
+            <!-- Настройки возраста (для ageBased) -->
+            <div id="logAgeSettings" class="setting-item" style="display: none;">
+                <div class="setting-info">
+                    <h3>Максимальный возраст</h3>
+                    <p>Как долго хранить записи</p>
+                </div>
+                <select id="logMaxAgeDays" class="form-control" style="width: 150px;">
+                    <option value="7">7 дней</option>
+                    <option value="30">30 дней</option>
+                    <option value="90" selected>90 дней</option>
+                    <option value="180">180 дней</option>
+                    <option value="365">1 год</option>
+                </select>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="setting-item" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
+                <div class="setting-info">
+                    <h3>Текущая статистика</h3>
+                    <p id="logStatsText">Загрузка...</p>
+                </div>
+                <button id="btnRefreshStats" class="btn-action" style="padding: 6px 12px;">🔄 Обновить</button>
+            </div>
+            
+            <!-- Действия -->
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Управление логами</h3>
+                    <p>Экспорт или полная очистка журнала</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btnExportLogs" class="btn-action" style="padding: 8px 16px;">📥 Экспорт CSV</button>
+                    <button id="btnManualCleanup" class="btn-action" style="padding: 8px 16px;">🗑️ Очистить сейчас</button>
+                    <button id="btnClearAllLogs" class="btn-action delete" style="padding: 8px 16px;">⚠️ Удалить всё</button>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Секция: О приложении -->
         <div class="settings-section">
             <h2>О приложении</h2>
@@ -174,15 +257,131 @@
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module">
+        import { 
+            getLogStats, 
+            saveLogSettings, 
+            manualCleanup, 
+            clearAllLogs, 
+            exportLogsToCSV 
+        } from './js/logger.js';
         if (typeof Neutralino !== 'undefined') Neutralino.init();
         
         // Загрузка настроек при старте
         import { loadSettings, updateSetting, getSetting } from './js/settings-manager.js';
 
+
+        // Загрузка настроек логирования
+        async function loadLogSettings() {
+            try {
+                const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
+                const settings = JSON.parse(data);
+                const logging = settings.logging || { cleanupStrategy: 'none' };
+                
+                // Устанавливаем значения
+                document.getElementById('logCleanupStrategy').value = logging.cleanupStrategy || 'none';
+                
+                if (logging.cleanupTime) {
+                    const hours = String(logging.cleanupTime.hour || 0).padStart(2, '0');
+                    const minutes = String(logging.cleanupTime.minute || 0).padStart(2, '0');
+                    document.getElementById('logCleanupTime').value = `${hours}:${minutes}`;
+                }
+                
+                if (logging.maxEntries) {
+                    document.getElementById('logMaxEntries').value = logging.maxEntries;
+                }
+                
+                if (logging.maxAgeDays) {
+                    document.getElementById('logMaxAgeDays').value = logging.maxAgeDays;
+                }
+                
+                updateLogSettingsVisibility();
+                await refreshLogStats();
+                
+            } catch (error) {
+                console.log('⚠️ Using default log settings');
+            }
+        }
+
+        // Показ/скрытие настроек
+        function updateLogSettingsVisibility() {
+            const strategy = document.getElementById('logCleanupStrategy').value;
+            
+            document.getElementById('logTimeSettings').style.display = 
+                (strategy === 'daily' || strategy === 'weekly') ? 'flex' : 'none';
+            document.getElementById('logMaxEntriesSettings').style.display = 
+                strategy === 'maxEntries' ? 'flex' : 'none';
+            document.getElementById('logAgeSettings').style.display = 
+                strategy === 'ageBased' ? 'flex' : 'none';
+        }
+
+        // Обновление статистики
+        async function refreshLogStats() {
+            const stats = await getLogStats();
+            const text = `
+                <strong>Всего записей:</strong> ${stats.total}<br>
+                <strong>Создано:</strong> ${stats.byAction.create || 0} | 
+                <strong>Изменено:</strong> ${stats.byAction.update || 0} | 
+                <strong>Удалено:</strong> ${stats.byAction.delete || 0}<br>
+                <strong>Первая запись:</strong> ${stats.oldest ? new Date(stats.oldest).toLocaleDateString() : '—'}<br>
+                <strong>Последняя:</strong> ${stats.newest ? new Date(stats.newest).toLocaleDateString() : '—'}
+            `;
+            document.getElementById('logStatsText').innerHTML = text;
+        }
+
+        // Сохранение настроек
+        document.getElementById('logCleanupStrategy').addEventListener('change', async () => {
+            updateLogSettingsVisibility();
+            await saveCurrentLogSettings();
+        });
+
+        document.getElementById('logCleanupTime').addEventListener('change', saveCurrentLogSettings);
+        document.getElementById('logMaxEntries').addEventListener('change', saveCurrentLogSettings);
+        document.getElementById('logMaxAgeDays').addEventListener('change', saveCurrentLogSettings);
+
+        async function saveCurrentLogSettings() {
+            const strategy = document.getElementById('logCleanupStrategy').value;
+            const [hours, minutes] = document.getElementById('logCleanupTime').value.split(':').map(Number);
+            
+            const settings = {
+                cleanupStrategy: strategy,
+                cleanupTime: { hour: hours, minute: minutes },
+                maxEntries: parseInt(document.getElementById('logMaxEntries').value),
+                maxAgeDays: parseInt(document.getElementById('logMaxAgeDays').value)
+            };
+            
+            const success = await saveLogSettings(settings);
+            if (success) showToast('✅ Настройки логирования сохранены');
+        }
+
+        // Кнопки действий
+        document.getElementById('btnRefreshStats').addEventListener('click', refreshLogStats);
+
+        document.getElementById('btnExportLogs').addEventListener('click', async () => {
+            const filePath = await exportLogsToCSV();
+            if (filePath) showToast(`✅ Логи экспортированы: ${filePath}`);
+            else showToast('❌ Ошибка экспорта');
+        });
+
+        document.getElementById('btnManualCleanup').addEventListener('click', async () => {
+            await manualCleanup();
+            showToast('✅ Очистка выполнена');
+            await refreshLogStats();
+        });
+
+        document.getElementById('btnClearAllLogs').addEventListener('click', async () => {
+            if (!confirm('⚠️ ВНИМАНИЕ: Все логи будут безвозвратно удалены! Продолжить?')) return;
+            
+            await clearAllLogs();
+            showToast('🗑️ Все логи удалены');
+            await refreshLogStats();
+        });
+
+
+
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Загружаем настройки из файла
             await loadSettings();
-
+            await loadLogSettings();
             // 2. Применяем состояние чекбоксов
             const tooltipsToggle = document.getElementById('toggleTooltips');
             const navTextToggle = document.getElementById('toggleNavText');
