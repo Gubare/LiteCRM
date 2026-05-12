@@ -8,7 +8,7 @@ let cleanupInterval = null;
 // Инициализация
 export async function initLogger() {
     try {
-        await Neutralino.filesystem.createDirectory('crm_data');
+        // await Neutralino.filesystem.createDirectory('crm_data');
         
         // Создаём файл логов если нет
         try {

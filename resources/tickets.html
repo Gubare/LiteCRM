@@ -5,19 +5,347 @@
     <title>Обращения - CRM</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .btn-action { padding: 4px 8px; margin: 0 2px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .btn-delete { background: #fef2f2; border-color: #ef4444; color: #ef4444; }
-        .btn-delete:hover { background: #ef4444; color: white; }
-        .btn-edit { background: #eff6ff; border-color: #3b82f6; color: #3b82f6; }
-        .btn-edit:hover { background: #3b82f6; color: white; }
-        .status-open { color: #d97706; font-weight: bold; }
-        .status-done { color: #059669; font-weight: bold; }
-        .status-archive { color: #6b7280; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .full-width { width: 100%; padding: 8px; margin: 5px 0; box-sizing: border-box; }
+        /* Панель управления */
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-filters, .toolbar-pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        /* Панель массовых действий */
+        .bulk-action-bar {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            margin: 0 0 15px 0;
+        }
+        
+        .bulk-action-bar.visible {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .count-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .bulk-action-bar button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        /* Контекстное меню */
+        .ctx-menu {
+            position: fixed;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            min-width: 180px;
+            z-index: 9999;
+            overflow: hidden;
+            animation: ctxFadeIn 0.12s ease;
+            display: none;
+        }
+        
+        .ctx-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #334155;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .ctx-menu-item:hover {
+            background: #f8fafc;
+        }
+        
+        .ctx-menu-item.danger {
+            color: #dc2626;
+        }
+        
+        .ctx-menu-item.danger:hover {
+            background: #fef2f2;
+        }
+        
+        .ctx-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 4px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes ctxFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Модальное окно */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-window {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+        
+        .modal-hint {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #334155;
+            font-size: 14px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        /* Стили для таблицы */
+        .crm-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .crm-table thead {
+            background: #f8fafc;
+        }
+        
+        .crm-table th {
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .crm-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            color: #334155;
+        }
+        
+        .crm-table tbody tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        
+        .crm-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .crm-table tbody tr.selected {
+            background: #eff6ff !important;
+            outline: 1px solid #3b82f6;
+            outline-offset: -1px;
+        }
+        
+        /* Статусы */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .badge-open { background: #fef3c7; color: #92400e; }
+        .badge-done { background: #dcfce7; color: #166534; }
+        .badge-archive { background: #dbeafe; color: #1e40af; }
+        
+        /* Анимация строк */
+        .table-row-animate {
+            opacity: 0;
+            animation: rowSlideIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes rowSlideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Кнопки действий */
+        .btn-action-icon {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            margin: 0 2px;
+        }
+        
+        .btn-action-icon:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        
+        .btn-action-icon.delete:hover {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        @media (max-width: 900px) {
+            .table-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .truncatable-cell {
+            cursor: pointer;
+            color: #334155;
+            transition: color 0.2s;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .truncatable-cell:hover { color: #64748b; }
+
+        .truncatable-cell {
+            cursor: pointer !important; /* Принудительно */
+            color: #334155;
+            transition: color 0.2s;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .truncatable-cell:hover { 
+            color: #64748b; 
+            /* text-decoration: underline; Подчеркивание при наведении */
+        }
     </style>
 </head>
 <body>
+    <!-- Навигация -->
     <nav class="main-nav">
     <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
     <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
@@ -27,297 +355,225 @@
     <a href="sales.html"><span class="nav-icon">💰</span> <span class="nav-text">Продажи</span></a>
     <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
     <a href="calendar.html"><span class="nav-icon">📅</span> <span class="nav-text">Календарь</span></a>
-  </nav>
-    <main class="page-content">
+    </nav>
 
-    <h1>Управление обращениями</h1>
-    
-    <!-- Форма создания -->
-    <form id="ticketForm" style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-        <div class="grid-2">
-            <div>
-                <label>Клиент:</label>
-                <select id="ticketClient" class="full-width" required>
-                    <option value="empty">Оставить пустым</option>
-                    <option value="new">➕ Создать нового клиента</option>
-                    <!-- Клиенты загрузятся сюда -->
-                </select>
-            </div>
-            <div>
-                <label>Тип обращения:</label>
-                <select id="ticketType" class="full-width" required>
+    <main class="page-content">
+        <h1>Управление обращениями</h1>
+        
+        <!-- Кнопка создания -->
+        <div style="margin-bottom: 20px;">
+            <button class="btn-primary" onclick="openModal('createTicketModal')" style="padding: 10px 20px; font-size: 15px;">
+                🎫 Создать обращение
+            </button>
+        </div>
+        
+        <!-- Панель управления -->
+        <div class="table-toolbar">
+            <div class="toolbar-filters">
+                <select id="filterType" class="form-control" style="width: 140px;">
+                    <option value="">Все типы</option>
                     <option value="Вопрос">Вопрос</option>
-                    <option value="Жалоба">️Жалоба</option>
+                    <option value="Жалоба">Жалоба</option>
                     <option value="Заказ">Заказ</option>
-                    <option value="Консультация">Консультация</option>
+                    <option value="Предложение">Предложение</option>
+                </select>
+                
+                <select id="filterClient" class="form-control" style="width: 180px;">
+                    <option value="">Все клиенты</option>
+                </select>
+                
+                <select id="filterStatus" class="form-control" style="width: 140px;">
+                    <option value="">Все статусы</option>
+                    <option value="Открыта">Открыта</option>
+                    <option value="Выполнена">Выполнена</option>
+                    <option value="Архив">Архив</option>
+                </select>
+                
+                <button id="btnApplyFilters" class="btn-primary" style="width: auto; padding: 8px 16px;">Применить</button>
+                <button id="btnResetFilters" class="btn-action-icon" style="width: auto; padding: 8px 16px;">Сброс</button>
+            </div>
+            
+            <div class="toolbar-pagination">
+                <label style="font-size: 13px; color: #64748b;">Записей:</label>
+                <select id="pageSize" class="form-control" style="width: 70px;">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+                
+                <label style="font-size: 13px; color: #64748b; margin: 0 8px;">Сортировка:</label>
+                <select id="sortSelect" class="form-control" style="width: 140px;">
+                    <option value="date_desc">Сначала новые</option>
+                    <option value="date_asc">Сначала старые</option>
                 </select>
             </div>
         </div>
-        <div class="grid-2">
-            <div>
-                <label>Контакт для ответа:</label>
-                <input type="text" id="ticketContact" class="full-width" placeholder="Телефон / Email / Telegram">
-            </div>
-            <div>
-                <label>Статус:</label>
-                <select id="ticketStatus" class="full-width">
-                    <option value="open">Открыта</option>
-                    <option value="done">Выполнена</option>
-                    <option value="archive">Архив</option>
-                </select>
-            </div>
+        
+        <!-- Панель массовых действий -->
+        <div id="bulkActionBar" class="bulk-action-bar">
+            <span>Выбрано записей: <span class="count-badge" id="selectedCount">0</span></span>
+            <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="editSelected()">✏️ Изменить</button>
+            <button id="btnBulkDelete" class="btn-action-icon delete" onclick="deleteSelected()">🗑️ Удалить</button>
+            <button class="btn-action-icon" onclick="clearSelection()" style="margin-left:auto; font-size:12px; color:#64748b;">✕ Снять выделение</button>
         </div>
-        <div>
-            <label>Подробное описание:</label>
-            <textarea id="ticketDesc" class="full-width" rows="3" placeholder="Суть вопроса или задачи..."></textarea>
+        
+        <!-- Таблица -->
+        <table id="ticketTable" class="crm-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>Клиент</th>
+                    <th style="width: 100px;">Тип</th>
+                    <th>Контакт</th>
+                    <th>Описание</th>
+                    <th style="width: 100px;">Дата</th>
+                    <th style="width: 100px;">Статус</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <!-- Пагинация -->
+        <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
+            <div class="pagination" id="pagination" style="display: flex; gap: 5px; align-items: center;"></div>
+            <span id="paginationInfo" style="font-size: 13px; color: #64748b; margin-left: 15px;"></span>
         </div>
-        <button type="submit" id="btnAddTicket" class="btn-action btn-edit" style="margin-top: 10px;">Создать обращение</button>
-    </form>
-    
-    <div id="message"></div>
-    
-    <!-- Таблица -->
-<h2>Все обращения</h2>
-<table id="ticketList" class="crm-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Клиент</th>
-            <th>Тип</th>
-            <th>Контакт</th>
-            <th>Описание</th>
-            <th>Дата</th>
-            <th>Статус</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-    
-    <!-- Модальное окно редактирования -->
-    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-        <div style="background: white; margin: 50px auto; padding: 20px; border-radius: 8px; width: 600px; max-width: 95%;">
-            <h3>Редактировать обращение</h3>
-            <input type="hidden" id="editTicketId">
-            <div class="grid-2">
-                <div><label>Клиент:</label><select id="editClient" class="full-width"></select></div>
-                <div><label>Тип:</label><select id="editType" class="full-width">
-                    <option value="Вопрос">Вопрос</option><option value="Жалоба">Жалоба</option>
-                    <option value="Заказ">Заказ</option><option value="Консультация">Консультация</option>
-                </select></div>
+    </main>
+
+    <!-- Модальное окно: Создание обращения -->
+    <div id="createTicketModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'createTicketModal')">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-hint">💡 Нажмите в любое место за пределами окна, чтобы закрыть</div>
+            <div class="modal-header">
+                <h3 style="margin: 0;">🎫 Новое обращение</h3>
             </div>
-            <div class="grid-2">
-                <div><label>Контакт:</label><input type="text" id="editContact" class="full-width"></div>
-                <div><label>Статус:</label><select id="editStatus" class="full-width">
-                    <option value="open">Открыта</option><option value="done">Выполнена</option><option value="archive">Архив</option>
-                </select></div>
-            </div>
-            <div><label>Описание:</label><textarea id="editDesc" class="full-width" rows="3"></textarea></div>
-            <div style="text-align: right; margin-top: 15px;">
-                <button id="btnCloseModal" class="btn-action">Отмена</button>
-                <button id="btnSaveEdit" class="btn-action btn-edit">Сохранить</button>
-            </div>
+            <form id="createTicketForm">
+                <div class="form-row">
+                    <div>
+                        <label>Клиент:</label>
+                        <select id="ticketClient" class="form-control" style="width: 100%;">
+                            <option value="">Оставить пустым</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Тип обращения:</label>
+                        <select id="ticketType" class="form-control" style="width: 100%;" required>
+                            <option value="Вопрос">Вопрос</option>
+                            <option value="Жалоба">Жалоба</option>
+                            <option value="Заказ">Заказ</option>
+                            <option value="Предложение">Предложение</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Контакт для ответа:</label>
+                        <input type="text" id="ticketContact" class="form-control" style="width: 100%;" placeholder="Телефон / Email / Telegram">
+                    </div>
+                    <div>
+                        <label>Статус:</label>
+                        <select id="ticketStatus" class="form-control" style="width: 100%;">
+                            <option value="Открыта">Открыта</option>
+                            <option value="Выполнена">Выполнена</option>
+                            <option value="Архив">Архив</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <div>
+                        <label>Подробное описание:</label>
+                        <textarea id="ticketDescription" rows="4" placeholder="Суть вопроса или задачи..."></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-action-icon" onclick="closeModal('createTicketModal')" style="flex: 1; padding: 10px;">Отмена</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; padding: 10px;">Создать обращение</button>
+                </div>
+            </form>
         </div>
     </div>
-</main>
-    
+
+    <!-- Модальное окно: Редактирование -->
+    <div id="editTicketModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'editTicketModal')">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 style="margin: 0;">✏️ Редактирование обращения</h3>
+            </div>
+            <form id="editTicketForm">
+                <input type="hidden" id="editTicketId">
+                <div class="form-row">
+                    <div>
+                        <label>Клиент:</label>
+                        <select id="editTicketClient" class="form-control" style="width: 100%;">
+                            <option value="">Оставить пустым</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Тип обращения:</label>
+                        <select id="editTicketType" class="form-control" style="width: 100%;">
+                            <option value="Вопрос">Вопрос</option>
+                            <option value="Жалоба">Жалоба</option>
+                            <option value="Заказ">Заказ</option>
+                            <option value="Предложение">Предложение</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Контакт для ответа:</label>
+                        <input type="text" id="editTicketContact" class="form-control" style="width: 100%;">
+                    </div>
+                    <div>
+                        <label>Статус:</label>
+                        <select id="editTicketStatus" class="form-control" style="width: 100%;">
+                            <option value="Открыта">Открыта</option>
+                            <option value="Выполнена">Выполнена</option>
+                            <option value="Архив">Архив</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <div>
+                        <label>Подробное описание:</label>
+                        <textarea id="editTicketDescription" rows="4"></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-action-icon" onclick="closeModal('editTicketModal')" style="flex: 1; padding: 10px;">Отмена</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; padding: 10px;">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Модальное окно просмотра полного текста -->
+    <div id="fullTextModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'fullTextModal')">
+        <div class="modal-window" style="max-width: 500px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 style="margin: 0;">Полный текст</h3>
+            </div>
+            <div style="padding: 20px 0; color: #334155; line-height: 1.6; font-size: 15px; max-height: 60vh; overflow-y: auto;">
+                <p id="fullTextContent" style="white-space: pre-wrap;"></p>
+            </div>
+            <button class="btn-primary" onclick="closeModal('fullTextModal')" style="width: 100%;">Понятно</button>
+        </div>
+    </div>
+
+    <!-- Контекстное меню -->
+    <div id="ctxMenu" class="ctx-menu">
+        <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()">
+            <span>✏️</span> Редактировать
+        </button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-menu-item danger" id="ctxDelete" onclick="ctxDeleteAction()">
+            <span>🗑️</span> Удалить
+        </button>
+    </div>
+
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
-    <script type="module" src="js/ticket.js"></script>
     <script type="module" src="js/main.js"></script>
-    
-    <script type="module">
-        import { loadTickets, loadClientsForDropdown, createTicket, updateTicket, deleteTicket } from './js/ticket.js';
-
-        if (typeof Neutralino !== 'undefined') Neutralino.init();
-
-        window.renderTicketTable = renderTicketTable;
-        window.deleteTicketById = deleteTicketById;
-        window.editTicket = editTicket;
-        window.closeEditModal = closeEditModal;
-        window.saveEditTicket = saveEditTicket;
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            await waitForDatabase();
-            await loadAndRender();
-            setupEventDelegation();
-            populateClientDropdowns();
-        });
-
-        async function waitForDatabase() {
-            if (window.isDatabaseReady) return;
-            return new Promise(resolve => {
-                const check = () => window.isDatabaseReady ? resolve() : setTimeout(check, 50);
-                check();
-            });
-        }
-
-        async function loadAndRender() {
-            try {
-                const tickets = await loadTickets();
-                renderTicketTable(tickets);
-            } catch (error) { console.error('Error loading tickets:', error); }
-        }
-
-        async function populateClientDropdowns() {
-            const clients = await loadClientsForDropdown();
-            const mainSelect = document.getElementById('ticketClient');
-            const editSelect = document.getElementById('editClient');
-            
-            // Сохраняем первые 2 опции
-            const specialOptions = mainSelect.innerHTML;
-            
-            const clientOptions = clients.map(c => 
-                `<option value="${c.id}">${c.name} (${c.phone || c.email || 'Нет контакта'})</option>`
-            ).join('');
-            
-            mainSelect.innerHTML = specialOptions + clientOptions;
-            editSelect.innerHTML = '<option value="empty">Пусто</option>' + clientOptions;
-        }
-
-        // Обработчик формы
-        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnAddTicket');
-            if (btn.disabled) return;
-            btn.disabled = true; btn.textContent = '⏳ Создание...';
-
-            try {
-                const formData = {
-                    client_id: document.getElementById('ticketClient').value,
-                    type: document.getElementById('ticketType').value,
-                    contact: document.getElementById('ticketContact').value,
-                    description: document.getElementById('ticketDesc').value,
-                    status: document.getElementById('ticketStatus').value
-                };
-
-                // Обработка "+Создать клиента"
-                if (formData.client_id === 'new') {
-                    if (confirm('Перейти на страницу создания клиента?')) {
-                        window.location.href = 'clients.html';
-                        return;
-                    } else {
-                        formData.client_id = 'empty'; // Если отказался
-                    }
-                }
-
-                await createTicket(formData);
-                if (window.saveDataToFile) await window.saveDataToFile();
-                
-                e.target.reset();
-                const tickets = await loadTickets();
-                renderTicketTable(tickets);
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-            } finally {
-                btn.disabled = false; btn.textContent = 'Создать обращение';
-            }
-        });
-
-        function renderTicketTable(tickets) {
-            const tbody = document.querySelector('#ticketList tbody');
-            if (!tbody) return;
-            
-            if (tickets.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: #94a3b8;">📭 Нет обращений</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = tickets.map(t => {
-                let statusClass = 'badge-gray';
-                if (t.status === 'open') statusClass = 'badge-warning';
-                if (t.status === 'done') statusClass = 'badge-success';
-                if (t.status === 'archive') statusClass = 'badge-info';
-                
-                const statusLabel = {open: 'Открыта', done: 'Выполнена', archive: 'Архив'}[t.status];
-                
-                return `
-                <tr>
-                    <td><strong>#${t.id}</strong></td>
-                    <td>${t.client_id ? (window.clientsCache?.[t.client_id]?.name || 'ID:' + t.client_id) : '—'}</td>
-                    <td>${t.type}</td>
-                    <td>${t.contact || '—'}</td>
-                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${t.description}">
-                        ${t.description || '—'}
-                    </td>
-                    <td>${new Date(t.created_at).toLocaleDateString()}</td>
-                    <td><span class="badge ${statusClass}">${statusLabel}</span></td>
-                    <td style="text-align: center;">
-                        <button class="btn-action-icon" onclick="window.editTicket(${t.id})">✏️</button>
-                        <button class="btn-action-icon delete" onclick="window.deleteTicketById(${t.id})">🗑️</button>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-        function sendEmailToClient(email, subject, body) {
-            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            Neutralino.os.open(mailtoLink);
-        }
-
-        function setupEventDelegation() {
-            document.getElementById('ticketList').addEventListener('click', async (e) => {
-                const btn = e.target.closest('button[data-action]');
-                if (!btn) return;
-                const row = btn.closest('tr');
-                const id = parseInt(row?.dataset?.ticketId);
-                const action = btn.dataset.action;
-                if (!id) return;
-
-                try {
-                    if (action === 'edit') editTicket(id);
-                    else if (action === 'delete') await deleteTicketById(id);
-                } catch (error) { alert('Ошибка: ' + error.message); }
-            });
-        }
-
-        async function deleteTicketById(id) {
-            if (!confirm('Удалить это обращение?')) return;
-            await deleteTicket(id);
-            if (window.saveDataToFile) await window.saveDataToFile();
-            const tickets = await loadTickets();
-            renderTicketTable(tickets);
-        }
-
-        async function editTicket(id) {
-            const ticket = await loadTickets().then(t => t.find(x => x.id === id));
-            if (!ticket) return;
-            document.getElementById('editTicketId').value = id;
-            document.getElementById('editClient').value = ticket.client_id || 'empty';
-            document.getElementById('editType').value = ticket.type;
-            document.getElementById('editContact').value = ticket.contact;
-            document.getElementById('editDesc').value = ticket.description;
-            document.getElementById('editStatus').value = ticket.status;
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
-
-        async function saveEditTicket() {
-            const id = parseInt(document.getElementById('editTicketId').value);
-            const data = {
-                client_id: document.getElementById('editClient').value,
-                type: document.getElementById('editType').value,
-                contact: document.getElementById('editContact').value,
-                description: document.getElementById('editDesc').value,
-                status: document.getElementById('editStatus').value
-            };
-            try {
-                await updateTicket(id, data);
-                if (window.saveDataToFile) await window.saveDataToFile();
-                closeEditModal();
-                renderTicketTable(await loadTickets());
-            } catch (error) { alert('Ошибка: ' + error.message); }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-                const showText = localStorage.getItem('crm_showNavText') !== 'false';
-            if (!showText) {
-                document.body.classList.add('nav-icons-only');
-            }
-            document.getElementById('btnCloseModal')?.addEventListener('click', closeEditModal);
-            document.getElementById('btnSaveEdit')?.addEventListener('click', saveEditTicket);
-            document.getElementById('editModal')?.addEventListener('click', e => e.target.id === 'editModal' && closeEditModal());
-        });
-    </script>
+    <script type="module" src="js/tickets.js"></script>
 </body>
 </html>

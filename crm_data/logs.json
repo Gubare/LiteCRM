@@ -1,182 +1,8 @@
 [
   {
     "id": 1,
-    "timestamp": "2026-05-11T15:17:47.925Z",
-    "action": "create",
-    "store": "clients",
-    "recordId": 9,
-    "data": {
-      "name": "Петр",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:17:47.921Z",
-      "updated_at": "2026-05-11T15:17:47.921Z"
-    }
-  },
-  {
-    "id": 2,
-    "timestamp": "2026-05-11T15:18:34.228Z",
-    "action": "create",
-    "store": "clients",
-    "recordId": 10,
-    "data": {
-      "name": "Сергей",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:18:34.218Z",
-      "updated_at": "2026-05-11T15:18:34.218Z"
-    }
-  },
-  {
-    "id": 3,
-    "timestamp": "2026-05-11T15:20:20.926Z",
-    "action": "update",
-    "store": "clients",
-    "recordId": 10,
-    "data": {
-      "name": "Сергей",
-      "phone": "23214141214341",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:18:34.218Z",
-      "updated_at": "2026-05-11T15:20:20.922Z",
-      "id": 10
-    }
-  },
-  {
-    "id": 4,
-    "timestamp": "2026-05-11T15:21:33.684Z",
+    "timestamp": "2026-05-12T12:47:18.734Z",
     "action": "delete",
-    "store": "clients",
-    "recordId": 10,
-    "data": null
-  },
-  {
-    "id": 5,
-    "timestamp": "2026-05-11T15:23:52.533Z",
-    "action": "create",
-    "store": "clients",
-    "recordId": 11,
-    "data": {
-      "name": "Николай",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:23:52.530Z",
-      "updated_at": "2026-05-11T15:23:52.530Z"
-    }
-  },
-  {
-    "id": 6,
-    "timestamp": "2026-05-11T15:33:54.389Z",
-    "action": "create",
-    "store": "clients",
-    "recordId": 12,
-    "data": {
-      "name": "Сергей",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:33:54.385Z",
-      "updated_at": "2026-05-11T15:33:54.385Z"
-    },
-    "metadata": {}
-  },
-  {
-    "id": 7,
-    "timestamp": "2026-05-11T15:40:54.988Z",
-    "action": "delete",
-    "store": "clients",
-    "recordId": 12,
-    "data": {
-      "name": "Сергей",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:33:54.385Z",
-      "updated_at": "2026-05-11T15:33:54.385Z",
-      "id": 12
-    },
-    "metadata": {
-      "deletedAt": "2026-05-11T15:40:54.984Z",
-      "reason": "User initiated deletion"
-    }
-  },
-  {
-    "id": 8,
-    "timestamp": "2026-05-11T15:40:56.743Z",
-    "action": "delete",
-    "store": "clients",
-    "recordId": 11,
-    "data": {
-      "name": "Николай",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:23:52.530Z",
-      "updated_at": "2026-05-11T15:23:52.530Z",
-      "id": 11
-    },
-    "metadata": {
-      "deletedAt": "2026-05-11T15:40:56.740Z",
-      "reason": "User initiated deletion"
-    }
-  },
-  {
-    "id": 9,
-    "timestamp": "2026-05-11T15:40:58.551Z",
-    "action": "delete",
-    "store": "clients",
-    "recordId": 9,
-    "data": {
-      "name": "Петр",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T15:17:47.921Z",
-      "updated_at": "2026-05-11T15:17:47.921Z",
-      "id": 9
-    },
-    "metadata": {
-      "deletedAt": "2026-05-11T15:40:58.549Z",
-      "reason": "User initiated deletion"
-    }
-  },
-  {
-    "id": 10,
-    "timestamp": "2026-05-11T15:41:00.252Z",
-    "action": "delete",
-    "store": "clients",
-    "recordId": 8,
-    "data": {
-      "name": "Николай",
-      "phone": "",
-      "email": "",
-      "total_spent": 0,
-      "purchase_count": 0,
-      "created_at": "2026-05-11T08:30:23.102Z",
-      "updated_at": "2026-05-11T08:30:23.102Z",
-      "id": 8
-    },
-    "metadata": {
-      "deletedAt": "2026-05-11T15:41:00.245Z",
-      "reason": "User initiated deletion"
-    }
-  },
-  {
-    "id": 11,
-    "timestamp": "2026-05-11T17:27:10.726Z",
-    "action": "create",
     "store": "clients",
     "recordId": 8,
     "data": {
@@ -186,14 +12,18 @@
       "total_spent": 0,
       "purchase_count": 0,
       "created_at": "2026-05-11T17:27:10.721Z",
-      "updated_at": "2026-05-11T17:27:10.722Z"
+      "updated_at": "2026-05-11T17:27:10.722Z",
+      "id": 8
     },
-    "metadata": {}
+    "metadata": {
+      "deletedAt": "2026-05-12T12:47:18.730Z",
+      "reason": "User initiated deletion"
+    }
   },
   {
-    "id": 12,
-    "timestamp": "2026-05-11T17:28:13.610Z",
-    "action": "create",
+    "id": 2,
+    "timestamp": "2026-05-12T12:47:45.121Z",
+    "action": "delete",
     "store": "tickets",
     "recordId": 4,
     "data": {
@@ -203,140 +33,302 @@
       "description": "Товар 1",
       "status": "open",
       "created_at": "2026-05-11T17:28:13.601Z",
-      "updated_at": "2026-05-11T17:28:13.601Z"
+      "updated_at": "2026-05-11T17:28:13.601Z",
+      "id": 4
+    },
+    "metadata": {
+      "deletedAt": "2026-05-12T12:47:45.117Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 3,
+    "timestamp": "2026-05-12T12:47:45.140Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 3,
+    "data": {
+      "client_id": null,
+      "type": "Вопрос",
+      "contact": "",
+      "description": "",
+      "status": "open",
+      "created_at": "2026-05-11T08:31:57.623Z",
+      "updated_at": "2026-05-11T08:31:57.624Z",
+      "id": 3
+    },
+    "metadata": {
+      "deletedAt": "2026-05-12T12:47:45.119Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 4,
+    "timestamp": "2026-05-12T12:47:45.160Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 2,
+    "data": {
+      "client_id": 3,
+      "type": "Жалоба",
+      "contact": "89005553535",
+      "description": "Нет парковки",
+      "status": "open",
+      "created_at": "2026-05-05T11:11:08.527Z",
+      "updated_at": "2026-05-05T11:11:08.528Z",
+      "id": 2
+    },
+    "metadata": {
+      "deletedAt": "2026-05-12T12:47:45.123Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 5,
+    "timestamp": "2026-05-12T12:49:34.932Z",
+    "action": "update",
+    "store": "tickets",
+    "recordId": 1,
+    "data": {
+      "client_id": "2",
+      "type": "Жалоба",
+      "contact": "Почта",
+      "description": "Нет парковки",
+      "status": "Открыта",
+      "created_at": "2026-05-01T13:01:25.426Z",
+      "updated_at": "2026-05-12T12:49:34.927Z",
+      "id": 1
+    },
+    "metadata": {}
+  },
+  {
+    "id": 6,
+    "timestamp": "2026-05-12T12:49:42.624Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 1,
+    "data": {
+      "client_id": "2",
+      "type": "Жалоба",
+      "contact": "Почта",
+      "description": "Нет парковки",
+      "status": "Открыта",
+      "created_at": "2026-05-01T13:01:25.426Z",
+      "updated_at": "2026-05-12T12:49:34.927Z",
+      "id": 1
+    },
+    "metadata": {
+      "deletedAt": "2026-05-12T12:49:42.619Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 7,
+    "timestamp": "2026-05-12T12:49:44.856Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 5,
+    "data": {
+      "client_id": "2",
+      "type": "Заказ",
+      "contact": "89005553535",
+      "status": "Выполнена",
+      "description": "324588888",
+      "created_at": "2026-05-12T12:43:35.126Z",
+      "id": 5,
+      "updated_at": "2026-05-12T12:44:02.879Z"
+    },
+    "metadata": {
+      "deletedAt": "2026-05-12T12:49:44.852Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 8,
+    "timestamp": "2026-05-12T12:49:59.810Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 6,
+    "data": {
+      "client_id": "2",
+      "type": "Вопрос",
+      "contact": "89005553535",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-12T12:49:59.806Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 9,
+    "timestamp": "2026-05-12T12:50:06.193Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 7,
+    "data": {
+      "client_id": null,
+      "type": "Жалоба",
+      "contact": "",
+      "status": "Выполнена",
+      "description": "",
+      "created_at": "2026-05-12T12:50:06.181Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 10,
+    "timestamp": "2026-05-12T12:50:21.944Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 8,
+    "data": {
+      "client_id": "7",
+      "type": "Заказ",
+      "contact": "89005553535",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-12T12:50:21.941Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 11,
+    "timestamp": "2026-05-12T12:50:42.001Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 9,
+    "data": {
+      "client_id": "6",
+      "type": "Предложение",
+      "contact": "8900555353532542435767856453423425346768767856745",
+      "status": "Архив",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп",
+      "created_at": "2026-05-12T12:50:41.998Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 12,
+    "timestamp": "2026-05-12T13:06:48.624Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 10,
+    "data": {
+      "client_name": "Петр",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-12T13:06:48.621Z"
     },
     "metadata": {}
   },
   {
     "id": 13,
-    "timestamp": "2026-05-11T17:28:57.963Z",
+    "timestamp": "2026-05-12T13:08:51.009Z",
     "action": "create",
-    "store": "sales",
-    "recordId": 15,
+    "store": "tickets",
+    "recordId": 11,
     "data": {
-      "client_id": 7,
-      "product_id": 2,
-      "quantity": 7,
-      "unit_price": 11,
-      "total_amount": 77,
-      "transaction_date": "2026-05-11T20:28",
-      "comment": "",
-      "type": "sale",
-      "is_bulk": false,
-      "created_at": "2026-05-11T17:28:57.959Z",
-      "updated_at": "2026-05-11T17:28:57.959Z"
+      "client_name": "Петр",
+      "type": "Жалоба",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-12T13:08:51.005Z"
     },
     "metadata": {}
   },
   {
     "id": 14,
-    "timestamp": "2026-05-11T17:28:57.983Z",
-    "action": "update",
-    "store": "products",
-    "recordId": 2,
+    "timestamp": "2026-05-12T13:09:00.924Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 12,
     "data": {
-      "category": "Телефон",
-      "name": "А61",
+      "client_name": "Петр",
+      "type": "Предложение",
+      "contact": "",
+      "status": "Открыта",
       "description": "",
-      "price": 11,
-      "quantity": 10,
-      "is_active": true,
-      "sku": "ТЕ-2",
-      "created_at": "2026-05-01T12:17:11.559Z",
-      "updated_at": "2026-05-11T17:28:57.964Z",
-      "id": 2
+      "created_at": "2026-05-12T13:09:00.916Z"
     },
     "metadata": {}
   },
   {
     "id": 15,
-    "timestamp": "2026-05-11T17:29:30.887Z",
-    "action": "create",
-    "store": "sales",
-    "recordId": 16,
+    "timestamp": "2026-05-12T13:22:42.000Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 7,
     "data": {
       "client_id": null,
-      "product_id": 4,
-      "quantity": 10,
-      "unit_price": 12222,
-      "total_amount": 122220,
-      "transaction_date": "2026-05-11T20:29",
-      "comment": "📅 Период: с 01.05.2026 по 15.05.2026",
-      "type": "writeoff",
-      "is_bulk": false,
-      "created_at": "2026-05-11T17:29:30.882Z",
-      "updated_at": "2026-05-11T17:29:30.882Z"
+      "type": "Жалоба",
+      "contact": "",
+      "status": "Выполнена",
+      "description": "",
+      "created_at": "2026-05-12T12:50:06.181Z",
+      "id": 7
     },
-    "metadata": {}
+    "metadata": {
+      "deletedAt": "2026-05-12T13:22:41.996Z",
+      "reason": "User initiated deletion"
+    }
   },
   {
     "id": 16,
-    "timestamp": "2026-05-11T17:29:30.909Z",
-    "action": "update",
-    "store": "products",
-    "recordId": 4,
+    "timestamp": "2026-05-12T13:23:00.643Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 6,
     "data": {
-      "category": "Телефон",
-      "name": "A33",
+      "client_id": "2",
+      "type": "Вопрос",
+      "contact": "89005553535",
+      "status": "Открыта",
       "description": "",
-      "price": 12222,
-      "quantity": 50,
-      "is_active": true,
-      "sku": "ТЕ-4",
-      "created_at": "2026-05-06T13:04:02.199Z",
-      "updated_at": "2026-05-11T17:29:30.889Z",
-      "id": 4
+      "created_at": "2026-05-12T12:49:59.806Z",
+      "id": 6
     },
-    "metadata": {}
+    "metadata": {
+      "deletedAt": "2026-05-12T13:23:00.636Z",
+      "reason": "User initiated deletion"
+    }
   },
   {
     "id": 17,
-    "timestamp": "2026-05-11T17:30:15.002Z",
+    "timestamp": "2026-05-12T13:23:00.679Z",
     "action": "delete",
-    "store": "sales",
-    "recordId": 13,
+    "store": "tickets",
+    "recordId": 8,
     "data": {
-      "client_id": null,
-      "product_id": 2,
-      "quantity": 1,
-      "unit_price": 11,
-      "total_amount": 11,
-      "transaction_date": "2026-05-10T19:22:26.222Z",
-      "comment": "",
-      "type": "sale",
-      "is_bulk": false,
-      "created_at": "2026-05-10T19:22:26.228Z",
-      "updated_at": "2026-05-10T19:22:26.228Z",
-      "id": 13
+      "client_id": "7",
+      "type": "Заказ",
+      "contact": "89005553535",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-12T12:50:21.941Z",
+      "id": 8
     },
     "metadata": {
-      "deletedAt": "2026-05-11T17:30:14.998Z",
+      "deletedAt": "2026-05-12T13:23:00.641Z",
       "reason": "User initiated deletion"
     }
   },
   {
     "id": 18,
-    "timestamp": "2026-05-11T17:30:15.035Z",
-    "action": "delete",
-    "store": "sales",
-    "recordId": 14,
+    "timestamp": "2026-05-12T13:24:18.928Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 13,
     "data": {
-      "client_id": null,
-      "product_id": 2,
-      "quantity": 1,
-      "unit_price": 11,
-      "total_amount": 11,
-      "transaction_date": "2026-05-11T11:31",
-      "comment": "",
-      "type": "sale",
-      "is_bulk": false,
-      "created_at": "2026-05-11T08:31:52.297Z",
-      "updated_at": "2026-05-11T08:31:52.297Z",
-      "id": 14
+      "client_name": "Николай",
+      "type": "Вопрос",
+      "contact": "89005553535",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-12T13:24:18.924Z"
     },
-    "metadata": {
-      "deletedAt": "2026-05-11T17:30:15.000Z",
-      "reason": "User initiated deletion"
-    }
+    "metadata": {}
   }
 ]

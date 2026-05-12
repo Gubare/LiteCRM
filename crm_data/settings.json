@@ -2,7 +2,7 @@
   "ui.showTooltips": false,
   "ui.darkMode": false,
   "ui.showNavText": true,
-  "ui.animateRows": false,
+  "ui.animateRows": true,
   "ui.selectionModifier": "ctrl",
   "calendar.workDays": {
     "0": false,
@@ -13,7 +13,7 @@
     "5": false,
     "6": false
   },
-  "calendar.canEditSchedule": true,
+  "calendar.canEditSchedule": false,
   "logging": {
     "cleanupStrategy": "none",
     "cleanupTime": {
