@@ -172,5 +172,171 @@
       "deletedAt": "2026-05-11T15:41:00.245Z",
       "reason": "User initiated deletion"
     }
+  },
+  {
+    "id": 11,
+    "timestamp": "2026-05-11T17:27:10.726Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 8,
+    "data": {
+      "name": "Петр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-11T17:27:10.721Z",
+      "updated_at": "2026-05-11T17:27:10.722Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 12,
+    "timestamp": "2026-05-11T17:28:13.610Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 4,
+    "data": {
+      "client_id": 7,
+      "type": "Заказ",
+      "contact": "",
+      "description": "Товар 1",
+      "status": "open",
+      "created_at": "2026-05-11T17:28:13.601Z",
+      "updated_at": "2026-05-11T17:28:13.601Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 13,
+    "timestamp": "2026-05-11T17:28:57.963Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 15,
+    "data": {
+      "client_id": 7,
+      "product_id": 2,
+      "quantity": 7,
+      "unit_price": 11,
+      "total_amount": 77,
+      "transaction_date": "2026-05-11T20:28",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-05-11T17:28:57.959Z",
+      "updated_at": "2026-05-11T17:28:57.959Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 14,
+    "timestamp": "2026-05-11T17:28:57.983Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 2,
+    "data": {
+      "category": "Телефон",
+      "name": "А61",
+      "description": "",
+      "price": 11,
+      "quantity": 10,
+      "is_active": true,
+      "sku": "ТЕ-2",
+      "created_at": "2026-05-01T12:17:11.559Z",
+      "updated_at": "2026-05-11T17:28:57.964Z",
+      "id": 2
+    },
+    "metadata": {}
+  },
+  {
+    "id": 15,
+    "timestamp": "2026-05-11T17:29:30.887Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 16,
+    "data": {
+      "client_id": null,
+      "product_id": 4,
+      "quantity": 10,
+      "unit_price": 12222,
+      "total_amount": 122220,
+      "transaction_date": "2026-05-11T20:29",
+      "comment": "📅 Период: с 01.05.2026 по 15.05.2026",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-05-11T17:29:30.882Z",
+      "updated_at": "2026-05-11T17:29:30.882Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 16,
+    "timestamp": "2026-05-11T17:29:30.909Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 4,
+    "data": {
+      "category": "Телефон",
+      "name": "A33",
+      "description": "",
+      "price": 12222,
+      "quantity": 50,
+      "is_active": true,
+      "sku": "ТЕ-4",
+      "created_at": "2026-05-06T13:04:02.199Z",
+      "updated_at": "2026-05-11T17:29:30.889Z",
+      "id": 4
+    },
+    "metadata": {}
+  },
+  {
+    "id": 17,
+    "timestamp": "2026-05-11T17:30:15.002Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 13,
+    "data": {
+      "client_id": null,
+      "product_id": 2,
+      "quantity": 1,
+      "unit_price": 11,
+      "total_amount": 11,
+      "transaction_date": "2026-05-10T19:22:26.222Z",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-05-10T19:22:26.228Z",
+      "updated_at": "2026-05-10T19:22:26.228Z",
+      "id": 13
+    },
+    "metadata": {
+      "deletedAt": "2026-05-11T17:30:14.998Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 18,
+    "timestamp": "2026-05-11T17:30:15.035Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 14,
+    "data": {
+      "client_id": null,
+      "product_id": 2,
+      "quantity": 1,
+      "unit_price": 11,
+      "total_amount": 11,
+      "transaction_date": "2026-05-11T11:31",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-05-11T08:31:52.297Z",
+      "updated_at": "2026-05-11T08:31:52.297Z",
+      "id": 14
+    },
+    "metadata": {
+      "deletedAt": "2026-05-11T17:30:15.000Z",
+      "reason": "User initiated deletion"
+    }
   }
 ]

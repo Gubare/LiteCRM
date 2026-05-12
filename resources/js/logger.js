@@ -154,7 +154,7 @@ async function processQueue() {
             action: entry.action,
             store: entry.store,
             recordId: entry.recordId,
-            data: entry.data, // 🔥 Теперь всегда содержит данные (даже при удалении)
+            data: entry.data,
             metadata: entry.metadata || {}
         });
 

@@ -806,7 +806,13 @@ html, body {
     }
 }
 
-        .calendar-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+/* Контейнер*/
+.calendar-container {
+    width: 130%;
+    max-width: none !important;
+    padding: 20px;
+    box-sizing: border-box;
+}
         
         /* Шапка календаря */
         .calendar-header {
@@ -843,6 +849,8 @@ html, body {
         }
         
         .calendar-title {
+            flex: 0 0 250px;
+            text-align: center;
             font-size: 24px;
             font-weight: 700;
             color: #1e293b;
@@ -891,74 +899,95 @@ html, body {
     background: #8b5cf6; color: white; border-color: #8b5cf6;
 }
         
-        /* Сетка календаря */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+/* Сетка календаря */
+.calendar-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(7, 13%);
+    gap: 1.5%;
+    grid-auto-rows: minmax(75px, 95px);
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
+/* Ячейка дня */
+.calendar-day {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.calendar-day:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    z-index: 1;
+}
+
+.calendar-day.other-month {
+    background: #f1f5f9;
+    opacity: 0.5;
+}
+
+.calendar-day.today {
+    border: 2px solid #3b82f6;
+    background: #eff6ff;
+}
+
+.calendar-day.weekend-col {
+    background: #fef2f2 !important;
+}
         
-        .calendar-day {
-            min-height: 100px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            background: #f8fafc;
-        }
+/* Номер дня */
+.day-number {
+    font-weight: 600;
+    font-size: 14px;
+    color: #334155;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.calendar-day.today .day-number {
+    color: #3b82f6;
+    font-size: 16px;
+}
         
-        .calendar-day:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
+/* Заметки */
+.day-note {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 2px 0;
+    color: white;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex-shrink: 0;
+}
         
-        .calendar-day.other-month {
-            background: #f1f5f9;
-            opacity: 0.5;
-        }
-        
-        .calendar-day.today {
-            border: 2px solid #3b82f6;
-            background: #eff6ff;
-        }
-        
-        .day-number {
-            font-weight: 600;
-            font-size: 14px;
-            color: #334155;
-            margin-bottom: 4px;
-        }
-        
-        .calendar-day.today .day-number {
-            color: #3b82f6;
-            font-size: 16px;
-        }
-        
-        /* Заметки на дне */
-        .day-note {
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin: 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: white;
-        }
-        
-        /* Индикаторы статистики */
+/* Индикаторы статистики */
 .day-indicators {
     display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap;
 }
         
 .indicator {
-    width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+    width: 9px; height: 9px; border-radius: 50%; display: inline-block;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
         
@@ -967,7 +996,7 @@ html, body {
         .indicator.tickets { background: #f59e0b; }
         
 .indicator-count {
-    font-size: 10px; color: #64748b; margin-left: 2px; font-weight: 500;
+    font-size: 12px; color: #64748b; margin-left: 2px; font-weight: 500;
 }
         
         /* Модальное окно заметки */
