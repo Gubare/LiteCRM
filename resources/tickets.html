@@ -315,33 +315,91 @@
             }
         }
 
-        .truncatable-cell {
-            cursor: pointer;
-            color: #334155;
-            transition: color 0.2s;
-            display: inline-block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-        .truncatable-cell:hover { color: #64748b; }
+.truncatable-cell {
+    cursor: pointer !important;
+    color: #334155;
+    transition: all 0.2s;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
 
-        .truncatable-cell {
-            cursor: pointer !important; /* Принудительно */
-            color: #334155;
-            transition: color 0.2s;
-            display: inline-block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .truncatable-cell:hover { 
-            color: #64748b; 
-            /* text-decoration: underline; Подчеркивание при наведении */
-        }
+.truncatable-cell:hover { 
+    color: #1e40af;
+    background: #eff6ff;
+    /* text-decoration: underline; */
+}
+
+
+/* === ФИКСИРОВАННАЯ ТАБЛИЦА ОБРАЩЕНИЙ === */
+#ticketTable {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+/* Точное распределение ширины */
+/* ID: 60px */
+#ticketTable th:nth-child(1), 
+#ticketTable td:nth-child(1) { 
+    width: 60px; 
+    text-align: center; 
+}
+
+/* Клиент: 180px (больше места) */
+#ticketTable th:nth-child(2), 
+#ticketTable td:nth-child(2) { 
+    width: 180px; 
+}
+
+/* Тип: 120px (с запасом под "Предложение") */
+#ticketTable th:nth-child(3), 
+#ticketTable td:nth-child(3) { 
+    width: 120px; 
+}
+
+/* Контакт: 150px (обрезается, но можно открыть) */
+#ticketTable th:nth-child(4), 
+#ticketTable td:nth-child(4) { 
+    width: 150px; 
+}
+
+/* Описание: 250px (остаток места, обрезается) */
+#ticketTable th:nth-child(5), 
+#ticketTable td:nth-child(5) { 
+    width: 250px; 
+}
+
+/* Дата: 100px */
+#ticketTable th:nth-child(6), 
+#ticketTable td:nth-child(6) { 
+    width: 100px; 
+}
+
+/* Статус: 90px */
+#ticketTable th:nth-child(7), 
+#ticketTable td:nth-child(7) { 
+    width: 90px; 
+    text-align: center;
+}
+
+/* Обрезка длинного текста во всех ячейках */
+#ticketTable td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 10px 8px;
+}
+
+/* Фиксированная высота заголовков */
+#ticketTable thead th {
+    height: 45px;
+    padding: 12px 8px;
+}
     </style>
 </head>
 <body>

@@ -1104,3 +1104,148 @@ html, body {
 .weekday-header.readonly .edit-icon {
     display: none !important;
 }
+
+/* === УНИВЕРСАЛЬНАЯ ПАГИНАЦИЯ  === */
+
+/* Контейнер пагинации */
+.pagination {
+    display: flex;
+    gap: 6px; /* Расстояние между кнопками */
+    align-items: center;
+}
+
+/* Базовый стиль кнопки */
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #334155;
+    border-radius: 6px; /* Скругление как на скриншоте */
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+/* Эффект при наведении (для неактивных кнопок) */
+.page-btn:not(.active):not(:disabled):hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1e293b;
+    transform: translateY(-1px); /* Легкий подъем */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Активная страница (синяя) */
+.page-btn.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3); /* Синяя тень */
+    transform: translateY(-1px);
+}
+
+/* Стрелки (чуть меньше ширина, чтобы были квадратными) */
+.page-btn.arrow {
+    min-width: 32px;
+    padding: 0;
+}
+
+/* Отключенное состояние */
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: #f1f5f9;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Текст рядом с пагинацией */
+.pagination-info {
+    font-size: 13px;
+    color: #64748b;
+    margin-left: 15px;
+    white-space: nowrap;
+}
+
+/* === ПРОСМОТР ПОЛНОГО ТЕКСТА === */
+
+/* Обрезанный текст в таблице */
+.truncatable-text {
+    cursor: pointer;
+    color: #334155;
+    transition: all 0.2s;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.truncatable-text:hover {
+    color: #1e40af;
+    background: #eff6ff;
+    /* text-decoration: underline; */
+}
+
+.text-empty {
+    color: #cbd5e1;
+}
+
+/* Модальное окно просмотра текста */
+.text-viewer-modal {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideUp 0.3s ease;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.text-viewer-modal .modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.text-viewer-modal .modal-body {
+    padding: 25px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.full-text-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #334155;
+    white-space: pre-wrap; /* Сохраняет переносы строк */
+    word-wrap: break-word;
+}
+
+.text-viewer-modal .modal-footer {
+    padding: 15px 25px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}

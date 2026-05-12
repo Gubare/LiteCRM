@@ -13,6 +13,8 @@ import {
     getAllItems
 } from './db_indexeddb.js';
 import { getSetting } from './settings-manager.js';
+import { renderPagination } from './partials/pagination.js';
+import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js';
 
 // === СОСТОЯНИЕ СТРАНИЦЫ ===
 let currentPage = 1;
@@ -27,11 +29,11 @@ function goToPage(newPage) {
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
-    
     await waitForDatabase();
     await populateDropdowns();
     await loadSalesTable();
     setupEventListeners();
+    initTextViewer();
     
     // Установка даты по умолчанию
     const now = new Date();
@@ -118,7 +120,24 @@ async function loadSalesTable(customSort = null) {
     try {
         const result = await getSalesPaginated(currentPage, currentPageSize, currentFilters, sortValue);
         renderSalesTable(result.items);
-        renderPagination(result.pagination, goToPage);
+
+        let sales = await getAllItems('sales');
+        const total = sales.length;
+        const start = (currentPage - 1) * currentPageSize;
+        const pagedTickets = sales.slice(start, start + currentPageSize);
+        const paginationContainer = document.getElementById('pagination');
+        const paginationInfo = document.getElementById('paginationInfo');
+
+        // Вызываем функцию из импортированного модуля
+        renderPagination(
+            paginationContainer, 
+            paginationInfo, 
+            currentPage, 
+            Math.ceil(total / currentPageSize), 
+            total, 
+            currentPageSize, 
+            goToPage // Функция, которую вызывает модуль при клике
+        );
         
         const table = document.getElementById('salesTable');
         if (table) table.classList.add('loaded');
@@ -156,16 +175,14 @@ function renderSalesTable(items) {
             const product = productMap[item.product_id];
             const client = item.client_id ? (clientMap[item.client_id]?.name || 'ID:' + item.client_id) : '—';
 
-            // 🔥 Анимация: применяем класс к tr
+            // Анимация: применяем класс к tr
             const animClass = shouldAnimate ? 'table-row-animate' : '';
             const animDelay = shouldAnimate ? `style="animation-delay: ${index * 0.04}s;"` : '';
             
             // Комментарий
             const commentText = item.comment || '—';
             const commentDisplay = commentText === '—' ? '—' : (commentText.length > 20 ? commentText.substring(0, 20) + '...' : commentText);
-            const commentHtml = commentText !== '—' 
-                ? `<span class="comment-cell" onclick="viewComment(\`${item.comment.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)" title="Нажмите для просмотра">${commentDisplay}</span>`
-                : `<span style="color: #cbd5e1;">—</span>`;
+            const commentHtml = createTruncatableHtml(item.comment, 25, 'Описание');
             
             // Сумма
             const isPositive = item.type === 'restock';
@@ -203,37 +220,6 @@ function renderSalesTable(items) {
     });
 }
 
-// === РЕНДЕР ПАГИНАЦИИ ===
-export function renderPagination({ current_page, total_pages, total_items, page_size }, onPageChange) {
-    const container = document.getElementById('pagination');
-    const info = document.getElementById('paginationInfo');
-    
-    if (!container) return;
-    
-    info.textContent = `Показано ${((current_page - 1) * page_size) + 1}–${Math.min(current_page * page_size, total_items)} из ${total_items}`;
-    
-    let buttons = '';
-    buttons += `<button ${current_page === 1 ? 'disabled' : ''} data-page="1">«</button>`;
-    buttons += `<button ${current_page === 1 ? 'disabled' : ''} data-page="${current_page - 1}">‹</button>`;
-    
-    for (let i = Math.max(1, current_page - 2); i <= Math.min(total_pages, current_page + 2); i++) {
-        buttons += `<button class="${i === current_page ? 'active' : ''}" data-page="${i}">${i}</button>`;
-    }
-    
-    buttons += `<button ${current_page === total_pages ? 'disabled' : ''} data-page="${current_page + 1}">›</button>`;
-    buttons += `<button ${current_page === total_pages ? 'disabled' : ''} data-page="${total_pages}">»</button>`;
-    
-    container.innerHTML = buttons;
-    
-    container.querySelectorAll('button[data-page]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const page = parseInt(btn.dataset.page);
-            if (page !== current_page && typeof onPageChange === 'function') {
-                onPageChange(page);
-            }
-        });
-    });
-}
 
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 function setupEventListeners() {

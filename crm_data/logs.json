@@ -330,5 +330,43 @@
       "created_at": "2026-05-12T13:24:18.924Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 19,
+    "timestamp": "2026-05-12T20:09:05.849Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 2,
+    "data": {
+      "category": "Телефон",
+      "name": "А61",
+      "description": "",
+      "price": 11000,
+      "quantity": 10,
+      "is_active": true,
+      "sku": "ТЕ-2",
+      "created_at": "2026-05-01T12:17:11.559Z",
+      "updated_at": "2026-05-12T20:09:05.844Z",
+      "id": 2
+    },
+    "metadata": {}
+  },
+  {
+    "id": 20,
+    "timestamp": "2026-05-12T20:36:42.150Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 5,
+    "data": {
+      "sku": "МО-5",
+      "category": "Монитор",
+      "name": "GE-213981",
+      "description": "",
+      "price": 1200,
+      "quantity": 22,
+      "is_active": true,
+      "created_at": "2026-05-12T20:36:42.146Z"
+    },
+    "metadata": {}
   }
 ]

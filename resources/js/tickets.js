@@ -1,6 +1,8 @@
 // resources/js/tickets.js
 import { getAllItems, addItem, updateItem, deleteItem, getDbInstance } from './db_indexeddb.js';
 import { getSetting } from './settings-manager.js';
+import { renderPagination } from './partials/pagination.js';
+import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js';
 
 let currentPage = 1;
 let currentPageSize = 10;
@@ -10,18 +12,44 @@ let ctxTargetId = null;
 
 
 // Создает HTML для обрезки текста с кликом для просмотра
-function createTruncatableHtml(text, maxLen = 15) {
-    if (!text || text === '—') return '<span style="color: #cbd5e1;">—</span>';
-    const display = text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
-    // Экранируем кавычки для безопасной вставки в onclick
-    const safeText = text.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/'/g, "\\'");
-    return `<span class="truncatable-cell" onclick="viewFullText('${safeText}')" title="${text}">${display}</span>`;
-}
+// function createTruncatableHtml(text, maxLen = 15, fieldName = '') {
+//     if (!text || text === '—') return '<span style="color: #cbd5e1;">—</span>';
+    
+//     const display = text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+    
+//     const escapedText = text
+//         .replace(/\\/g, '\\\\')
+//         .replace(/"/g, '&quot;')
+//         .replace(/'/g, '&#39;')
+//         .replace(/</g, '&lt;')
+//         .replace(/>/g, '&gt;')
+//         .replace(/\n/g, '\\n');
+    
+//     // Используем data-атрибут и делегирование событий
+//     return `<span class="truncatable-cell" 
+//                    data-fulltext="${escapedText}" 
+//                    onclick="handleTruncateClick(this)"
+//                    title="${text}">${display}</span>`;
+// }
+
+// Обработчик клика по обрезанному тексту
+window.handleTruncateClick = function(element) {
+    const fullText = element.getAttribute('data-fulltext');
+    if (fullText) {
+        viewFullText(fullText);
+    }
+};
+
 
 // Просмотр полного текста
 window.viewFullText = function(text) {
-    document.getElementById('fullTextContent').textContent = text;
-    openModal('fullTextModal');
+    const content = document.getElementById('fullTextContent');
+    if (content) {
+        content.textContent = text;
+        openModal('fullTextModal');
+    } else {
+        console.error('Modal content not found');
+    }
 };
 
 // === ИНИЦИАЛИЗАЦИЯ ===
@@ -32,6 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await populateDropdowns();
     await loadTickets();
     setupEventListeners();
+    initTextViewer();
 });
 
 async function waitForDatabase() {
@@ -97,10 +126,20 @@ async function loadTickets() {
         const total = tickets.length;
         const start = (currentPage - 1) * currentPageSize;
         const pagedTickets = tickets.slice(start, start + currentPageSize);
+        const paginationContainer = document.getElementById('pagination');
+        const paginationInfo = document.getElementById('paginationInfo')
         
         renderTable(pagedTickets);
-        renderPagination(currentPage, Math.ceil(total / currentPageSize), total, currentPageSize);
-        
+        // Вызываем функцию из импортированного модуля
+        renderPagination(
+            paginationContainer, 
+            paginationInfo, 
+            currentPage, 
+            Math.ceil(total / currentPageSize), 
+            total, 
+            currentPageSize, 
+            goToPage // Функция, которую вызывает модуль при клике
+        );        
     } catch (error) {
         console.error('Error loading tickets:', error);
         if (tbody) {
@@ -130,9 +169,9 @@ function renderTable(tickets) {
             'Архив': 'badge-archive'
         }[ticket.status] || 'badge-open';
         
-        // 🔥 Обрезка контакта и описания
-        const contactHtml = createTruncatableHtml(ticket.contact, 18);
-        const descHtml = createTruncatableHtml(ticket.description, 25);
+        // Обрезка контакта и описания
+        const contactHtml = createTruncatableHtml(ticket.contact, 18, 'Контакт');
+        const descHtml = createTruncatableHtml(ticket.description, 25, 'Описание');
         
         return `
         <tr data-id="${ticket.id}" 
@@ -150,26 +189,51 @@ function renderTable(tickets) {
     }).join('');
 }
 
-function renderPagination(currentPage, totalPages, totalItems, pageSize) {
-    const container = document.getElementById('pagination');
-    const info = document.getElementById('paginationInfo');
+// function renderPagination(currentPage, totalPages, totalItems, pageSize) {
+//     const container = document.getElementById('pagination');
+//     const info = document.getElementById('paginationInfo');
     
-    if (!container) return;
+//     if (!container) return;
     
-    info.textContent = `Показано ${((currentPage - 1) * pageSize) + 1}–${Math.min(currentPage * pageSize, totalItems)} из ${totalItems}`;
+//     info.textContent = `Показано ${((currentPage - 1) * pageSize) + 1}–${Math.min(currentPage * pageSize, totalItems)} из ${totalItems}`;
     
-    let buttons = '';
-    buttons += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})" style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer;">‹</button>`;
+//     let buttons = '';
     
-    for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
-        const activeClass = i === currentPage ? 'style="background: #3b82f6; color: white; border-color: #3b82f6;"' : 'style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer;"';
-        buttons += `<button ${activeClass} onclick="goToPage(${i})">${i}</button>`;
-    }
+//     // Кнопка "В начало" (<<)
+//     buttons += `<button ${currentPage === 1 ? 'disabled' : ''} 
+//                 onclick="goToPage(1)" 
+//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.4; cursor: not-allowed;' : ''}">«</button>`;
     
-    buttons += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})" style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer;">›</button>`;
+//     // Кнопка "Назад" (<)
+//     buttons += `<button ${currentPage === 1 ? 'disabled' : ''} 
+//                 onclick="goToPage(${currentPage - 1})" 
+//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.4; cursor: not-allowed;' : ''}">‹</button>`;
+
+//     // Номера страниц (показываем максимум 5 страниц вокруг текущей)
+//     const startPage = Math.max(1, currentPage - 2);
+//     const endPage = Math.min(totalPages, currentPage + 2);
+
+//     for (let i = startPage; i <= endPage; i++) {
+//         // Для активной кнопки задаем явный padding и размеры, чтобы не прыгало
+//         const activeClass = i === currentPage 
+//             ? 'background: #3b82f6; color: white; border-color: #3b82f6; font-weight: 600; padding: 6px 10px; border-radius: 4px;' 
+//             : 'padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer;';
+            
+//         buttons += `<button style="${activeClass}" onclick="goToPage(${i})">${i}</button>`;
+//     }
     
-    container.innerHTML = buttons;
-}
+//     // Кнопка "Вперед" (>)
+//     buttons += `<button ${currentPage === totalPages ? 'disabled' : ''} 
+//                 onclick="goToPage(${currentPage + 1})" 
+//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.4; cursor: not-allowed;' : ''}">›</button>`;
+    
+//     // Кнопка "В конец" (>>)
+//     buttons += `<button ${currentPage === totalPages ? 'disabled' : ''} 
+//                 onclick="goToPage(${totalPages})" 
+//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.4; cursor: not-allowed;' : ''}">»</button>`;
+    
+//     container.innerHTML = buttons;
+// }
 
 window.goToPage = function(newPage) {
     currentPage = newPage;
