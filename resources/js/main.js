@@ -206,7 +206,9 @@ if(NL_OS != "Darwin") {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('main.js: DOMContentLoaded');
     await loadSettings();
-
+    // Применяем тему
+    const theme = getSetting('ui.theme');
+    document.documentElement.setAttribute('data-theme', theme);
 
     if (!getSetting('ui.showNavText')) {
         document.body.classList.add('nav-icons-only');

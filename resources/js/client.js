@@ -11,6 +11,7 @@ import { renderPagination } from './partials/pagination.js';
 import { SelectionManager } from './partials/selectionManager.js';
 import { openModal, closeModal, confirmModal } from './partials/modalManager.js';
 
+
 // === СОСТОЯНИЕ ===
 let currentPage = 1;
 let currentPageSize = 10;
@@ -242,6 +243,8 @@ export function calculateClientDisplayData(client, sales = []) {
 // === МОДАЛЬНОЕ ОКНО КЛИЕНТА ===
 window.openClientModal = async function(id = null) {
     // Сброс формы
+    const ctxMenu = document.getElementById('ctxMenu');
+    if (ctxMenu) ctxMenu.style.display = 'none';
     const form = document.getElementById('clientForm');
     if (form) form.reset();
     document.getElementById('clientId').value = '';

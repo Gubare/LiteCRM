@@ -5,9 +5,7 @@
     <title>Клиенты - CRM</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-
-        /* Центрирование пагинации */
-        .pagination-container {
+        /* .pagination-container {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -26,31 +24,10 @@
             font-size: 13px;
             color: #64748b;
             white-space: nowrap;
-        }
+        } */
         /* === ФИКСИРОВАННАЯ ТАБЛИЦА КЛИЕНТОВ === */
         .crm-table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-        
-        /* Ширина колонок (без Действий) */
-        .crm-table th:nth-child(1), .crm-table td:nth-child(1) { width: 60px; }  /* ID */
-        .crm-table th:nth-child(2), .crm-table td:nth-child(2) { width: 150px; } /* Имя */
-        .crm-table th:nth-child(3), .crm-table td:nth-child(3) { width: 130px; } /* Телефон */
-        .crm-table th:nth-child(4), .crm-table td:nth-child(4) { width: 180px; } /* Email */
-        .crm-table th:nth-child(5), .crm-table td:nth-child(5) { width: 70px; text-align: center; } /* Покупки */
-        .crm-table th:nth-child(6), .crm-table td:nth-child(6) { width: 100px; text-align: right; } /* Сумма */
-        .crm-table th:nth-child(7), .crm-table td:nth-child(7) { width: 80px; text-align: right; } /* Ср. чек */
-        .crm-table th:nth-child(8), .crm-table td:nth-child(8) { width: 140px; } /* Сегмент */
-        
-        .crm-table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 10px; }
-        .crm-table tbody tr { cursor: pointer; transition: background 0.15s; }
-        .crm-table tbody tr:hover { background: #f8fafc; }
-        .crm-table tbody tr.selected { background: #eff6ff !important; outline: 1px solid #3b82f6; }
-        
-        /* Стили бейджей */
-        .badge-cluster { padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; transition: transform 0.2s; }
-        .badge-cluster:hover { transform: scale(1.05); }
-        .cluster-new { background: #ffedd5; color: #c2410c; }
-        .cluster-regular { background: #dbeafe; color: #1e40af; }
-        .cluster-vip { background: #fce7f3; color: #be185d; }
+    
     </style>
 </head>
 <body>

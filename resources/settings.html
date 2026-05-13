@@ -77,6 +77,18 @@
                     <span class="toggle-slider"></span>
                 </label>
             </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Тема оформления</h3>
+                    <p>Выберите цветовую схему интерфейса</p>
+                </div>
+                <select id="themeSelect" class="form-control" style="width: 200px;">
+                    <option value="blue">Синяя (по умолчанию)</option>
+                    <option value="excel">Зелёная (Excel)</option>
+                </select>
+            </div>
+
             <div class="setting-item">
                 <div class="setting-info">
                     <h3>Названия в меню</h3>
@@ -434,6 +446,13 @@
             });
         });
 
+        // Изменение темы
+        document.getElementById('themeSelect').addEventListener('change', (e) => {
+            const theme = e.target.value;
+            document.documentElement.setAttribute('data-theme', theme);
+            updateSetting('ui.theme', theme);
+            showToast(`✅ Тема изменена на ${e.target.options[e.target.selectedIndex].text}`);
+        });
 
         // Настройки календаря
         const calEditToggle = document.getElementById('toggleCalendarEdit');

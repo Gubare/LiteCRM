@@ -282,19 +282,6 @@
             </div>
         </form>
     </div>
-
-            <!-- Пагинация (кнопки 1, 2, 3...) -->
-        <div class="table-controls" style="margin-top: 15px; justify-content: center; display: flex;">
-            <div id="pagination" class="pagination" style="min-height: 36px; display: flex; align-items: center; gap: 5px;">
-                <!-- Заглушки (исчезнут автоматически, когда JS отрисует кнопки) -->
-                <div class="pag-placeholder"></div>
-                <div class="pag-placeholder"></div>
-                <div class="pag-placeholder active"></div>
-                <div class="pag-placeholder"></div>
-                <div class="pag-placeholder"></div>
-            </div>
-            <span id="paginationInfo" style="font-size: 13px; color: #64748b; margin-left: 15px; align-self: center;"></span>
-        </div>
 </div>
 <script>
 // Применяем настройки сразу после загрузки DOM
@@ -402,6 +389,11 @@ document.getElementById('editSaleForm').addEventListener('submit', async (e) => 
 
 
 </script>
+            <!-- Пагинация -->
+            <div class="pagination-container">
+                <div id="pagination" class="pagination"></div>
+                <span id="paginationInfo"></span>
+            </div>
     <!-- Подключение скриптов -->
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>

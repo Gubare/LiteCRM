@@ -421,5 +421,154 @@
       "created_at": "2026-05-13T10:35:45.787Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 24,
+    "timestamp": "2026-05-13T11:28:59.906Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 10,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-13T11:28:59.900Z",
+      "updated_at": "2026-05-13T11:28:59.900Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 25,
+    "timestamp": "2026-05-13T11:29:10.470Z",
+    "action": "update",
+    "store": "clients",
+    "recordId": 10,
+    "data": {
+      "name": "Александр",
+      "phone": "222222",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-13T11:28:59.900Z",
+      "updated_at": "2026-05-13T11:29:10.467Z",
+      "id": 10
+    },
+    "metadata": {}
+  },
+  {
+    "id": 26,
+    "timestamp": "2026-05-13T11:30:02.122Z",
+    "action": "update",
+    "store": "clients",
+    "recordId": 10,
+    "data": {
+      "name": "Александр",
+      "phone": "22222222",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-13T11:28:59.900Z",
+      "updated_at": "2026-05-13T11:30:02.115Z",
+      "id": 10
+    },
+    "metadata": {}
+  },
+  {
+    "id": 27,
+    "timestamp": "2026-05-13T11:30:53.070Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 10,
+    "data": {
+      "name": "Александр",
+      "phone": "22222222",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-13T11:28:59.900Z",
+      "updated_at": "2026-05-13T11:30:02.115Z",
+      "id": 10
+    },
+    "metadata": {
+      "deletedAt": "2026-05-13T11:30:53.066Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 28,
+    "timestamp": "2026-05-13T13:26:08.126Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 17,
+    "data": {
+      "client_id": 9,
+      "product_id": 5,
+      "quantity": 2,
+      "unit_price": 1200,
+      "total_amount": 2400,
+      "transaction_date": "2026-05-13T16:25",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-05-13T13:26:08.120Z",
+      "updated_at": "2026-05-13T13:26:08.120Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 29,
+    "timestamp": "2026-05-13T13:26:08.151Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 5,
+    "data": {
+      "sku": "МО-5",
+      "category": "Монитор",
+      "name": "GE-213981",
+      "description": "",
+      "price": 1200,
+      "quantity": 20,
+      "is_active": true,
+      "created_at": "2026-05-12T20:36:42.146Z",
+      "id": 5,
+      "updated_at": "2026-05-13T13:26:08.132Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 30,
+    "timestamp": "2026-05-13T13:26:21.726Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 14,
+    "data": {
+      "client_name": "Сергей",
+      "type": "Предложение",
+      "contact": "89005553535",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-13T13:26:21.712Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 31,
+    "timestamp": "2026-05-13T13:26:27.310Z",
+    "action": "update",
+    "store": "tickets",
+    "recordId": 14,
+    "data": {
+      "client_name": "Сергей",
+      "type": "Предложение",
+      "contact": "89005553535",
+      "status": "Выполнена",
+      "description": "",
+      "created_at": "2026-05-13T13:26:21.712Z",
+      "id": 14,
+      "updated_at": "2026-05-13T13:26:27.305Z"
+    },
+    "metadata": {}
   }
 ]
