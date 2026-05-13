@@ -1,42 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Клиенты - CRM</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Стили для кнопок действий */
-        .btn-action {
-            padding: 4px 8px;
-            margin: 0 2px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
+
+        /* Центрирование пагинации */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px 0;
         }
-        .btn-delete {
-            background: #fef2f2;
-            border-color: #ef4444;
-            color: #ef4444;
+
+        .pagination {
+            display: flex;
+            gap: 5px;
+            align-items: center;
         }
-        .btn-delete:hover {
-            background: #ef4444;
-            color: white;
+
+        #paginationInfo {
+            font-size: 13px;
+            color: #64748b;
+            white-space: nowrap;
         }
-        .btn-edit {
-            background: #eff6ff;
-            border-color: #3b82f6;
-            color: #3b82f6;
-        }
-        .btn-edit:hover {
-            background: #3b82f6;
-            color: white;
-        }
+        /* === ФИКСИРОВАННАЯ ТАБЛИЦА КЛИЕНТОВ === */
+        .crm-table { table-layout: fixed; width: 100%; border-collapse: collapse; }
         
+        /* Ширина колонок (без Действий) */
+        .crm-table th:nth-child(1), .crm-table td:nth-child(1) { width: 60px; }  /* ID */
+        .crm-table th:nth-child(2), .crm-table td:nth-child(2) { width: 150px; } /* Имя */
+        .crm-table th:nth-child(3), .crm-table td:nth-child(3) { width: 130px; } /* Телефон */
+        .crm-table th:nth-child(4), .crm-table td:nth-child(4) { width: 180px; } /* Email */
+        .crm-table th:nth-child(5), .crm-table td:nth-child(5) { width: 70px; text-align: center; } /* Покупки */
+        .crm-table th:nth-child(6), .crm-table td:nth-child(6) { width: 100px; text-align: right; } /* Сумма */
+        .crm-table th:nth-child(7), .crm-table td:nth-child(7) { width: 80px; text-align: right; } /* Ср. чек */
+        .crm-table th:nth-child(8), .crm-table td:nth-child(8) { width: 140px; } /* Сегмент */
+        
+        .crm-table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 10px; }
+        .crm-table tbody tr { cursor: pointer; transition: background 0.15s; }
+        .crm-table tbody tr:hover { background: #f8fafc; }
+        .crm-table tbody tr.selected { background: #eff6ff !important; outline: 1px solid #3b82f6; }
+        
+        /* Стили бейджей */
+        .badge-cluster { padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; transition: transform 0.2s; }
+        .badge-cluster:hover { transform: scale(1.05); }
+        .cluster-new { background: #ffedd5; color: #c2410c; }
+        .cluster-regular { background: #dbeafe; color: #1e40af; }
+        .cluster-vip { background: #fce7f3; color: #be185d; }
     </style>
 </head>
 <body>
+        <!-- Навигация -->
     <nav class="main-nav">
     <a href="index.html"><span class="nav-icon">🏠</span> <span class="nav-text">Главная</span></a>
     <a href="clients.html"><span class="nav-icon">👥</span> <span class="nav-text">Клиенты</span></a>
@@ -49,311 +67,101 @@
   </nav>
 
     <main class="page-content">
-    <h1>Список клиентов</h1>
-    
-    <h2>Добавить клиента</h2>
-    <!-- Форма добавления -->
-    <form id="clientForm">
-        <input type="text" id="clientName" name="name" placeholder="Имя" required>
-        <input type="text" id="clientPhone" name="phone" placeholder="Телефон">
-        <input type="email" id="clientEmail" name="email" placeholder="Email">
-        <button type="submit" id="btnAddClient" class="btn-action btn-edit">Добавить</button>
-    </form>
-    <div id="message"></div>
-    
-    <h2>Все клиенты</h2>
-<table id="clientList">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Имя</th>
-            <th>Телефон</th>
-            <th>Email</th>
-            <th>Покупки</th>
-            <th>Общая сумма</th>
-            <th>Ср. чек</th>
-            <th>Сегмент</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+        <h1>Список клиентов</h1>
+        
+        <!-- Панель управления -->
+        <div class="table-toolbar">
+            <div class="toolbar-filters">
+                <input type="text" id="filterSearch" class="form-control" placeholder="Поиск по имени/телефону..." style="width: 250px;">
+                <select id="filterCluster" class="form-control" style="width: 160px;">
+                    <option value="">Все сегменты</option>
+                    <option value="new">Новые</option>
+                    <option value="regular">Обычные</option>
+                    <option value="vip">VIP</option>
+                </select>
+                <button id="btnApplyFilters" class="btn-primary">Применить</button>
+                <button id="btnResetFilters" class="btn-action">Сброс</button>
+            </div>
+            <div class="toolbar-actions">
+                <button class="btn-primary" onclick="openClientModal()">Добавить клиента</button>
+            </div>
+        </div>
 
+        <!-- Панель массовых действий -->
+        <div id="bulkActionBar" class="bulk-action-bar">
+            <span>Выбрано: <span class="count-badge">0</span></span>
+            <button id="btnBulkDelete" class="btn-action delete" onclick="window.bulkDelete()">🗑️ Удалить</button>
+            <button class="btn-action" onclick="window.selectionManager.clear()" style="margin-left:auto;">✕ Снять выделение</button>
+        </div>
 
-<!-- Модальное окно для редактирования -->
-<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-    <div style="background: white; margin: 100px auto; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;">
-        <h3>Редактировать клиента</h3>
-        <input type="hidden" id="editClientId">
-        <div style="margin-bottom: 10px;">
-            <label>Имя:</label>
-            <input type="text" id="editName" style="width: 100%; padding: 8px; margin-top: 4px;">
+        <!-- Таблица -->
+        <table id="clientTable" class="crm-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Имя</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Покупки</th>
+                    <th>Сумма</th>
+                    <th>Ср. чек</th>
+                    <th>Сегмент</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- Пагинация -->  
+        <div class="pagination-container">
+            <div id="pagination" class="pagination"></div>
+            <span id="paginationInfo"></span>
         </div>
-        <div style="margin-bottom: 10px;">
-            <label>Телефон:</label>
-            <input type="text" id="editPhone" style="width: 100%; padding: 8px; margin-top: 4px;">
-        </div>
-        <div style="margin-bottom: 10px;">
-            <label>Email:</label>
-            <input type="email" id="editEmail" style="width: 100%; padding: 8px; margin-top: 4px;">
-        </div>
-        <div style="text-align: right;">
-            <button id="btnCloseModal" class="btn-action">Отмена</button>
-            <!-- Оставил btnSaveEdit для модального окна -->
-            <button id="btnSaveEdit" class="btn-action btn-edit">Сохранить</button>
+    </main>
+
+    <!-- Контекстное меню -->
+    <div id="ctxMenu" class="ctx-menu">
+        <button class="ctx-menu-item" onclick="window.editFromCtx()">✏️ Редактировать</button>
+        <button class="ctx-menu-item danger" onclick="window.deleteFromCtx()">🗑️ Удалить</button>
+    </div>
+
+    <!-- Модальное окно Клиента (Создание/Редактирование) -->
+    <div id="clientModal" class="modal-overlay" onclick="closeModal('clientModal')">
+        <div class="modal-window" onclick="event.stopPropagation()" style="max-width: 500px;">
+            <h3 id="clientModalTitle">Добавить клиента</h3>
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
+                <div class="form-group">
+                    <label>Имя *</label>
+                    <input type="text" id="clientName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="clientPhone" class="form-control" placeholder="+7...">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="clientEmail" class="form-control" placeholder="mail@example.com">
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button type="button" class="btn-action" onclick="closeModal('clientModal')" style="flex:1;">Отмена</button>
+                    <button type="submit" class="btn-primary" style="flex:1;">Сохранить</button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
-</main>
-    <!-- Подключаем скрипты -->
+
+    <!-- Модальное окно Кластера (Инфо) -->
+    <div id="clusterInfoModal" class="modal-overlay" onclick="closeModal('clusterInfoModal')">
+        <div class="modal-window" onclick="event.stopPropagation()" style="max-width: 400px;">
+            <h3>Параметры сегмента</h3>
+            <div id="clusterStats" style="margin: 20px 0; color: #475569; line-height: 1.8;"></div>
+            <button class="btn-primary" onclick="closeModal('clusterInfoModal')" style="width: 100%;">Понятно</button>
+        </div>
+    </div>
+
     <script src="js/neutralino.js"></script>
-    <script type="module" src="js/settings-manager.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
-    <script type="module" src="js/client.js"></script>
-        <script type="module" src="js/analytics.js"></script>
-    <!-- main.js подключаем, но рендеринг будет в этом файле -->
     <script type="module" src="js/main.js"></script>
-    
-    <!-- Логика страницы клиентов -->
-    <script type="module">
-        import { loadClientList, handleClientFormSubmit, deleteClient, updateClient } from './js/client.js';
-        import { calculateClientDisplayData } from './js/client.js';
-        import { getSetting } from './js/settings-manager.js';
-        // Инициализация Neutralino
-        if (typeof Neutralino !== 'undefined') {
-            Neutralino.init();
-        }
-        
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Ждём готовности БД
-            if (window.isDatabaseReady) {
-                const clients = await loadClientList();
-                renderClientTable(clients);
-            } else {
-                document.addEventListener('dbReady', async () => {
-                    const clients = await loadClientList();
-                    renderClientTable(clients);
-                }, { once: true });
-            }
-        });
-        
-        document.getElementById('clientForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('clientName').value,
-                phone: document.getElementById('clientPhone').value,
-                email: document.getElementById('clientEmail').value
-            };
-            
-            try {
-                await handleClientFormSubmit(formData);
-                
-                if (typeof window.saveDataToFile === 'function') {
-                    await window.saveDataToFile();
-                    console.log('💾 Бэкап сохранён после добавления клиента');
-                }
-                
-                // Очищаем форму
-                document.getElementById('clientName').value = '';
-                document.getElementById('clientPhone').value = '';
-                document.getElementById('clientEmail').value = '';
-                
-                // Перезагружаем список
-                const clients = await loadClientList();
-                renderClientTable(clients);
-                
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Ошибка: ' + error.message);
-            }
-        }, { once: false }); // Можно установить true или оставить false
-
-        // Рендер таблицы с кнопками
-        function renderClientTable(clients) {
-            const tbody = document.querySelector('#clientList tbody');
-            if (!tbody) return;
-            
-            if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 60px; color: #94a3b8; font-size: 14px;">Нет клиентов. Добавьте первого!</td></tr>';
-                return;
-            }
-            
-            const showTooltips = getSetting('ui.showTooltips');
-            const fmt = (num) => num.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
-            
-            tbody.innerHTML = clients.map(client => {
-                const metrics = calculateClientDisplayData(client);
-                
-                const segmentHtml = showTooltips 
-                    ? `<span title="${metrics.segmentTooltip}" style="cursor: help;">
-                        ${metrics.segment}
-                    </span>`
-                    : metrics.segment;
-                
-                const newBadgeHtml = metrics.newBadge 
-                    ? `<span title="${metrics.newBadge.tooltip}" 
-                            style="background: ${metrics.newBadge.color}; color: white; 
-                                padding: 4px 8px; border-radius: 12px; 
-                                font-size: 11px; font-weight: 500;
-                                cursor: help; display: inline-flex; align-items: center; gap: 4px;">
-                            ${metrics.newBadge.icon} Новый
-                    </span>`
-                    : '';
-                
-                // Обрезаем длинные email и телефоны
-                const truncate = (text, maxLen = 20) => {
-                    if (!text || text === '—') return '—';
-                    return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
-                };
-                
-                return `
-                <tr>
-                    <td style="font-weight: 500; color: #64748b;">${client.id}</td>
-                    <td><strong style="color: #0f172a;">${client.name || '—'}</strong></td>
-                    <td style="font-family: monospace; color: #475569;">${truncate(client.phone, 15)}</td>
-                    <td style="color: #475569;">${truncate(client.email, 25)}</td>
-                    <td style="text-align: center; font-weight: 500;">${metrics.count}</td>
-                    <td style="text-align: right; font-weight: 600; color: #0f172a;">${fmt(metrics.total)}</td>
-                    <td style="text-align: right; font-weight: 600; color: #3b82f6;">${fmt(metrics.avgCheck)}</td>
-                    <td>
-                        <span style="
-                            background: ${metrics.segmentColor};
-                            color: white;
-                            padding: 4px 10px;
-                            border-radius: 12px;
-                            font-size: 11px;
-                            font-weight: 500;
-                            display: inline-block;
-                            white-space: nowrap;
-                        ">
-                            ${segmentHtml}
-                        </span>
-                        ${newBadgeHtml ? `<span style="margin-left: 4px;">${newBadgeHtml}</span>` : ''}
-                    </td>
-                    <td>
-                        <button class="btn-action btn-edit" onclick="window.editClient(${client.id}, '${client.name}', '${client.phone}', '${client.email}')" 
-                                style="padding: 6px 10px; font-size: 13px;" title="Редактировать">✏️</button>
-                        <button class="btn-action btn-delete" onclick="window.deleteClientById(${client.id})" 
-                                style="padding: 6px 10px; font-size: 13px;" title="Удалить">🗑️</button>
-                    </td>
-                </tr>
-                `;
-            }).join('');
-        }
-        // Удаление клиента
-        window.deleteClientById = async function(id) {
-            if (!confirm('Вы уверены, что хотите удалить этого клиента?')) return;
-            
-            try {
-                await deleteClient(id);
-                
-                // Сохраняем бэкап после удаления
-                if (typeof window.saveDataToFile === 'function') {
-                    await window.saveDataToFile();
-                }
-                
-                const clients = await loadClientList();
-                renderClientTable(clients);
-                
-            } catch (error) {
-                alert('Не удалось удалить: ' + error.message);
-            }
-        };
-        
-            // Редактирование клиента
-            window.editClient = function(id, name, phone, email) {
-                document.getElementById('editClientId').value = id;
-                document.getElementById('editName').value = name;
-                document.getElementById('editPhone').value = phone;
-                document.getElementById('editEmail').value = email;
-                document.getElementById('editModal').style.display = 'block';
-            };
-            
-            // Закрытие модального окна
-            function closeEditModal() {
-                document.getElementById('editModal').style.display = 'none';
-            }
-        
-    //Cохранение редактирования клиента
-    // Сохранение изменений
-    async function saveEditClient() {
-        const id = parseInt(document.getElementById('editClientId').value);
-        const updatedData = {
-            name: document.getElementById('editName').value,
-            phone: document.getElementById('editPhone').value,
-            email: document.getElementById('editEmail').value
-        };
-        
-        try {
-            if (window.updateClient) {
-                await window.updateClient(id, updatedData);
-                console.log('✅ Клиент обновлён');
-                
-                // Сохраняем бэкап
-                if (window.saveDataToFile) {
-                    await window.saveDataToFile();
-                }
-                
-                closeEditModal();
-                
-                // Перезагружаем список
-                const clients = await loadClientList();
-                renderClientTable(clients);
-            } else {
-                alert('Функция updateClient ещё не реализована');
-            }
-        } catch (error) {
-            alert('Ошибка обновления: ' + error.message);
-        }
-    }
-        // Добавляем обработчики событий после загрузки DOM
-        document.addEventListener('DOMContentLoaded', async () => {
-                const showText = localStorage.getItem('crm_showNavText') !== 'false';
-                if (!showText) {
-                    document.body.classList.add('nav-icons-only');
-                }
-            const loadingOverlay = document.getElementById('tableLoading');
-    
-            try {
-                // Ждём БД
-                if (!window.isDatabaseReady) {
-                    await new Promise(resolve => {
-                        document.addEventListener('dbReady', resolve, { once: true });
-                    });
-                }
-                
-                const clients = await loadClientList();
-                renderClientTable(clients);
-                
-                // Скрываем заглушку
-                if (loadingOverlay) {
-                    loadingOverlay.classList.add('hidden');
-                    setTimeout(() => loadingOverlay.remove(), 300);
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                if (loadingOverlay) {
-                    loadingOverlay.innerHTML = '<p style="color: #ef4444;">❌ Ошибка загрузки</p>';
-                }
-            }
-        document.getElementById('btnCloseModal').addEventListener('click', closeEditModal);
-        document.getElementById('btnSaveEdit').addEventListener('click', saveEditClient);
-        
-        // Закрытие по клику вне модального окна
-        document.getElementById('editModal').addEventListener('click', (e) => {
-            if (e.target.id === 'editModal') {
-                closeEditModal();
-            }
-        });
-    });
-
-            // Делаем функции глобальными
-            window.updateClient = updateClient;
-            window.deleteClientById = deleteClientById;
-            window.editClient = editClient;
-            window.renderClientTable = renderClientTable;
-    </script>
+    <script type="module" src="js/client.js"></script>
 </body>
 </html>

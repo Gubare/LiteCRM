@@ -189,51 +189,6 @@ function renderTable(tickets) {
     }).join('');
 }
 
-// function renderPagination(currentPage, totalPages, totalItems, pageSize) {
-//     const container = document.getElementById('pagination');
-//     const info = document.getElementById('paginationInfo');
-    
-//     if (!container) return;
-    
-//     info.textContent = `Показано ${((currentPage - 1) * pageSize) + 1}–${Math.min(currentPage * pageSize, totalItems)} из ${totalItems}`;
-    
-//     let buttons = '';
-    
-//     // Кнопка "В начало" (<<)
-//     buttons += `<button ${currentPage === 1 ? 'disabled' : ''} 
-//                 onclick="goToPage(1)" 
-//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.4; cursor: not-allowed;' : ''}">«</button>`;
-    
-//     // Кнопка "Назад" (<)
-//     buttons += `<button ${currentPage === 1 ? 'disabled' : ''} 
-//                 onclick="goToPage(${currentPage - 1})" 
-//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.4; cursor: not-allowed;' : ''}">‹</button>`;
-
-//     // Номера страниц (показываем максимум 5 страниц вокруг текущей)
-//     const startPage = Math.max(1, currentPage - 2);
-//     const endPage = Math.min(totalPages, currentPage + 2);
-
-//     for (let i = startPage; i <= endPage; i++) {
-//         // Для активной кнопки задаем явный padding и размеры, чтобы не прыгало
-//         const activeClass = i === currentPage 
-//             ? 'background: #3b82f6; color: white; border-color: #3b82f6; font-weight: 600; padding: 6px 10px; border-radius: 4px;' 
-//             : 'padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer;';
-            
-//         buttons += `<button style="${activeClass}" onclick="goToPage(${i})">${i}</button>`;
-//     }
-    
-//     // Кнопка "Вперед" (>)
-//     buttons += `<button ${currentPage === totalPages ? 'disabled' : ''} 
-//                 onclick="goToPage(${currentPage + 1})" 
-//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.4; cursor: not-allowed;' : ''}">›</button>`;
-    
-//     // Кнопка "В конец" (>>)
-//     buttons += `<button ${currentPage === totalPages ? 'disabled' : ''} 
-//                 onclick="goToPage(${totalPages})" 
-//                 style="padding: 6px 10px; border: 1px solid #e2e8f0; background: white; border-radius: 4px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.4; cursor: not-allowed;' : ''}">»</button>`;
-    
-//     container.innerHTML = buttons;
-// }
 
 window.goToPage = function(newPage) {
     currentPage = newPage;

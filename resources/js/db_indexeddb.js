@@ -2,7 +2,7 @@
 import { showErrorWithRetry, executeWithRetry } from './error-handler.js';
 import { logAction } from './logger.js';
 const DB_NAME = 'CRM_Database';
-const DB_VERSION = 6; // Увеличиваем версию для добавления новых хранилищ!
+const DB_VERSION = 6; // Увеличиваем версию для добавления новых хранилищ
 const STORE_NAME = 'clients'; 
 let db = null;
 
@@ -15,51 +15,98 @@ export function initDatabase() {
             const db = event.target.result;
             const oldVersion = event.oldVersion;
             
-            console.log(`🔄 DB upgrade from ${oldVersion} to ${DB_VERSION}`);
+            console.log(`🔄 Upgrade DB from ${oldVersion} to ${DB_VERSION}`);
             
-            // Создаём хранилища, если их нет
+            // Создание хранилища clients
             if (!db.objectStoreNames.contains('clients')) {
-                db.createObjectStore('clients', { keyPath: 'id', autoIncrement: true });
+                const clientStore = db.createObjectStore('clients', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                clientStore.createIndex('name', 'name', { unique: false });
+                clientStore.createIndex('phone', 'phone', { unique: false });
                 console.log('✅ Store "clients" created');
             }
             
+            // Создание хранилища products
             if (!db.objectStoreNames.contains('products')) {
-                const products = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-                products.createIndex('sku', 'sku', { unique: true });
+                const productStore = db.createObjectStore('products', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                productStore.createIndex('sku', 'sku', { unique: true });
                 console.log('✅ Store "products" created');
             }
             
-            if (!db.objectStoreNames.contains('tickets')) {
-                db.createObjectStore('tickets', { keyPath: 'id', autoIncrement: true });
-                console.log('✅ Store "tickets" created');
-            }
-            
+            // Создание хранилища sales
             if (!db.objectStoreNames.contains('sales')) {
-                db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
+                const salesStore = db.createObjectStore('sales', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                salesStore.createIndex('client_id', 'client_id', { unique: false });
+                salesStore.createIndex('transaction_date', 'transaction_date', { unique: false });
                 console.log('✅ Store "sales" created');
             }
             
+            // Создание хранилища tickets
+            if (!db.objectStoreNames.contains('tickets')) {
+                db.createObjectStore('tickets', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                console.log('✅ Store "tickets" created');
+            }
+            
+            // Создание хранилища bulk_adjustments
             if (!db.objectStoreNames.contains('bulk_adjustments')) {
-                db.createObjectStore('bulk_adjustments', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('bulk_adjustments', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
                 console.log('✅ Store "bulk_adjustments" created');
             }
             
+            // Создание хранилища calendar_notes
             if (!db.objectStoreNames.contains('calendar_notes')) {
-                const notes = db.createObjectStore('calendar_notes', { keyPath: 'id', autoIncrement: true });
-                notes.createIndex('date', 'date', { unique: false });
+                const notesStore = db.createObjectStore('calendar_notes', { 
+                    keyPath: 'id', 
+                    autoIncrement: true 
+                });
+                notesStore.createIndex('date', 'date', { unique: false });
                 console.log('✅ Store "calendar_notes" created');
             }
         };
-
-        request.onsuccess = (e) => { db = e.target.result; resolve(db); };
-        request.onerror = (e) => reject(e.target.error);
-    });
-}
+                request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
 
 
 // Получить экземпляр БД
-export function getDbInstance() {
-    return db;
+export async function getDbInstance() {
+    if (window.dbInstance) {
+        return window.dbInstance;
+    }
+    
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => {
+            console.error('❌ DB open error:', request.error);
+            reject(request.error);
+        };
+        
+        request.onsuccess = () => {
+            console.log('✅ DB opened successfully');
+            window.dbInstance = request.result;
+            resolve(request.result);
+        };
+        
+        // request.onupgradeneeded = (event) => {
+        //     // ... код из пункта 1 ...
+        // };
+    });
 }
 
 // Экспорт всех данных для бэкапа
@@ -220,19 +267,21 @@ export async function addItem(storeName, itemData) {
 }
 
 // Получить все записи из таблицы  
-export function getAllItems(storeName) {
+export async function getAllItems(storeName) {
+    // Получаем экземпляр БД
+    const db = await getDbInstance();
+    
     return new Promise((resolve, reject) => {
-        if (!db) {
-            reject(new Error('База данных не инициализирована'));
-            return;
+        try {
+            const transaction = db.transaction([storeName], 'readonly');
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e.target.error);
+        } catch (error) {
+            reject(error);
         }
-
-        const transaction = db.transaction([storeName], 'readonly');
-        const store = transaction.objectStore(storeName);
-        const request = store.getAll();
-
-        request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => reject(e.target.error);
     });
 }
 
