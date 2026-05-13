@@ -570,5 +570,66 @@
       "updated_at": "2026-05-13T13:26:27.305Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 32,
+    "timestamp": "2026-05-13T14:57:46.806Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1001,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-13T14:57:46.800Z",
+      "updated_at": "2026-05-13T14:57:46.800Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 33,
+    "timestamp": "2026-05-13T14:58:27.624Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 3726,
+    "data": {
+      "client_id": 312,
+      "product_id": 1185,
+      "quantity": 18,
+      "unit_price": 2933.36,
+      "total_amount": 52800.48,
+      "transaction_date": "2026-03-14T02:01",
+      "comment": "Комментарий #2561",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-03-14T02:01:44Z",
+      "updated_at": "2026-03-14T02:01:44Z",
+      "id": 3726
+    },
+    "metadata": {
+      "deletedAt": "2026-05-13T14:58:27.612Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 34,
+    "timestamp": "2026-05-13T15:04:36.094Z",
+    "action": "update",
+    "store": "tickets",
+    "recordId": 1741,
+    "data": {
+      "client_id": "879",
+      "client_name": "Елена Морозов",
+      "type": "",
+      "contact": "",
+      "status": "Архив",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-05-13T21:22:22Z",
+      "id": 1741,
+      "updated_at": "2026-05-13T15:04:36.091Z"
+    },
+    "metadata": {}
   }
 ]

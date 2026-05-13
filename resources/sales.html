@@ -210,24 +210,11 @@
             <tbody></tbody>
         </table>
         
-        <!-- Пагинация -->
-        <div class="table-controls" style="margin-top: 15px; justify-content: center;">
-            <div class="pagination" id="pagination"></div>
-            <span id="paginationInfo" style="font-size: 13px; color: #64748b; margin-left: 15px;"></span>
-        </div>
-    </div>
-
-    <!-- Модальное окно -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Подтверждение</h3>
-            <p id="modalMessage"></p>
-            <div class="modal-actions">
-                <button id="modalCancel" class="btn-action">Отмена</button>
-                <button id="modalConfirm" class="btn-primary" style="width: auto;">Подтвердить</button>
+            <!-- Пагинация -->
+            <div class="pagination-container">
+                <div id="pagination" class="pagination"></div>
+                <span id="paginationInfo"></span>
             </div>
-        </div>
-    </div>
 </main>
 <!-- === МОДАЛЬНОЕ ОКНО: ПРОСМОТР КОММЕНТАРИЯ === -->
 <div id="viewCommentModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'viewCommentModal')">
@@ -389,11 +376,6 @@ document.getElementById('editSaleForm').addEventListener('submit', async (e) => 
 
 
 </script>
-            <!-- Пагинация -->
-            <div class="pagination-container">
-                <div id="pagination" class="pagination"></div>
-                <span id="paginationInfo"></span>
-            </div>
     <!-- Подключение скриптов -->
     <script src="js/neutralino.js"></script>
     <script type="module" src="js/db_indexeddb.js"></script>
