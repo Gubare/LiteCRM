@@ -3,7 +3,7 @@
   "ui.darkMode": false,
   "ui.showNavText": true,
   "ui.animateRows": true,
-  "ui.theme": "excel",
+  "ui.theme": "blue",
   "ui.selectionModifier": "ctrl",
   "calendar.workDays": {
     "0": false,
