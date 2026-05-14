@@ -1,7 +1,6 @@
 // resources/js/charts.js
 import { getAllItems } from './db_indexeddb.js';
-import { getSetting } from './settings-manager.js';
-
+import { getSetting, updateSetting } from './settings-manager.js';
 // === КОНФИГУРАЦИЯ ГРАФИКОВ ===
 const CHART_CONFIGS = {
     sales: {
@@ -28,6 +27,12 @@ const CHART_CONFIGS = {
             type: 'line',
             icon: '📈',
             description: 'Динамика среднего чека'
+        },
+        'dealsPerDay': {
+            title: 'Количество сделок в день',
+            type: 'line',
+            icon: '📊',
+            description: 'Динамика числа транзакций'
         }
     },
     clients: {
@@ -48,7 +53,13 @@ const CHART_CONFIGS = {
             type: 'bar',
             icon: '📊',
             description: 'По сумме покупок'
-        }
+        },
+        'topClientsByCount': {
+            title: 'Топ-10 по количеству покупок',
+            type: 'bar',
+            icon: '🏆',
+            description: 'Клиенты с наибольшим числом сделок'
+    }
     },
     products: {
         'stockLevels': {
@@ -83,66 +94,67 @@ const CHART_CONFIGS = {
             icon: '🍩',
             description: 'Вопросы/Жалобы/Заказы'
         }
+    },
+    activity: {
+        'dailyActivity': {
+            title: 'Активность по дням',
+            type: 'line',
+            icon: '📈',
+            description: 'Сравнение клиентов, продаж и обращений',
+            multiDataset: true  // Флаг объединения
+        }
     }
 };
 
 // === СОСТОЯНИЕ ===
 let currentMode = 'sales';
-let currentCharts = {}; // Хранилище экземпляров Chart.js
+let currentCharts = {};
+let currentPeriod = {
+    type: '30',  // '7', '30', '90', '365', 'all', 'custom'
+    from: null,
+    to: null
+};
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
     
+    // Загружаем сохранённый период из настроек
+    await loadSavedPeriod();
+    
     setupEventListeners();
+    setupDateInputs();
+    setupExpandHandlers();
     await renderChartsForMode('sales');
+    updatePeriodInfo();
 });
-
-function setupEventListeners() {
-    // Переключение режима данных (Продажи/Клиенты/...)
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentMode = e.target.dataset.mode;
-            await renderChartsForMode(currentMode);
-        });
-    });
-    
-    // Изменение типа диаграммы
-    document.getElementById('chartTypeSelect')?.addEventListener('change', () => {
-        refreshAllCharts();
-    });
-    
-    // Изменение периода
-    document.getElementById('chartPeriod')?.addEventListener('change', () => {
-        refreshAllCharts();
-    });
-}
 
 // === ОТРИСОВКА ГРАФИКОВ ===
 async function renderChartsForMode(mode) {
     const container = document.getElementById('chartsContainer');
     if (!container) return;
     
-    // Очистка старых графиков
     destroyAllCharts();
     container.innerHTML = '';
     
     const configs = CHART_CONFIGS[mode];
-    const period = document.getElementById('chartPeriod')?.value || '30';
+    if (!configs) return;
     
-    // Загрузка данных
     const data = await loadDataForMode(mode);
     const periodDays = data.dateRange?.days || 30;
     
-    // Создание графиков
     for (const [key, config] of Object.entries(configs)) {
         const chartCard = createChartCard(key, config);
         container.appendChild(chartCard);
         
         const canvas = chartCard.querySelector('canvas');
-        const chartData = prepareChartData(mode, key, data, periodDays);
+        let chartData;
+        
+        if (config.multiDataset) {
+            chartData = await prepareDailyActivity(periodDays);
+        } else {
+            chartData = prepareChartData(mode, key, data, periodDays);
+        }
         
         currentCharts[key] = new Chart(canvas, {
             type: config.type,
@@ -155,6 +167,8 @@ async function renderChartsForMode(mode) {
 function createChartCard(key, config) {
     const card = document.createElement('div');
     card.className = 'chart-card';
+    card.dataset.chartKey = key; // Для привязки к экземпляру Chart.js
+    
     card.innerHTML = `
         <div class="chart-header">
             <h3>${config.icon} ${config.title}</h3>
@@ -163,6 +177,7 @@ function createChartCard(key, config) {
         <div class="chart-body">
             <canvas id="chart-${key}"></canvas>
         </div>
+        <button class="chart-expand-btn" title="Развернуть на весь экран">⛶</button>
     `;
     return card;
 }
@@ -177,7 +192,7 @@ async function loadDataForMode(mode) {
             const products = await getAllItems('products');
             return {
                 sales: sales.filter(s => new Date(s.transaction_date) >= dateRange.from),
-                products: products,
+                products,
                 dateRange
             };
             
@@ -202,10 +217,20 @@ async function loadDataForMode(mode) {
                 dateRange
             };
             
+        case 'activity':
+            // Для сводной активности загружаем всё
+            return {
+                clients: await getAllItems('clients'),
+                sales: await getAllItems('sales'),
+                tickets: await getAllItems('tickets'),
+                dateRange
+            };
+            
         default:
             return { dateRange };
     }
 }
+
 
 function prepareChartData(mode, chartKey, data, periodDays = 30) {
     const type = document.getElementById('chartTypeSelect')?.value || 'line';
@@ -220,6 +245,8 @@ function prepareChartData(mode, chartKey, data, periodDays = 30) {
             return prepareTopProducts(data.sales, data.products);
         case 'sales.avgCheckTrend':
             return prepareAvgCheckTrend(data.sales, type);
+        case 'sales.dealsPerDay':
+            return prepareDealsPerDay(data.sales, type);
             
         // === КЛИЕНТЫ ===
         case 'clients.clientGrowth':
@@ -228,6 +255,8 @@ function prepareChartData(mode, chartKey, data, periodDays = 30) {
             return prepareClientSegments(data.allClients);
         case 'clients.topClients':
             return prepareTopClients(data.allClients, data.sales, periodDays);
+        case 'clients.topClientsByCount':
+            return prepareTopClientsByCount(data.allClients, data.sales, periodDays);
             
         // === ТОВАРЫ ===
         case 'products.stockLevels':
@@ -248,9 +277,90 @@ function prepareChartData(mode, chartKey, data, periodDays = 30) {
     }
 }
 
-// === ПРИМЕРЫ ПОДГОТОВКИ ДАННЫХ ===
+async function prepareDailyActivity(periodDays) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+    
+    // Загружаем все данные параллельно
+    const [clients, sales, tickets] = await Promise.all([
+        getAllItems('clients'),
+        getAllItems('sales'),
+        getAllItems('tickets')
+    ]);
+    
+    // Группируем по датам
+    const byDate = {};
+    
+    // Клиенты: новые регистрации
+    clients.forEach(c => {
+        const date = new Date(c.created_at);
+        if (date >= cutoffDate) {
+            const dateStr = date.toLocaleDateString('ru-RU');
+            byDate[dateStr] = byDate[dateStr] || { clients: 0, sales: 0, tickets: 0 };
+            byDate[dateStr].clients++;
+        }
+    });
+    
+    // Продажи: транзакции
+    sales.forEach(s => {
+        const date = new Date(s.transaction_date);
+        if (date >= cutoffDate && s.type === 'sale') {
+            const dateStr = date.toLocaleDateString('ru-RU');
+            byDate[dateStr] = byDate[dateStr] || { clients: 0, sales: 0, tickets: 0 };
+            byDate[dateStr].sales++;
+        }
+    });
+    
+    // Обращения: новые тикеты
+    tickets.forEach(t => {
+        const date = new Date(t.created_at);
+        if (date >= cutoffDate) {
+            const dateStr = date.toLocaleDateString('ru-RU');
+            byDate[dateStr] = byDate[dateStr] || { clients: 0, sales: 0, tickets: 0 };
+            byDate[dateStr].tickets++;
+        }
+    });
+    
+    // Формируем данные для графика
+    const labels = Object.keys(byDate).sort((a, b) => {
+        const [dA, mA, yA] = a.split('.').map(Number);
+        const [dB, mB, yB] = b.split('.').map(Number);
+        return new Date(yA, mA - 1, dA) - new Date(yB, mB - 1, dB);
+    });
+    
+    return {
+        labels,
+        datasets: [
+            {
+                label: 'Новых клиентов',
+                data: labels.map(d => byDate[d].clients),
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                yAxisID: 'y',
+                tension: 0.4
+            },
+            {
+                label: 'Продаж',
+                data: labels.map(d => byDate[d].sales),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                yAxisID: 'y',
+                tension: 0.4
+            },
+            {
+                label: 'Обращений',
+                data: labels.map(d => byDate[d].tickets),
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                yAxisID: 'y',
+                tension: 0.4
+            }
+        ]
+    };
+}
 
-// === ИСПРАВЛЕННЫЕ ФУНКЦИИ ПОДГОТОВКИ ДАННЫХ ===
+
+// === ФУНКЦИИ ПОДГОТОВКИ ДАННЫХ ===
 
 function prepareRevenueTrend(sales, type) {
     // Группировка по дням
@@ -314,6 +424,38 @@ function prepareSalesByType(sales) {
                 Number(byType.restock) || 0
             ],
             backgroundColor: ['#10b981', '#ef4444', '#3b82f6']
+        }]
+    };
+}
+
+function prepareDealsPerDay(sales, type) {
+    const byDate = {};
+    
+    sales.forEach(sale => {
+        const date = new Date(sale.transaction_date);
+        const dateStr = date.toLocaleDateString('ru-RU');
+        
+        byDate[dateStr] = (byDate[dateStr] || 0) + 1;
+    });
+    
+    // Сортировка дат
+    const labels = Object.keys(byDate).sort((a, b) => {
+        const [dayA, monthA, yearA] = a.split('.').map(Number);
+        const [dayB, monthB, yearB] = b.split('.').map(Number);
+        return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
+    });
+    
+    const values = labels.map(date => byDate[date]);
+    
+    return {
+        labels,
+        datasets: [{
+            label: 'Сделок',
+            data: values,
+            borderColor: '#f59e0b',
+            backgroundColor: type === 'line' ? 'rgba(245, 158, 11, 0.1)' : '#f59e0b',
+            fill: type === 'line',
+            tension: 0.4
         }]
     };
 }
@@ -524,6 +666,56 @@ function prepareTopClients(allClients, sales, periodDays) {
         }]
     };
 }
+
+function prepareTopClientsByCount(allClients, sales, periodDays) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+    
+    // Считаем количество покупок по каждому клиенту
+    const clientCounts = {};
+    
+    sales.forEach(sale => {
+        if (sale.type !== 'sale' || !sale.client_id) return;
+        
+        const saleDate = new Date(sale.transaction_date);
+        if (saleDate < cutoffDate) return;
+        
+        clientCounts[sale.client_id] = (clientCounts[sale.client_id] || 0) + 1;
+    });
+    
+    // Сортируем и берём топ-10
+    const sorted = Object.entries(clientCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+    
+    if (sorted.length === 0) {
+        return {
+            labels: ['Нет данных'],
+            datasets: [{
+                label: 'Количество покупок',
+                data: [0],
+                backgroundColor: '#cbd5e1'
+            }]
+        };
+    }
+    
+    const labels = sorted.map(([id]) => {
+        const client = allClients.find(c => c.id == id);
+        return client ? client.name : `ID:${id}`;
+    });
+    
+    const values = sorted.map(([, count]) => count);
+    
+    return {
+        labels,
+        datasets: [{
+            label: 'Покупок',
+            data: values,
+            backgroundColor: '#8b5cf6'
+        }]
+    };
+}
+
 
 function prepareStockLevels(products) {
     const sorted = [...products]
@@ -766,33 +958,302 @@ function destroyAllCharts() {
 
 // === ПОЛУЧЕНИЕ ПЕРИОДА ===
 function getDateRange() {
-    const period = document.getElementById('chartPeriod')?.value || '30';
+    const now = new Date();
     
-    if (period === 'custom') {
-        const from = document.getElementById('customDateFrom')?.value;
-        const to = document.getElementById('customDateTo')?.value;
-        
-        if (from && to) {
-            return {
-                from: new Date(from),
-                to: new Date(to),
-                days: Math.ceil((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24))
-            };
-        }
+    if (currentPeriod.type === 'custom' && currentPeriod.from && currentPeriod.to) {
+        return {
+            from: new Date(currentPeriod.from),
+            to: new Date(currentPeriod.to),
+            days: Math.ceil((new Date(currentPeriod.to) - new Date(currentPeriod.from)) / (1000 * 60 * 60 * 24))
+        };
     }
     
-    if (period === 'all') {
+    if (currentPeriod.type === 'all') {
         return {
             from: new Date(2020, 0, 1),
-            to: new Date(),
+            to: now,
             days: 3650
         };
     }
     
-    const days = parseInt(period);
-    const to = new Date();
+    const days = parseInt(currentPeriod.type) || 30;
+    const to = now;
     const from = new Date();
     from.setDate(from.getDate() - days);
     
     return { from, to, days };
+}
+// === ОБРАБОТЧИКИ СОБЫТИЙ ===
+
+function setupEventListeners() {
+    // Переключение режима данных
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentMode = e.target.dataset.mode;
+            await renderChartsForMode(currentMode);
+        });
+    });
+    
+    // Изменение периода
+    const periodSelect = document.getElementById('chartPeriod');
+    if (periodSelect) {
+        periodSelect.addEventListener('change', async (e) => {
+            const value = e.target.value;
+            
+            if (value === 'custom') {
+                showCustomPeriodSection();
+            } else {
+                hideCustomPeriodSection();
+                await applyPeriod(value);
+            }
+        });
+    }
+    
+    // Кнопка "Применить" для произвольного периода
+    document.getElementById('btnApplyCustomPeriod')?.addEventListener('click', async () => {
+        const from = document.getElementById('customDateFrom').value;
+        const to = document.getElementById('customDateTo').value;
+        
+        if (!from || !to) {
+            alert('⚠️ Выберите обе даты');
+            return;
+        }
+        
+        if (new Date(from) > new Date(to)) {
+            alert('⚠️ Дата начала не может быть позже даты окончания');
+            return;
+        }
+        
+        await applyPeriod('custom', from, to);
+    });
+    
+    // Кнопка "Сбросить"
+    document.getElementById('btnResetPeriod')?.addEventListener('click', async () => {
+        hideCustomPeriodSection();
+        const periodSelect = document.getElementById('chartPeriod');
+        if (periodSelect) {
+            periodSelect.value = '30'; // Возвращаем к стандартному 30 дням
+        }
+        await applyPeriod('30');
+    });
+}
+
+function setupDateInputs() {
+    const dateFrom = document.getElementById('customDateFrom');
+    const dateTo = document.getElementById('customDateTo');
+    
+    // Устанавливаем значения только если нет сохранённого произвольного периода
+    if (currentPeriod.type !== 'custom' || !currentPeriod.from || !currentPeriod.to) {
+        const today = new Date().toISOString().split('T')[0];
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const defaultFrom = thirtyDaysAgo.toISOString().split('T')[0];
+        
+        if (dateFrom) dateFrom.value = defaultFrom;
+        if (dateTo) dateTo.value = today;
+    }
+}
+
+function showCustomPeriodSection() {
+    const section = document.getElementById('customPeriodSection');
+    if (section) section.style.display = 'flex';
+}
+
+function hideCustomPeriodSection() {
+    const section = document.getElementById('customPeriodSection');
+    if (section) section.style.display = 'none';
+}
+
+// === РАБОТА С НАСТРОЙКАМИ ПЕРИОДА ===
+
+async function loadSavedPeriod() {
+    try {
+        // Читаем файл настроек напрямую
+        const settingsFile = 'crm_data/settings.json';
+        
+        try {
+            const data = await Neutralino.filesystem.readFile(settingsFile);
+            const settings = JSON.parse(data);
+            
+            const savedPeriod = settings['charts.period'];
+            console.log('📅 Loading saved period:', savedPeriod);
+            
+            if (savedPeriod) {
+                currentPeriod = savedPeriod;
+                
+                const periodSelect = document.getElementById('chartPeriod');
+                if (periodSelect) {
+                    periodSelect.value = currentPeriod.type;
+                }
+                
+                if (currentPeriod.type === 'custom' && currentPeriod.from && currentPeriod.to) {
+                    showCustomPeriodSection();
+                    const dateFrom = document.getElementById('customDateFrom');
+                    const dateTo = document.getElementById('customDateTo');
+                    if (dateFrom) dateFrom.value = currentPeriod.from;
+                    if (dateTo) dateTo.value = currentPeriod.to;
+                }
+                
+                console.log('✅ Loaded saved period:', currentPeriod);
+            } else {
+                console.log('⚠️ No saved period found, using default');
+                currentPeriod = { type: '30', from: null, to: null };
+            }
+        } catch (err) {
+            // Файл не существует или невалидный JSON
+            console.log('⚠️ Settings file not found or invalid, using default');
+            currentPeriod = { type: '30', from: null, to: null };
+        }
+    } catch (error) {
+        console.error('❌ Error loading saved period:', error);
+        currentPeriod = { type: '30', from: null, to: null };
+    }
+}
+
+async function savePeriod(period) {
+    try {
+        const settingsFile = 'crm_data/settings.json';
+        
+        // 1. Читаем существующие настройки
+        let settings = {};
+        try {
+            const data = await Neutralino.filesystem.readFile(settingsFile);
+            settings = JSON.parse(data);
+            console.log('📖 Read existing settings:', Object.keys(settings).length, 'keys');
+        } catch (err) {
+            console.log('⚠️ Settings file not found, creating new');
+        }
+        
+        // 2. Добавляем/обновляем период
+        settings['charts.period'] = {
+            ...period,
+            appliedAt: new Date().toISOString()
+        };
+        
+        // 3. Сохраняем обратно
+        await Neutralino.filesystem.writeFile(
+            settingsFile,
+            JSON.stringify(settings, null, 2)
+        );
+        
+        currentPeriod = period;
+        console.log('✅ Saved period. Total settings:', Object.keys(settings).length);
+        
+    } catch (error) {
+        console.error('❌ Failed to save period:', error);
+    }
+}
+export async function applyPeriod(type, from = null, to = null) {
+    const period = {
+        type,
+        from,
+        to,
+        appliedAt: new Date().toISOString()
+    };
+    
+    await savePeriod(period);
+    updatePeriodInfo();
+    
+    // Перерисовываем графики
+    await renderChartsForMode(currentMode);
+}
+
+export function updatePeriodInfo() {
+    const infoEl = document.getElementById('periodInfo');
+    if (!infoEl) return;
+    
+    const periodText = getPeriodDescription(currentPeriod);
+    infoEl.textContent = `📅 ${periodText}`;
+    infoEl.title = `Период: ${periodText}`;
+}
+
+export function getPeriodDescription(period) {
+    switch(period.type) {
+        case '7': return 'Последние 7 дней';
+        case '30': return 'Последние 30 дней';
+        case '90': return 'Последние 3 месяца';
+        case '365': return 'Последний год';
+        case 'all': return 'Всё время';
+        case 'custom':
+            if (period.from && period.to) {
+                const from = new Date(period.from).toLocaleDateString('ru-RU');
+                const to = new Date(period.to).toLocaleDateString('ru-RU');
+                return `С ${from} по ${to}`;
+            }
+            return 'Произвольный период';
+        default: return 'Не выбрано';
+    }
+}
+
+let expandedChart = null; // Хранит текущий развёрнутый график
+
+function setupExpandHandlers() {
+    // Обработчик клика по кнопке
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.chart-expand-btn');
+        if (btn) {
+            const card = btn.closest('.chart-card');
+            toggleExpandChart(card);
+        }
+    });
+
+    // Закрытие по клику на оверлей
+    const overlay = document.querySelector('.chart-overlay') || createChartOverlay();
+    overlay.addEventListener('click', () => {
+        if (expandedChart) toggleExpandChart(expandedChart);
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && expandedChart) {
+            toggleExpandChart(expandedChart);
+        }
+    });
+}
+
+function createChartOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'chart-overlay';
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function toggleExpandChart(card) {
+    if (!card) return;
+
+    const overlay = document.querySelector('.chart-overlay');
+    const key = card.dataset.chartKey;
+    const chartInstance = currentCharts[key];
+
+    if (card.classList.contains('expanded')) {
+        // === Сворачивание ===
+        card.classList.remove('expanded');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        
+        // Пересчёт размеров графика
+        if (chartInstance) {
+            setTimeout(() => chartInstance.resize(), 50);
+        }
+        expandedChart = null;
+    } else {
+        // === Разворачивание ===
+        // Сначала свернём предыдущий, если был
+        if (expandedChart) {
+            expandedChart.classList.remove('expanded');
+        }
+        
+        card.classList.add('expanded');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+        
+        // Пересчёт размеров графика под новый контейнер
+        if (chartInstance) {
+            // Небольшая задержка для применения CSS-перехода
+            setTimeout(() => chartInstance.resize(), 100);
+        }
+        expandedChart = card;
+    }
 }

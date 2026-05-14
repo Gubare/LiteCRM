@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Генератор тестовых данных для CRM System
-Использование: python generate_test_data.py --clients 100 --products 100 --sales 100 --tickets 100 --notes 50 --output crm_data/backup.json
+Использование:
+py generate_test_data.py --clients 100 --products 100 --sales 100 --tickets 100 --notes 50 --output crm_data/backup.json
 """
 
 import json
@@ -33,7 +34,7 @@ LONG_TEXT = """вчфслыяюмшдрфидрфышгпарыфот.зампф
 пышвимшдфигшмиыф
 ырпавываявчпаспршощжжшдглноавсп
 длинный текст для проверки обрезки и прокрутки в модальном окне"""
-
+START_DATE = datetime(2026, 5, 1)
 def random_date(start_date, end_date):
     """Генерация случайной даты в диапазоне"""
     delta = end_date - start_date
@@ -47,7 +48,7 @@ def generate_clients(count, start_id=1):
     first_names = ['Александр', 'Мария', 'Дмитрий', 'Анна', 'Сергей', 'Елена', 'Андрей', 'Ольга', 'Михаил', 'Татьяна', 'Иван', 'Наталья', 'Петр', 'Ирина', 'Алексей', 'Светлана']
     last_names = ['Иванов', 'Смирнов', 'Кузнецов', 'Попов', 'Соколов', 'Лебедев', 'Козлов', 'Новиков', 'Морозов', 'Петров', 'Волков', 'Соловьев', 'Васильев', 'Зайцев', 'Павлов', 'Семенов']
     
-    base_date = datetime(2026, 1, 1)
+    base_date = START_DATE
     
     for i in range(count):
         name = f"{random.choice(first_names)} {random.choice(last_names)}"
@@ -70,7 +71,7 @@ def generate_clients(count, start_id=1):
 def generate_products(count, start_id=1):
     """Генерация товаров"""
     products = []
-    base_date = datetime(2026, 1, 1)
+    base_date = START_DATE
     
     for i in range(count):
         category = random.choice(CATEGORIES)
@@ -96,7 +97,7 @@ def generate_products(count, start_id=1):
 def generate_tickets(clients, count, start_id=1):
     """Генерация обращений"""
     tickets = []
-    base_date = datetime(2026, 5, 1)
+    base_date = START_DATE
     
     for i in range(count):
         # 70% привязываем к клиенту, 30% — без
@@ -129,7 +130,7 @@ def generate_tickets(clients, count, start_id=1):
 def generate_sales(clients, products, count, start_id=1):
     """Генерация продаж"""
     sales = []
-    base_date = datetime(2026, 1, 1)
+    base_date = START_DATE
     
     for i in range(count):
         created = random_date(base_date, datetime.now())
@@ -172,7 +173,7 @@ def generate_sales(clients, products, count, start_id=1):
 def generate_calendar_notes(count, start_id=1):
     """Генерация заметок календаря"""
     notes = []
-    base_date = datetime(2026, 1, 1)
+    base_date = START_DATE
     end_date = datetime(2026, 12, 31)
     
     texts = ["Позвонить клиенту", "Встреча в офисе", "Оплата счета", "Подготовить отчет", "Заказать товар", "312", "yu,,y,", "h.t.t", LONG_TEXT]

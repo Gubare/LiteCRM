@@ -23,5 +23,11 @@
     },
     "maxEntries": 100,
     "maxAgeDays": 7
+  },
+  "charts.period": {
+    "type": "7",
+    "from": null,
+    "to": null,
+    "appliedAt": "2026-05-14T19:59:57.673Z"
   }
 }

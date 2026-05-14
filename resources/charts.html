@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <title>Аналитика и графики - CRM</title>
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- Локальные библиотеки (вместо CDN) -->
     <script src="lib/chart.min.js"></script>
     <script src="lib/chartjs-adapter-date-fns.min.js"></script>
 </head>
@@ -20,69 +18,54 @@
     <a href="settings.html"><span class="nav-icon">⚙️</span> <span class="nav-text">Настройки</span></a>
     <a href="calendar.html"><span class="nav-icon">📅</span> <span class="nav-text">Календарь</span></a>
     <a href="charts.html"><span class="nav-icon">📊</span> <span class="nav-text">Графики</span></a>
-    </nav>  
+    </nav>
 
     <main class="page-content">
-        <h1 class="page-title">Аналитика и графики</h1>
+        <h1 class="page-title">📊 Аналитика и графики</h1>
         
-        <!-- Панель управления -->
-        <div class="charts-toolbar">
-            <!-- Выбор типа графика -->
-            <div class="chart-type-selector">
-                <label>Тип диаграммы:</label>
-                <select id="chartTypeSelect" class="form-control">
-                    <option value="line">Линейная</option>
-                    <option value="bar">Столбчатая</option>
-                    <option value="pie">Круговая</option>
-                    <option value="doughnut">Кольцевая</option>
-                    <option value="radar">Радиальная</option>
-                    <option value="polarArea">Полярная</option>
-                </select>
-            </div>
-            
-            <!-- Выбор данных (аналог режимов календаря) -->
-            <div class="chart-data-modes">
-                <button class="mode-btn active" data-mode="sales">💰 Продажи</button>
-                <button class="mode-btn" data-mode="clients">👥 Клиенты</button>
-                <button class="mode-btn" data-mode="products">📦 Товары</button>
-                <button class="mode-btn" data-mode="tickets">🎫 Обращения</button>
-            </div>
-            
-            <!-- Период -->
-            <div class="chart-period">
+        <!-- Панель управления периодами -->
+        <div class="charts-period-panel">
+            <div class="period-presets">
                 <label>Период:</label>
                 <select id="chartPeriod" class="form-control">
                     <option value="7">7 дней</option>
-                    <option value="30" selected>30 дней</option>
+                    <option value="30">30 дней</option>
                     <option value="90">3 месяца</option>
                     <option value="365">Год</option>
                     <option value="all">Всё время</option>
-                    <option value="custom">Произвольный</option>
+                    <option value="custom">📅 Произвольный</option>
                 </select>
             </div>
-
+            
             <!-- Произвольный период (скрыт по умолчанию) -->
-            <div id="customPeriodContainer" class="custom-period" style="display: none;">
-                <div class="date-input">
+            <div id="customPeriodSection" class="custom-period-section" style="display: none;">
+                <div class="date-input-group">
                     <label>С:</label>
                     <input type="date" id="customDateFrom" class="form-control">
                 </div>
-                <div class="date-input">
+                <div class="date-input-group">
                     <label>По:</label>
                     <input type="date" id="customDateTo" class="form-control">
                 </div>
+                <button id="btnApplyCustomPeriod" class="btn btn-primary">Применить</button>
+                <button id="btnResetPeriod" class="btn btn-secondary">Сбросить</button>
             </div>
+            
+            <div class="period-info" id="periodInfo"></div>
+        </div>
+        
+        <!-- Режимы данных (аналог календаря) -->
+        <div class="chart-data-modes">
+            <button class="mode-btn active" data-mode="sales">💰 Продажи</button>
+            <button class="mode-btn" data-mode="clients">👥 Клиенты</button>
+            <button class="mode-btn" data-mode="products">📦 Товары</button>
+            <button class="mode-btn" data-mode="tickets">🎫 Обращения</button>
+            <button class="mode-btn" data-mode="activity">📊 Сводная</button>
         </div>
         
         <!-- Сетка графиков -->
         <div class="charts-grid" id="chartsContainer">
-            <!-- Графики будут генерироваться динамически -->
-        </div>
-        
-        <!-- Таблица с данными (опционально) -->
-        <div class="chart-data-table" id="dataTableContainer" style="display:none;">
-            <h3>📋 Данные</h3>
-            <table class="crm-table" id="dataTable"></table>
+            <!-- Графики генерируются динамически -->
         </div>
     </main>
 
