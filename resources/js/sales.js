@@ -1,5 +1,5 @@
 // resources/js/sales.js
-// Логика страницы продаж
+// Логика страницы продаж (рефакторинг)
 
 import { 
     getProductsForDropdown, 
@@ -9,38 +9,46 @@ import {
     deleteItem,
     getItemById,
     updateItem,
-    updateClientMetrics,
     getAllItems
 } from './db_indexeddb.js';
 import { getSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
 import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js';
+import { SelectionManager } from './partials/selectionManager.js';
+import { confirmModal } from './partials/modalManager.js';
+import { showSuccess, showError, showWarning } from './partials/toast.js';
 
 // === СОСТОЯНИЕ СТРАНИЦЫ ===
 let currentPage = 1;
 let currentPageSize = 10;
 let currentFilters = {};
+let selectionManager = null;
 
-function goToPage(newPage) {
-    currentPage = newPage;
-    loadSalesTable();
-}
+// Маппинг типов для отображения (английский ключ → русский текст + класс)
+const TYPE_LABELS = {
+    sale: { text: 'Продажа', class: 'badge-success' },
+    writeoff: { text: 'Списание', class: 'badge-danger' },
+    restock: { text: 'Поступление', class: 'badge-info' }
+};
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
+    
     await waitForDatabase();
     await populateDropdowns();
     await loadSalesTable();
-    setupEventListeners();
+    
+    // Инициализация общих компонентов
     initTextViewer();
+    initSelectionManager();
+    
+    setupEventListeners();
     
     // Установка даты по умолчанию
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    const isoString = now.toISOString().slice(0, 16);
-    document.getElementById('saleDate').value = isoString;
-    // document.getElementById('bulkDate').value = isoString;
+    document.getElementById('saleDate').value = now.toISOString().slice(0, 16);
 });
 
 async function waitForDatabase() {
@@ -51,13 +59,47 @@ async function waitForDatabase() {
     });
 }
 
+function initSelectionManager() {
+    selectionManager = new SelectionManager({
+        tableBodySelector: '#salesTable tbody',
+        actionBarId: 'bulkActionBar',
+        ctxMenuId: 'ctxMenu',
+        callbacks: {
+            onEdit: openEditSale,
+            onDelete: handleBulkDelete
+        }
+    });
+}
+
+
+async function handleBulkDelete() {
+    await selectionManager.bulkDelete(
+        'sales',
+        (count) => {
+            showSuccess(`✅ Удалено: ${count}`);
+            loadSalesTable();
+        },
+        (err) => showError('❌ ' + err.message)
+    );
+}
+
+window.deleteSelected = handleBulkDelete;
+
+async function clearSelection(params) {
+    await selectionManager.clear()
+    
+}
+
+window.clearSelection = clearSelection
 // === ЗАПОЛНЕНИЕ ВЫПАДАЮЩИХ СПИСКОВ ===
 let priceAutoFillAttached = false;
 
 async function populateDropdowns() {
     try {
-        const products = await getProductsForDropdown();
-        const clients = await getAllItems('clients');
+        const [products, clients] = await Promise.all([
+            getProductsForDropdown(),
+            getAllItems('clients')
+        ]);
         
         const productOptions = products
             .filter(p => p.is_active)
@@ -65,78 +107,59 @@ async function populateDropdowns() {
                 ${p.sku} — ${p.name} (ост.: ${p.quantity}, ${p.price}₽)
             </option>`).join('');
         
-        // 🔥 Добавляем проверки на null
-        const saleProduct = document.getElementById('saleProduct');
-        const bulkProduct = document.getElementById('bulkProduct');
-        const filterProduct = document.getElementById('filterProduct');
+        // Заполнение селектов с проверкой на null
+        const fillSelect = (id, defaultOption, options) => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = defaultOption + options;
+        };
         
-        if (filterProduct) {
-            filterProduct.innerHTML = '<option value="">Все товары</option>' + productOptions;
-        }
-        if (saleProduct) {
-            saleProduct.innerHTML = '<option value="">Выберите товар...</option>' + productOptions;
-        }
-        if (bulkProduct) {
-            bulkProduct.innerHTML = '<option value="">Выберите товар...</option>' + productOptions;
-        }
+        fillSelect('filterProduct', '<option value="">Все товары</option>', productOptions);
+        fillSelect('saleProduct', '<option value="">Выберите товар...</option>', productOptions);
+        fillSelect('bulkProduct', '<option value="">Выберите товар...</option>', productOptions);
         
         const clientOptions = clients.map(c => 
             `<option value="${c.id}">${c.name} (${c.phone || c.email || 'нет контакта'})</option>`
         ).join('');
+        fillSelect('saleClient', '<option value="empty">🔘 Не указан</option><option value="new">➕ Создать клиента</option>', clientOptions);
         
-        const saleClient = document.getElementById('saleClient');
-        if (saleClient) {
-            saleClient.innerHTML = 
-                '<option value="empty">🔘 Не указан</option><option value="new">➕ Создать клиента</option>' + clientOptions;
-        }
-        
-        //Автозаполнение цены: проверяем существование элемента
+        // Автозаполнение цены (один раз)
+        const saleProduct = document.getElementById('saleProduct');
         if (saleProduct && !priceAutoFillAttached) {
             saleProduct.addEventListener('change', function() {
-                const option = this.options[this.selectedIndex];
-                const price = option.dataset.price;
+                const price = this.options[this.selectedIndex]?.dataset.price;
                 const salePriceInput = document.getElementById('salePrice');
-                if (price && salePriceInput) {
-                    salePriceInput.value = price;
-                }
+                if (price && salePriceInput) salePriceInput.value = price;
             });
             priceAutoFillAttached = true;
         }
         
     } catch (error) {
         console.error('Error populating dropdowns:', error);
-        showToast('⚠️ Не удалось загрузить списки товаров/клиентов');
+        showWarning('⚠️ Не удалось загрузить списки');
     }
 }
+
 // === ЗАГРУЗКА ТАБЛИЦЫ ===
-async function loadSalesTable(customSort = null) {
+export async function loadSalesTable(customSort = null) {
     const tbody = document.querySelector('#salesTable tbody');
-    if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">⏳ Загрузка...</td></tr>';
-    }
+    if (tbody) tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;">⏳ Загрузка...</td></tr>';
     
-    const sortValue = customSort || document.getElementById('sortSelect').value;
+    const sortValue = customSort || document.getElementById('sortSelect')?.value;
     
     try {
         const result = await getSalesPaginated(currentPage, currentPageSize, currentFilters, sortValue);
+        
         renderSalesTable(result.items);
-
-        let sales = await getAllItems('sales');
-        const total = sales.length;
-        const start = (currentPage - 1) * currentPageSize;
-        const pagedTickets = sales.slice(start, start + currentPageSize);
-        const paginationContainer = document.getElementById('pagination');
-        const paginationInfo = document.getElementById('paginationInfo');
-
-        // Вызываем функцию из импортированного модуля
+        
+        // Универсальная пагинация
         renderPagination(
-            paginationContainer, 
-            paginationInfo, 
-            currentPage, 
-            Math.ceil(total / currentPageSize), 
-            total, 
-            currentPageSize, 
-            goToPage // Функция, которую вызывает модуль при клике
+            document.getElementById('pagination'),
+            document.getElementById('paginationInfo'),
+            currentPage,
+            result.pagination.total_pages,
+            result.pagination.total_items,
+            currentPageSize,
+            (page) => { currentPage = page; loadSalesTable(); }
         );
         
         const table = document.getElementById('salesTable');
@@ -145,8 +168,9 @@ async function loadSalesTable(customSort = null) {
     } catch (error) {
         console.error('Error loading sales:', error);
         if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444;">❌ Ошибка: ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#ef4444;">❌ ${error.message}</td></tr>`;
         }
+        showError('Ошибка загрузки данных');
     }
 }
 
@@ -155,255 +179,205 @@ function renderSalesTable(items) {
     const shouldAnimate = getSetting('ui.animateRows');
     const tbody = document.querySelector('#salesTable tbody');
     
-    if (!tbody) {
-        console.error('❌ Table body not found! Check HTML structure.');
-        return;
-    }
+    if (!tbody) return;
     
     if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #94a3b8;">Нет ни одной записи!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;">📭 Нет записей</td></tr>';
         return;
     }
     
     Promise.all([getAllItems('products'), getAllItems('clients')]).then(([products, clients]) => {
-        const productMap = {};
-        const clientMap = {};
-        products.forEach(p => productMap[p.id] = p);
-        clients.forEach(c => clientMap[c.id] = c);
+        const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+        const clientMap = Object.fromEntries(clients.map(c => [c.id, c]));
         
         tbody.innerHTML = items.map((item, index) => {
             const product = productMap[item.product_id];
-            const client = item.client_id ? (clientMap[item.client_id]?.name || 'ID:' + item.client_id) : '—';
-
-            // Анимация: применяем класс к tr
+            const client = item.client_id ? (clientMap[item.client_id]?.name || `ID:${item.client_id}`) : '—';
+            
+            // Анимация
             const animClass = shouldAnimate ? 'table-row-animate' : '';
-            const animDelay = shouldAnimate ? `style="animation-delay: ${index * 0.04}s;"` : '';
+            const animDelay = shouldAnimate ? `style="animation-delay:${index * 0.04}s"` : '';
             
-            // Комментарий
-            const commentText = item.comment || '—';
-            const commentDisplay = commentText === '—' ? '—' : (commentText.length > 20 ? commentText.substring(0, 20) + '...' : commentText);
-            const commentHtml = createTruncatableHtml(item.comment, 25, 'Описание');
+            // Комментарий с обрезкой
+            const commentHtml = createTruncatableHtml(item.comment, 25, 'Комментарий');
             
-            // Сумма
+            // Сумма и тип
             const isPositive = item.type === 'restock';
-            const sumClass = isPositive ? 'color: #166534;' : 'color: #991b1b;';
+            const sumClass = isPositive ? 'color:#166534' : 'color:#991b1b';
             const sumSign = isPositive ? '+' : '';
+            const typeInfo = TYPE_LABELS[item.type] || { text: item.type, class: 'badge-gray' };
             
-            // Бейдж типа
-            let typeBadge = 'badge-gray';
-            if (item.type === 'sale') typeBadge = 'badge-success';
-            if (item.type === 'writeoff') typeBadge = 'badge-danger';
-            if (item.type === 'restock') typeBadge = 'badge-info';
-            
-            // Тёмный фон для записей с периодом
-            const hasPeriod = item.comment && item.comment.includes('📅 Период:');
-            const rowBg = hasPeriod ? 'background: #f0f9ff;' : '';
+            // Фон для записей с периодом
+            const hasPeriod = item.comment?.includes('📅 Период:');
+            const rowBg = hasPeriod ? 'background:#f0f9ff' : '';
             
             return `
-            <tr data-id="${item.id}" 
-                class="${animClass}" 
-                ${animDelay}
-                style="${rowBg}"
-                onclick="handleRowClick(event, ${item.id})">
+            <tr data-id="${item.id}" class="${animClass}" ${animDelay} style="${rowBg}">
                 <td><strong>#${item.id}</strong></td>
                 <td>${product ? `${product.sku} ${product.name}` : '-'}</td>
                 <td>${client}</td>
-                <td style="text-align: center;">${item.quantity}</td>
-                <td style="text-align: right; font-weight: 600; ${sumClass}">${sumSign}${item.total_amount?.toFixed(2) || 0} ₽</td>
+                <td style="text-align:center">${item.quantity}</td>
+                <td style="text-align:right;font-weight:600;${sumClass}">${sumSign}${(item.total_amount || 0).toFixed(2)} ₽</td>
                 <td>${new Date(item.transaction_date).toLocaleDateString()}</td>
-                <td><span class="badge ${typeBadge}">${item.type}</span></td>
-                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <td><span class="badge ${typeInfo.class}">${typeInfo.text}</span></td>
+                <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                     ${commentHtml}
                 </td>
             </tr>`;
         }).join('');
+        
+        // Перепривязываем обработчики выделения (для динамических строк)
+        // if (selectionManager) selectionManager.refresh();
     });
 }
-
 
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 function setupEventListeners() {
     // Формы
-    const singleSaleForm = document.getElementById('singleSaleForm');
-    const bulkAdjustmentForm = document.getElementById('bulkAdjustmentForm');
+    document.getElementById('singleSaleForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleSingleSaleSubmit();
+        closeModal('singleSaleModal');
+    });
     
-    if (singleSaleForm) {
-        singleSaleForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await handleSingleSaleSubmit();
-            closeModal('singleSaleModal');
+    document.getElementById('bulkAdjustmentForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleBulkAdjustmentSubmit();
+        closeModal('bulkAdjustmentModal');
+    });
+    
+    // Фильтры и пагинация
+    document.getElementById('pageSize')?.addEventListener('change', (e) => {
+        currentPageSize = parseInt(e.target.value);
+        currentPage = 1;
+        loadSalesTable();
+    });
+    
+    document.getElementById('btnApplyFilters')?.addEventListener('click', () => {
+        currentFilters = {
+            type: document.getElementById('filterType')?.value || null,
+            product_id: document.getElementById('filterProduct')?.value || null,
+            date_from: document.getElementById('filterDateFrom')?.value || null,
+            date_to: document.getElementById('filterDateTo')?.value || null
+        };
+        currentPage = 1;
+        loadSalesTable();
+    });
+    
+    document.getElementById('btnResetFilters')?.addEventListener('click', () => {
+        ['filterType', 'filterProduct', 'filterDateFrom', 'filterDateTo'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
         });
-    }
+        currentFilters = {};
+        currentPage = 1;
+        loadSalesTable();
+    });
     
-    if (bulkAdjustmentForm) {
-        bulkAdjustmentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await handleBulkAdjustmentSubmit();
-            closeModal('bulkAdjustmentModal');
-        });
-    }
-    
-    // Пагинация и фильтры
-    const pageSize = document.getElementById('pageSize');
-    const btnApplyFilters = document.getElementById('btnApplyFilters');
-    const btnResetFilters = document.getElementById('btnResetFilters');
-    const sortSelect = document.getElementById('sortSelect');
-    
-    if (pageSize) {
-        pageSize.addEventListener('change', (e) => {
-            currentPageSize = parseInt(e.target.value);
-            currentPage = 1;
-            loadSalesTable();
-        });
-    }
-    
-    if (btnApplyFilters) {
-        btnApplyFilters.addEventListener('click', () => {
-            currentFilters = {
-                type: document.getElementById('filterType')?.value || null,
-                product_id: document.getElementById('filterProduct')?.value || null,
-                date_from: document.getElementById('filterDateFrom')?.value || null,
-                date_to: document.getElementById('filterDateTo')?.value || null
-            };
-            currentPage = 1;
-            loadSalesTable();
-        });
-    }
-    
-    if (btnResetFilters) {
-        btnResetFilters.addEventListener('click', () => {
-            const filterType = document.getElementById('filterType');
-            const filterProduct = document.getElementById('filterProduct');
-            const filterDateFrom = document.getElementById('filterDateFrom');
-            const filterDateTo = document.getElementById('filterDateTo');
-            
-            if (filterType) filterType.value = '';
-            if (filterProduct) filterProduct.value = '';
-            if (filterDateFrom) filterDateFrom.value = '';
-            if (filterDateTo) filterDateTo.value = '';
-            
-            currentFilters = {};
-            currentPage = 1;
-            loadSalesTable();
-        });
-    }
-    
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            currentPage = 1;
-            loadSalesTable(e.target.value); 
-        });
-    }
+    document.getElementById('sortSelect')?.addEventListener('change', (e) => {
+        currentPage = 1;
+        loadSalesTable(e.target.value);
+    });
     
     // Модальные окна
-    const modalCancel = document.getElementById('modalCancel');
-    const confirmModal = document.getElementById('confirmModal');
+    document.getElementById('modalCancel')?.addEventListener('click', () => {
+        document.getElementById('confirmModal').style.display = 'none';
+    });
     
-    if (modalCancel) {
-        modalCancel.addEventListener('click', () => {
+    document.getElementById('confirmModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'confirmModal') {
             document.getElementById('confirmModal').style.display = 'none';
-        });
-    }
-    
-    if (confirmModal) {
-        confirmModal.addEventListener('click', (e) => {
-            if (e.target.id === 'confirmModal') {
-                confirmModal.style.display = 'none';
-            }
-        });
-    }
+        }
+    });
     
     // Клиент: создать нового
-    const saleClient = document.getElementById('saleClient');
-    if (saleClient) {
-        saleClient.addEventListener('change', async (e) => {
-            if (e.target.value === 'new') {
-                e.target.value = 'empty';
-                if (confirm('Перейти на страницу создания клиента?')) {
-                    window.location.href = 'clients.html';
-                }
+    document.getElementById('saleClient')?.addEventListener('change', async (e) => {
+        if (e.target.value === 'new') {
+            e.target.value = 'empty';
+            if (confirm('Перейти к созданию клиента?')) {
+                window.location.href = 'clients.html';
             }
-        });
-    }
-
-    // Период для единичной сделки - с проверкой
-    const salePeriodToggle = document.getElementById('salePeriodToggle');
-    if (salePeriodToggle) {
-        salePeriodToggle.addEventListener('change', function() {
-            const commentContainer = document.getElementById('saleCommentContainer');
-            const periodContainer = document.getElementById('salePeriodContainer');
-            const commentInput = document.getElementById('saleComment');
-            const periodFromInput = document.getElementById('salePeriodFrom');
-            const periodToInput = document.getElementById('salePeriodTo');
-            
-            if (this.checked) {
-                if (commentContainer) commentContainer.style.display = 'none';
-                if (periodContainer) periodContainer.style.display = 'block';
-                if (commentInput) commentInput.value = '';
-            } else {
-                if (periodContainer) periodContainer.style.display = 'none';
-                if (commentContainer) commentContainer.style.display = 'block';
-                if (periodFromInput) periodFromInput.value = '';
-                if (periodToInput) periodToInput.value = '';
-            }
-        });
-    }
+        }
+    });
+    
+    // Переключение периода/комментария
+    setupPeriodToggle('salePeriodToggle', 'saleCommentContainer', 'salePeriodContainer', 'saleComment', 'salePeriodFrom', 'salePeriodTo');
+    setupPeriodToggle('bulkPeriodToggle', 'bulkCommentContainer', 'bulkPeriodContainer', 'bulkComment', 'bulkPeriodFrom', 'bulkPeriodTo');
 }
+
+// Хелпер для переключения период/комментарий
+function setupPeriodToggle(toggleId, commentContainerId, periodContainerId, commentInputId, fromInputId, toInputId) {
+    const toggle = document.getElementById(toggleId);
+    if (!toggle) return;
+    
+    toggle.addEventListener('change', function() {
+        const showPeriod = this.checked;
+        document.getElementById(commentContainerId).style.display = showPeriod ? 'none' : 'block';
+        document.getElementById(periodContainerId).style.display = showPeriod ? 'block' : 'none';
+        
+        const commentInput = document.getElementById(commentInputId);
+        const fromInput = document.getElementById(fromInputId);
+        const toInput = document.getElementById(toInputId);
+        
+        if (showPeriod) {
+            if (commentInput) commentInput.value = '';
+        } else {
+            if (fromInput) fromInput.value = '';
+            if (toInput) toInput.value = '';
+        }
+    });
+}
+
 // === ОБРАБОТКА ФОРМ ===
 
-// Единичная сделка
 async function handleSingleSaleSubmit() {
     const btn = document.getElementById('btnSingleSale');
-    if (btn.disabled) return;
+    if (btn?.disabled) return;
     
-    const isPeriodEnabled = document.getElementById('salePeriodToggle')?.checked || false;
-    
+    const isPeriod = document.getElementById('salePeriodToggle')?.checked;
     let comment = '';
-    if (isPeriodEnabled) {
-        const periodFrom = document.getElementById('salePeriodFrom').value;
-        const periodTo = document.getElementById('salePeriodTo').value;
+    
+    if (isPeriod) {
+        const from = document.getElementById('salePeriodFrom')?.value;
+        const to = document.getElementById('salePeriodTo')?.value;
         
-        if (!periodFrom || !periodTo) {
-            showToast('⚠️ Укажите обе даты периода (С и ПО)');
-            return;
-        }
-        if (new Date(periodFrom) > new Date(periodTo)) {
-            showToast('⚠️ Дата "С" не может быть позже даты "ПО"');
-            return;
-        }
-        const fromFormatted = new Date(periodFrom).toLocaleDateString('ru-RU');
-        const toFormatted = new Date(periodTo).toLocaleDateString('ru-RU');
-        comment = `📅 Период: с ${fromFormatted} по ${toFormatted}`;
+        if (!from || !to) { showWarning('Укажите обе даты периода'); return; }
+        if (new Date(from) > new Date(to)) { showWarning('Некорректный период'); return; }
+        
+        const fmt = d => new Date(d).toLocaleDateString('ru-RU');
+        comment = `📅 Период: с ${fmt(from)} по ${fmt(to)}`;
     } else {
-        comment = document.getElementById('saleComment').value;
+        comment = document.getElementById('saleComment')?.value || '';
     }
     
     const formData = {
-        client_id: document.getElementById('saleClient').value,
-        product_id: document.getElementById('saleProduct').value,
-        quantity: document.getElementById('saleQty').value,
-        unit_price: document.getElementById('salePrice').value,
-        transaction_date: document.getElementById('saleDate').value || new Date().toISOString(),
-        comment: comment,
-        type: document.getElementById('saleType').value
+        client_id: document.getElementById('saleClient')?.value,
+        product_id: document.getElementById('saleProduct')?.value,
+        quantity: document.getElementById('saleQty')?.value,
+        unit_price: document.getElementById('salePrice')?.value,
+        transaction_date: document.getElementById('saleDate')?.value || new Date().toISOString(),
+        comment,
+        type: document.getElementById('saleType')?.value
     };
     
-    if (!formData.product_id) { showToast('⚠️ Выберите товар'); return; }
+    if (!formData.product_id) { showWarning('Выберите товар'); return; }
     
     if (formData.type === 'writeoff') {
-        const confirmed = await confirmModal('Подтверждение списания', `Списать ${formData.quantity} ед. товара?`);
-        if (!confirmed) return;
+        const ok = await confirmModal('Подтверждение', `Списать ${formData.quantity} ед.?`);
+        if (!ok) return;
     }
     
-    btn.disabled = true; btn.textContent = '⏳ Обработка...';
+    btn.disabled = true;
+    btn.textContent = '⏳ Обработка...';
     
     try {
         await createSale(formData);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showToast('✅ Сделка зарегистрирована');
+        showSuccess('✅ Сделка зарегистрирована');
         
-        document.getElementById('singleSaleForm').reset();
+        // Сброс формы
+        document.getElementById('singleSaleForm')?.reset();
         document.getElementById('saleDate').value = new Date().toISOString().slice(0, 16);
         document.getElementById('salePeriodToggle').checked = false;
         document.getElementById('saleCommentContainer').style.display = 'block';
@@ -415,59 +389,59 @@ async function handleSingleSaleSubmit() {
         
     } catch (error) {
         console.error('Error creating sale:', error);
-        showToast('❌ Ошибка: ' + error.message);
+        showError('❌ ' + error.message);
     } finally {
-        btn.disabled = false; btn.textContent = 'Зарегистрировать сделку';
+        btn.disabled = false;
+        btn.textContent = 'Зарегистрировать сделку';
     }
 }
 
-// Пакетная корректировка
 async function handleBulkAdjustmentSubmit() {
     const btn = document.getElementById('btnBulkAdjustment');
-    if (btn.disabled) return;
+    if (btn?.disabled) return;
     
-    const isPeriodEnabled = document.getElementById('bulkPeriodToggle')?.checked || false;
-    
+    const isPeriod = document.getElementById('bulkPeriodToggle')?.checked;
     let comment = '';
-    if (isPeriodEnabled) {
-        const periodFrom = document.getElementById('bulkPeriodFrom').value;
-        const periodTo = document.getElementById('bulkPeriodTo').value;
+    
+    if (isPeriod) {
+        const from = document.getElementById('bulkPeriodFrom')?.value;
+        const to = document.getElementById('bulkPeriodTo')?.value;
         
-        if (!periodFrom || !periodTo) { showToast('⚠️ Укажите обе даты периода'); return; }
-        if (new Date(periodFrom) > new Date(periodTo)) { showToast('⚠️ Некорректный период'); return; }
+        if (!from || !to) { showWarning('Укажите обе даты'); return; }
+        if (new Date(from) > new Date(to)) { showWarning('Некорректный период'); return; }
         
-        const fromFormatted = new Date(periodFrom).toLocaleDateString('ru-RU');
-        const toFormatted = new Date(periodTo).toLocaleDateString('ru-RU');
-        comment = `📅 Период: с ${fromFormatted} по ${toFormatted}`;
+        const fmt = d => new Date(d).toLocaleDateString('ru-RU');
+        comment = `📅 Период: с ${fmt(from)} по ${fmt(to)}`;
     } else {
-        comment = document.getElementById('bulkComment').value;
+        comment = document.getElementById('bulkComment')?.value || '';
     }
     
     const formData = {
-        product_id: document.getElementById('bulkProduct').value,
-        quantity: document.getElementById('bulkQty').value,
-        period_start: document.getElementById('bulkDate').value || new Date().toISOString(),
+        product_id: document.getElementById('bulkProduct')?.value,
+        quantity: document.getElementById('bulkQty')?.value,
+        period_start: document.getElementById('bulkDate')?.value || new Date().toISOString(),
         period_end: null,
-        type: document.getElementById('bulkType').value,
-        comment: comment
+        type: document.getElementById('bulkType')?.value,
+        comment
     };
     
-    if (!formData.product_id) { showToast('⚠️ Выберите товар'); return; }
+    if (!formData.product_id) { showWarning('Выберите товар'); return; }
     
     if (formData.type === 'writeoff') {
-        const confirmed = await confirmModal('Подтверждение списания', `Списать ${formData.quantity} ед.?`);
-        if (!confirmed) return;
+        const ok = await confirmModal('Подтверждение', `Списать ${formData.quantity} ед.?`);
+        if (!ok) return;
     }
     
-    btn.disabled = true; btn.textContent = '⏳ Обработка...';
+    btn.disabled = true;
+    btn.textContent = '⏳ Обработка...';
     
     try {
         await createBulkAdjustment(formData);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showToast('✅ Корректировка зарегистрирована');
+        showSuccess('✅ Корректировка зарегистрирована');
         
-        document.getElementById('bulkAdjustmentForm').reset();
+        document.getElementById('bulkAdjustmentForm')?.reset();
         document.getElementById('bulkDate').value = new Date().toISOString().slice(0, 16);
         document.getElementById('bulkPeriodToggle').checked = false;
         document.getElementById('bulkCommentContainer').style.display = 'block';
@@ -479,194 +453,21 @@ async function handleBulkAdjustmentSubmit() {
         
     } catch (error) {
         console.error('Error creating bulk adjustment:', error);
-        showToast('❌ Ошибка: ' + error.message);
+        showError('❌ ' + error.message);
     } finally {
-        btn.disabled = false; btn.textContent = 'Зарегистрировать корректировку';
+        btn.disabled = false;
+        btn.textContent = 'Зарегистрировать корректировку';
     }
 }
 
 // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
-function formatDate(isoString) {
-    if (!isoString) return '—';
-    const date = new Date(isoString);
-    return date.toLocaleDateString('ru-RU') + ' ' + date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
-}
 
 function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    // Обёртка для обратной совместимости
+    showSuccess(message);
 }
 
-function confirmModal(title, message) {
-    return new Promise(resolve => {
-        document.getElementById('modalTitle').textContent = title;
-        document.getElementById('modalMessage').textContent = message;
-        document.getElementById('confirmModal').style.display = 'block';
-        
-        const onConfirm = () => { cleanup(); resolve(true); };
-        const onCancel = () => { cleanup(); resolve(false); };
-        const cleanup = () => {
-            document.getElementById('modalConfirm').removeEventListener('click', onConfirm);
-            document.getElementById('modalCancel').removeEventListener('click', onCancel);
-        };
-        
-        document.getElementById('modalConfirm').addEventListener('click', onConfirm);
-        document.getElementById('modalCancel').addEventListener('click', onCancel);
-    });
-}
-
-// === ВЫДЕЛЕНИЕ И КОНТЕКСТНОЕ МЕНЮ ===
-window.selectedRows = new Map();
-window.ctxTargetId = null;
-
-window.handleRowClick = function(event, id) {
-    event.preventDefault();
-    const row = event.currentTarget;
-    const modifier = getSetting('ui.selectionModifier') || 'shift';
-    const isModifier = modifier === 'shift' ? event.shiftKey : (event.ctrlKey || event.metaKey);
-
-    if (isModifier) {
-        if (window.selectedRows.has(id)) window.selectedRows.delete(id);
-        else window.selectedRows.set(id, row);
-    } else {
-        window.selectedRows.clear();
-        window.selectedRows.set(id, row);
-    }
-    window.updateSelectionUI();
-};
-
-window.updateSelectionUI = function() {
-    document.querySelectorAll('.crm-table tbody tr').forEach(tr => tr.classList.remove('selected'));
-    window.selectedRows.forEach(row => row.classList.add('selected'));
-
-    const bar = document.getElementById('bulkActionBar');
-    const countBadge = document.getElementById('selectedCount');
-    const btnEdit = document.getElementById('btnBulkEdit');
-    const btnDelete = document.getElementById('btnBulkDelete');
-    const count = window.selectedRows.size;
-
-    if (count > 0) {
-        bar.classList.add('visible');
-        countBadge.textContent = count;
-        btnEdit.disabled = count !== 1;
-        btnDelete.disabled = false;
-    } else {
-        bar.classList.remove('visible');
-    }
-};
-
-// ПКМ
-document.addEventListener('contextmenu', async (e) => {
-    const row = e.target.closest('tr');
-    if (!row || !row.dataset.id) return;
-    e.preventDefault();
-    
-    window.ctxTargetId = parseInt(row.dataset.id);
-    window.showContextMenu(e.pageX, e.pageY);
-});
-
-window.showContextMenu = function(x, y) {
-    const menu = document.getElementById('ctxMenu');
-    const btnEdit = document.getElementById('ctxEdit');
-    const btnDelete = document.getElementById('ctxDelete');
-    
-    btnEdit.disabled = !window.ctxTargetId;
-    btnDelete.disabled = !window.ctxTargetId;
-
-    const finalX = Math.min(x, window.innerWidth - 190);
-    const finalY = Math.min(y, window.innerHeight - 130);
-    
-    menu.style.left = `${finalX}px`;
-    menu.style.top = `${finalY}px`;
-    menu.style.display = 'block';
-};
-
-export function hideContextMenu() {
-    document.getElementById('ctxMenu').style.display = 'none';
-}
-
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.ctx-menu')) hideContextMenu();
-});
-
-window.ctxEditAction = async function() {
-    hideContextMenu();
-    if (window.ctxTargetId) await window.openEditSale(window.ctxTargetId);
-};
-
-window.ctxDeleteAction = async function() {
-    hideContextMenu();
-    if (!window.ctxTargetId) return;
-    if (!confirm('Удалить эту запись?')) return;
-    
-    try {
-        await deleteItem('sales', window.ctxTargetId);
-        if (window.saveDataToFile) await window.saveDataToFile();
-        showToast('✅ Удалено');
-        loadSalesTable();
-    } catch (err) { showToast('❌ Ошибка: ' + err.message); }
-};
-
-window.openEditSale = async function(id) {
-    try {
-        const item = await getItemById('sales', id);
-        if (!item) { showToast('❌ Запись не найдена'); return; }
-        
-        document.getElementById('editSaleId').value = item.id;
-        document.getElementById('editSaleQty').value = item.quantity;
-        document.getElementById('editSalePrice').value = item.unit_price;
-        document.getElementById('editSaleComment').value = item.comment || '';
-        
-        const dateObj = new Date(item.transaction_date);
-        dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());
-        document.getElementById('editSaleDate').value = dateObj.toISOString().slice(0, 16);
-        
-        openModal('editSaleModal');
-    } catch (err) { showToast('❌ Ошибка: ' + err.message); }
-};
-
-window.editSelected = async function() {
-    if (window.selectedRows.size !== 1) return;
-    const [id] = window.selectedRows.keys();
-    await window.openEditSale(id);
-};
-
-window.deleteSelected = async function() {
-    const count = window.selectedRows.size;
-    if (count === 0) return;
-    if (!confirm(`Удалить ${count} записей?`)) return;
-
-    try {
-        for (const id of Array.from(window.selectedRows.keys())) {
-            await deleteItem('sales', id);
-        }
-        if (window.saveDataToFile) await window.saveDataToFile();
-        window.clearSelection();
-        showToast(`✅ Удалено записей: ${count}`);
-        loadSalesTable();
-    } catch (err) { showToast('❌ Ошибка: ' + err.message); }
-};
-
-window.clearSelection = function() {
-    window.selectedRows.clear();
-    window.updateSelectionUI();
-};
-
-// Просмотр комментария
-window.viewComment = function(text) {
-    if (!text || text === '—') return;
-    const modal = document.getElementById('viewCommentModal');
-    const textContainer = document.getElementById('viewCommentText');
-    if (textContainer) {
-        textContainer.innerHTML = text.replace(/\n/g, '<br>');
-        if (modal) openModal('viewCommentModal');
-    }
-};
-
-// Управление модалками
+// Управление модальными окнами (глобальные для HTML)
 window.openModal = function(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -684,39 +485,102 @@ window.closeModal = function(modalId) {
 };
 
 window.closeModalOnOverlay = function(event, modalId) {
-    if (event.target === document.getElementById(modalId)) {
+    if (event.target.id === modalId) {
         window.closeModal(modalId);
     }
 };
 
-// Глобальный экспорт
+// Редактирование записи
+window.openEditSale = async function(id) {
+    try {
+        const item = await getItemById('sales', id);
+        if (!item) { showError('Запись не найдена'); return; }
+        
+        document.getElementById('editSaleId').value = item.id;
+        document.getElementById('editSaleQty').value = item.quantity;
+        document.getElementById('editSalePrice').value = item.unit_price;
+        document.getElementById('editSaleComment').value = item.comment || '';
+        
+        const dateObj = new Date(item.transaction_date);
+        dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());
+        document.getElementById('editSaleDate').value = dateObj.toISOString().slice(0, 16);
+        
+        openModal('editSaleModal');
+    } catch (err) {
+        showError('❌ ' + err.message);
+    }
+};
+
+// Удаление записи
 window.deleteSaleById = async function(id) {
-    if (!confirm('Удалить эту запись?')) return;
+    if (!confirm('Удалить запись?')) return;
     try {
         await deleteItem('sales', id);
         if (window.saveDataToFile) await window.saveDataToFile();
-        showToast('✅ Запись удалена');
+        showSuccess('✅ Запись удалена');
         loadSalesTable();
-    } catch (err) { showToast('❌ Ошибка удаления'); }
+    } catch (err) {
+        showError('❌ Ошибка удаления');
+    }
 };
 
-// Экспорт для HTML
-window.handleRowClick = window.handleRowClick;
-window.clearSelection = window.clearSelection;
-window.ctxEditAction = window.ctxEditAction;
-window.ctxDeleteAction = window.ctxDeleteAction;
-window.editSelected = window.editSelected;
-window.deleteSelected = window.deleteSelected;
-window.openEditSale = window.openEditSale;
-window.deleteItem = deleteItem;
-window.loadSalesTable = loadSalesTable;
-window.showToast = showToast;
-window.getItemById = getItemById;
-window.getAllItems = getAllItems;
-window.updateItem = updateItem;
-window.viewComment = window.viewComment;
-window.openModal = window.openModal;
-window.closeModal = window.closeModal;
-window.closeModalOnOverlay = window.closeModalOnOverlay;
+// === КОНТЕКСТНОЕ МЕНЮ И ДЕЙСТВИЯ ===
 
-export { loadSalesTable, populateDropdowns };
+// Редактирование из контекстного меню
+window.ctxEditAction = async function() {
+    hideContextMenu();
+    const id = selectionManager?.getCtxTargetId();
+    if (id) await openEditSale(id);
+};
+
+// Удаление из контекстного меню
+window.ctxDeleteAction = async function() {
+    hideContextMenu();
+    const id = selectionManager?.getCtxTargetId();
+    if (!id) return;
+    
+    if (!confirm('Удалить эту запись?')) return;
+    
+    try {
+        await deleteItem('sales', id);
+        if (window.saveDataToFile) await window.saveDataToFile();
+        showSuccess('✅ Запись удалена');
+        loadSalesTable();
+    } catch (err) {
+        showError('❌ ' + err.message);
+    }
+};
+
+// Массовое удаление (как у клиентов - без редактирования)
+export async function deleteSelected() {
+    const count = selectionManager?.getSelectedIds().length || 0;
+    if (count === 0) return;
+    
+    if (!confirm(`Удалить ${count} записей?`)) return;
+
+    try {
+        const ids = selectionManager.getSelectedIds();
+        for (const id of ids) {
+            await deleteItem('sales', id);
+        }
+        if (window.saveDataToFile) await window.saveDataToFile();
+        
+        selectionManager.clear();
+        showSuccess(`✅ Удалено записей: ${count}`);
+        loadSalesTable();
+    } catch (err) {
+        showError('❌ ' + err.message);
+    }
+}
+
+// Скрытие контекстного меню
+function hideContextMenu() {
+    const menu = document.getElementById('ctxMenu');
+    if (menu) menu.style.display = 'none';
+}
+
+// Глобальный экспорт
+window.deleteSelected = deleteSelected;
+window.ctxEditAction = ctxEditAction;
+window.ctxDeleteAction = ctxDeleteAction;
+window.hideContextMenu = hideContextMenu;

@@ -1,28 +1,43 @@
 // resources/js/partials/selectionManager.js
 import { getSetting } from '../settings-manager.js';
+import { deleteItem } from '../db_indexeddb.js';
 export class SelectionManager {
     constructor(options) {
-        this.tableBody = document.querySelector(options.tableBodySelector);
+        this.tableBodySelector = options.tableBodySelector;
         this.actionBar = document.getElementById(options.actionBarId);
         this.ctxMenu = document.getElementById(options.ctxMenuId);
-        this.selectedRows = new Map(); // id -> DOM Element
+        this.selectedRows = new Map();
         this.ctxTargetId = null;
+        this.callbacks = options.callbacks || {};
         
-        this.callbacks = options.callbacks || {}; // onDelete, onEdit, etc.
-        
+        // Ждём появления таблицы перед инициализацией
         this.init();
     }
 
     init() {
-        // Глобальные обработчики (вешаем один раз на document или tableBody)
+        // Проверяем существование элементов
+        const tableBody = document.querySelector(this.tableBodySelector);
+        
+        if (!tableBody) {
+            console.warn(`⚠️ Table body "${this.tableBodySelector}" not found. Retrying in 100ms...`);
+            setTimeout(() => this.init(), 100);
+            return;
+        }
+        
+        this.tableBody = tableBody;
+        
+        // Навешиваем обработчики
         this.tableBody.addEventListener('click', (e) => this.handleClick(e));
         this.tableBody.addEventListener('contextmenu', (e) => this.handleRightClick(e));
         
+        // Глобальный обработчик для закрытия меню
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.ctx-menu') && this.ctxMenu) {
                 this.ctxMenu.style.display = 'none';
             }
         });
+        
+        console.log('✅ SelectionManager initialized');
     }
 
     handleClick(event) {
@@ -72,6 +87,32 @@ export class SelectionManager {
             if (btnEdit) btnEdit.disabled = this.selectedRows.size !== 1;
         } else if (this.actionBar) {
             this.actionBar.classList.remove('visible');
+        }
+    }
+
+        /**
+     * Массовое удаление записей
+     * @param {string} storeName - имя хранилища (например, 'sales')
+     * @param {Function} onSuccess - callback после успешного удаления
+     * @param {Function} onError - callback при ошибке
+     */
+    async bulkDelete(storeName, onSuccess, onError) {
+        const ids = this.getSelectedIds();
+        if (ids.length === 0) return;
+        
+        if (!confirm(`Удалить ${ids.length} записей?`)) return;
+
+        try {
+            for (const id of ids) {
+                await deleteItem(storeName, id);
+            }
+            if (window.saveDataToFile) await window.saveDataToFile();
+            
+            this.clear();
+            if (onSuccess) onSuccess(ids.length);
+        } catch (err) {
+            console.error('Bulk delete error:', err);
+            if (onError) onError(err);
         }
     }
 

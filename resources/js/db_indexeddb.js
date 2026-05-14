@@ -82,15 +82,13 @@ export function initDatabase() {
             });
         }
 
-
+let dbInstance = null;
 // Получить экземпляр БД
 export async function getDbInstance() {
-    if (window.dbInstance) {
-        return window.dbInstance;
-    }
+    if (dbInstance) return dbInstance;
     
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        const request = indexedDB.open('CRM_Database', 6);
         
         request.onerror = () => {
             console.error('❌ DB open error:', request.error);
@@ -98,14 +96,22 @@ export async function getDbInstance() {
         };
         
         request.onsuccess = () => {
-            console.log('✅ DB opened successfully');
-            window.dbInstance = request.result;
-            resolve(request.result);
+            dbInstance = request.result;
+            console.log('✅ DB instance cached, version:', dbInstance.version);
+            resolve(dbInstance);
         };
         
-        // request.onupgradeneeded = (event) => {
-        //     // ... код из пункта 1 ...
-        // };
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            const stores = ['clients', 'products', 'sales', 'tickets', 'bulk_adjustments', 'calendar_notes'];
+            
+            stores.forEach(storeName => {
+                if (!db.objectStoreNames.contains(storeName)) {
+                    db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                    console.log(`✅ Store "${storeName}" created`);
+                }
+            });
+        };
     });
 }
 
@@ -268,21 +274,36 @@ export async function addItem(storeName, itemData) {
 
 // Получить все записи из таблицы  
 export async function getAllItems(storeName) {
-    // Получаем экземпляр БД
-    const db = await getDbInstance();
-    
-    return new Promise((resolve, reject) => {
-        try {
+    try {
+        const db = await getDbInstance();
+        
+        return new Promise((resolve, reject) => {
+            // Проверяем существование хранилища
+            if (!db.objectStoreNames.contains(storeName)) {
+                console.warn(`⚠️ Store "${storeName}" not found, returning empty array`);
+                resolve([]);
+                return;
+            }
+            
             const transaction = db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);
             const request = store.getAll();
-
-            request.onsuccess = (e) => resolve(e.target.result);
-            request.onerror = (e) => reject(e.target.error);
-        } catch (error) {
-            reject(error);
-        }
-    });
+            
+            request.onsuccess = () => {
+                const items = request.result || [];
+                console.log(`📥 getAllItems("${storeName}"): ${items.length} items`);
+                resolve(items);
+            };
+            
+            request.onerror = () => {
+                console.error(`❌ Error reading ${storeName}:`, request.error);
+                reject(request.error);
+            };
+        });
+    } catch (error) {
+        console.error(`❌ getAllItems failed for ${storeName}:`, error);
+        return [];
+    }
 }
 
 // Получить одну запись по ID

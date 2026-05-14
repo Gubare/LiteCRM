@@ -130,7 +130,7 @@
                 </select>
                 
                 
-                <select id="filterProduct" class="form-control" style="width: 30%; min-width: 300px; max-width: 500px;">
+                <select id="filterProduct" class="form-control" style="width: 30%; min-width: 500px; max-width: 500px;">
                     <option value="">Все товары</option>
                 </select>
                 
@@ -176,7 +176,7 @@
         <!-- Панель массовых действий -->
         <div id="bulkActionBar" class="bulk-action-bar">
             <span>Выбрано записей: <span class="count-badge" id="selectedCount">0</span></span>
-            <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="editSelected()">✏️ Изменить</button>
+            <!-- <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="openEditSale()">✏️ Изменить</button> -->
             <button id="btnBulkDelete" class="btn-action-icon delete" onclick="deleteSelected()">🗑️ Удалить</button>
             <button class="btn-action-icon" onclick="clearSelection()" style="margin-left:auto; font-size:12px; color:#64748b;">✕ Снять выделение</button>
         </div>
@@ -367,10 +367,10 @@ document.getElementById('editSaleForm').addEventListener('submit', async (e) => 
         if (window.saveDataToFile) await window.saveDataToFile();
         
         closeModal('editSaleModal');
-        showToast('✅ Изменения сохранены');
+        // showToast('✅ Изменения сохранены');
         window.loadSalesTable();
     } catch (err) {
-        showToast('❌ Ошибка сохранения: ' + err.message);
+        // showToast('❌ Ошибка сохранения: ' + err.message);
     }
 });
 

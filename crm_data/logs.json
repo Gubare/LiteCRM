@@ -631,5 +631,417 @@
       "updated_at": "2026-05-13T15:04:36.091Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 35,
+    "timestamp": "2026-05-13T20:12:38.344Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1,
+    "data": {
+      "name": "Анатолий",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-13T20:12:38.337Z",
+      "updated_at": "2026-05-13T20:12:38.337Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 36,
+    "timestamp": "2026-05-14T10:22:59.484Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 191,
+    "data": {
+      "product_id": 80,
+      "quantity": 14,
+      "unit_price": 6658.84,
+      "total_amount": 93223.76,
+      "transaction_date": "2026-05-10T17:36",
+      "comment": "",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-05-10T17:36:02Z",
+      "updated_at": "2026-05-10T17:36:02Z",
+      "id": 191
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T10:22:59.477Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 37,
+    "timestamp": "2026-05-14T10:23:05.267Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 166,
+    "data": {
+      "client_id": 37,
+      "product_id": 89,
+      "quantity": 12,
+      "unit_price": 9999.46,
+      "total_amount": 119993.52,
+      "transaction_date": "2026-05-09T14:02",
+      "comment": "Комментарий #6660",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-05-09T14:02:54Z",
+      "updated_at": "2026-05-09T14:02:54Z",
+      "id": 166
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T10:23:05.262Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 38,
+    "timestamp": "2026-05-14T10:23:05.301Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 172,
+    "data": {
+      "client_id": 36,
+      "product_id": 92,
+      "quantity": 15,
+      "unit_price": 28961.97,
+      "total_amount": 434429.55,
+      "transaction_date": "2026-05-05T03:17",
+      "comment": "",
+      "type": "restock",
+      "is_bulk": false,
+      "created_at": "2026-05-05T03:17:42Z",
+      "updated_at": "2026-05-05T03:17:42Z",
+      "id": 172
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T10:23:05.264Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 39,
+    "timestamp": "2026-05-14T10:26:53.859Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 153,
+    "data": {
+      "client_id": 31,
+      "product_id": 72,
+      "quantity": 13,
+      "unit_price": 34079.28,
+      "total_amount": 443030.64,
+      "transaction_date": "2026-04-30T08:32",
+      "comment": "Комментарий #2718",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-04-30T08:32:03Z",
+      "updated_at": "2026-04-30T08:32:03Z",
+      "id": 153
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T10:26:53.853Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 40,
+    "timestamp": "2026-05-14T10:26:53.883Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 189,
+    "data": {
+      "client_id": 27,
+      "product_id": 62,
+      "quantity": 2,
+      "unit_price": 16142.39,
+      "total_amount": 32284.78,
+      "transaction_date": "2026-04-27T23:05",
+      "comment": "",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-04-27T23:05:00Z",
+      "updated_at": "2026-04-27T23:05:00Z",
+      "id": 189
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T10:26:53.856Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 41,
+    "timestamp": "2026-05-14T10:26:53.919Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 157,
+    "data": {
+      "client_id": 19,
+      "product_id": 68,
+      "quantity": 18,
+      "unit_price": 28172.42,
+      "total_amount": 507103.56,
+      "transaction_date": "2026-04-21T12:46",
+      "comment": "",
+      "type": "restock",
+      "is_bulk": false,
+      "created_at": "2026-04-21T12:46:01Z",
+      "updated_at": "2026-04-21T12:46:01Z",
+      "id": 157
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T10:26:53.861Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 42,
+    "timestamp": "2026-05-14T12:15:21.939Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 51,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "gwwg.2@1234567876543212345678909876543234567898765433456",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-14T12:15:21.930Z",
+      "updated_at": "2026-05-14T12:15:21.930Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 43,
+    "timestamp": "2026-05-14T12:16:20.003Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 180,
+    "data": {
+      "product_id": 73,
+      "quantity": 12,
+      "unit_price": 37688.67,
+      "total_amount": 452264.04,
+      "transaction_date": "2026-04-17T14:52",
+      "comment": "",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-04-17T14:52:22Z",
+      "updated_at": "2026-04-17T14:52:22Z",
+      "id": 180
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:16:19.998Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 44,
+    "timestamp": "2026-05-14T12:23:51.560Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 152,
+    "data": {
+      "client_id": 44,
+      "product_id": 93,
+      "quantity": 4,
+      "unit_price": 8743.06,
+      "total_amount": 34972.24,
+      "transaction_date": "2026-04-12T03:04",
+      "comment": "📅 Период: с 07.03.2026 по 01.04.2026",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-04-12T03:04:49Z",
+      "updated_at": "2026-04-12T03:04:49Z",
+      "id": 152
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:23:51.553Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 45,
+    "timestamp": "2026-05-14T12:23:51.585Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 185,
+    "data": {
+      "client_id": 17,
+      "product_id": 86,
+      "quantity": 18,
+      "unit_price": 9976.93,
+      "total_amount": 179584.74,
+      "transaction_date": "2026-04-11T06:35",
+      "comment": "",
+      "type": "writeoff",
+      "is_bulk": false,
+      "created_at": "2026-04-11T06:35:22Z",
+      "updated_at": "2026-04-11T06:35:22Z",
+      "id": 185
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:23:51.555Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 46,
+    "timestamp": "2026-05-14T12:23:51.617Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 171,
+    "data": {
+      "client_id": 36,
+      "product_id": 53,
+      "quantity": 11,
+      "unit_price": 15275.3,
+      "total_amount": 168028.3,
+      "transaction_date": "2026-04-10T23:10",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-04-10T23:10:23Z",
+      "updated_at": "2026-04-10T23:10:23Z",
+      "id": 171
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:23:51.558Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 47,
+    "timestamp": "2026-05-14T12:23:51.645Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 156,
+    "data": {
+      "client_id": 9,
+      "product_id": 91,
+      "quantity": 7,
+      "unit_price": 21286.57,
+      "total_amount": 149005.99,
+      "transaction_date": "2026-04-11T04:02",
+      "comment": "Комментарий #2042",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-04-11T04:02:21Z",
+      "updated_at": "2026-04-11T04:02:21Z",
+      "id": 156
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:23:51.563Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 48,
+    "timestamp": "2026-05-14T12:23:57.284Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 181,
+    "data": {
+      "client_id": 2,
+      "product_id": 94,
+      "quantity": 13,
+      "unit_price": 38313.64,
+      "total_amount": 498077.32,
+      "transaction_date": "2026-04-10T13:53",
+      "comment": "",
+      "type": "restock",
+      "is_bulk": false,
+      "created_at": "2026-04-10T13:53:18Z",
+      "updated_at": "2026-04-10T13:53:18Z",
+      "id": 181
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:23:57.273Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 49,
+    "timestamp": "2026-05-14T12:25:39.841Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 163,
+    "data": {
+      "product_id": 76,
+      "quantity": 4,
+      "unit_price": 21428.74,
+      "total_amount": 85714.96,
+      "transaction_date": "2026-03-31T08:48",
+      "comment": "Комментарий #3926",
+      "type": "restock",
+      "is_bulk": false,
+      "created_at": "2026-03-31T08:48:09Z",
+      "updated_at": "2026-03-31T08:48:09Z",
+      "id": 163
+    },
+    "metadata": {
+      "deletedAt": "2026-05-14T12:25:39.836Z",
+      "reason": "User initiated deletion"
+    }
+  },
+  {
+    "id": 50,
+    "timestamp": "2026-05-14T12:27:25.703Z",
+    "action": "update",
+    "store": "clients",
+    "recordId": 36,
+    "data": {
+      "name": "Дмитрий Козлов",
+      "phone": "22222222",
+      "email": "35@example.com",
+      "created_at": "2026-04-28T21:03:49Z",
+      "id": 36,
+      "total_spent": 68927,
+      "purchase_count": 6,
+      "updated_at": "2026-05-14T12:27:25.695Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 51,
+    "timestamp": "2026-05-14T12:27:43.927Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 98,
+    "data": {
+      "sku": "ТЕ-98",
+      "category": "Телефон",
+      "name": "Lite-190",
+      "description": "gjc,f.fy",
+      "price": 12855.35,
+      "quantity": 56,
+      "is_active": true,
+      "created_at": "2026-02-08T18:14:36Z",
+      "id": 98,
+      "updated_at": "2026-05-14T12:27:43.921Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 52,
+    "timestamp": "2026-05-14T12:27:54.390Z",
+    "action": "update",
+    "store": "clients",
+    "recordId": 41,
+    "data": {
+      "name": "Светлана Лебедев",
+      "phone": "+79041439014",
+      "email": "mmm@mmm",
+      "created_at": "2026-04-28T22:45:45Z",
+      "id": 41,
+      "total_spent": 51240,
+      "purchase_count": 4,
+      "updated_at": "2026-05-14T12:27:54.383Z"
+    },
+    "metadata": {}
   }
 ]
