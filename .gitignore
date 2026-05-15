@@ -74,3 +74,41 @@ yarn-error.log*
 *.obj
 *.out
 ```
+# === ТЕСТЫ И ПРОИЗВОДИТЕЛЬНОСТЬ ===
+# Результаты бенчмарков и логи
+tests/performance/results.json
+tests/performance/results.log
+tests/performance/__snapshots__/
+
+# Кэш Vitest
+.vitest/
+node_modules/.vite/
+
+# Покрытие кода (если включено)
+coverage/
+*.lcov
+
+# === ДАННЫЕ ПОЛЬЗОВАТЕЛЯ (НИКОГДА НЕ КОММИТИТЬ!) ===
+# Локальная база данных и бэкапы
+crm_data/
+*.backup.json
+backup_*.json
+
+# Логи приложения
+logs/
+*.log
+
+# === СРЕДА РАЗРАБОТЧИКА ===
+# Локальные настройки (если есть)
+*.local.json
+.env.local
+.env.development
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# ОС
+.DS_Store
+Thumbs.db

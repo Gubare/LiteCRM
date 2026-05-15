@@ -362,7 +362,7 @@ async function prepareDailyActivity(periodDays) {
 
 // === ФУНКЦИИ ПОДГОТОВКИ ДАННЫХ ===
 
-function prepareRevenueTrend(sales, type) {
+export function prepareRevenueTrend(sales, type) {
     // Группировка по дням
     const byDate = {};
     
@@ -398,7 +398,7 @@ function prepareRevenueTrend(sales, type) {
     };
 }
 
-function prepareSalesByType(sales) {
+export function prepareSalesByType(sales) {
     const byType = { 
         sale: 0, 
         writeoff: 0, 
@@ -460,7 +460,7 @@ function prepareDealsPerDay(sales, type) {
     };
 }
 
-function prepareTopProducts(sales, products) {
+export function prepareTopProducts(sales, products) {
     const productSales = {};
     
     sales.forEach(sale => {

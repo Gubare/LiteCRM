@@ -3,7 +3,7 @@
 """
 Генератор тестовых данных для CRM System
 Использование:
-py generate_test_data.py --clients 100 --products 100 --sales 100 --tickets 100 --notes 50 --output crm_data/backup.json
+py tests/stress/generate_test_data.py --clients 100 --products 100 --sales 100 --tickets 100 --notes 50 --output tests/stress/backup.json
 """
 
 import json
