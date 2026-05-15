@@ -88,7 +88,7 @@ node_modules/.vite/
 coverage/
 *.lcov
 
-# === ДАННЫЕ ПОЛЬЗОВАТЕЛЯ (НИКОГДА НЕ КОММИТИТЬ!) ===
+#x
 # Локальная база данных и бэкапы
 crm_data/
 *.backup.json

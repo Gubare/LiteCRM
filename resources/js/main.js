@@ -209,10 +209,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Применяем тему
     const theme = getSetting('ui.theme');
     document.documentElement.setAttribute('data-theme', theme);
+    const navButtons = document.querySelectorAll('.nav-item[data-url]');
 
-    if (!getSetting('ui.showNavText')) {
-        document.body.classList.add('nav-icons-only');
-    }
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetUrl = btn.dataset.url;
+            
+            if (targetUrl) {
+                navButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                window.location.href = targetUrl;
+            }
+        });
+    });
+
 
     try {
         // Инициализация IndexedDB

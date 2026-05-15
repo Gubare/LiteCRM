@@ -12,6 +12,7 @@
   --color-text: #1e293b;
   --color-text-secondary: #64748b;
   --color-border: #e2e8f0;
+  --sidebar-text:#c5c5c5;
   
   /* Фоны */
   --bg-app: #f8fafc;
@@ -81,25 +82,130 @@ body {
    3. МАКЕТ И НАВИГАЦИЯ
    ========================================= */
 .main-nav {
-  position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
-  background: var(--bg-sidebar); display: flex; flex-direction: column;
-  padding: 20px 0; overflow-y: auto; z-index: 1000;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.2); transition: width 0.3s ease;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 80px; /* Фиксированная ширина */
+    height: 100vh;
+    background: var(--bg-sidebar);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
 }
 
-.main-nav a {
-  display: flex; align-items: center; gap: 12px; padding: 12px 20px;
-  color: #94a3b8; text-decoration: none; font-size: 14px;
-  transition: var(--transition-fast); white-space: nowrap;
+.nav-item {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    color: inherit; /* Наследует цвет текста */
+    cursor: pointer; /* Курсор-рука */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* padding: 12px 0; */
+    /* margin: 4px 0; */
+    /* color: var(--sidebar-text); */
+    text-decoration: none;
+    transition: all 0.2s ease;
+    /* cursor: pointer; */
+    border-radius: 12px;
+    min-height: 72px; /* Достаточно места для иконки + текста */
 }
-.main-nav a:hover, .main-nav a.active {
-  background: var(--bg-sidebar-hover); color: #fff;
-  border-left: 3px solid var(--color-primary);
+
+.nav-item:hover {
+    background: var(--bg-sidebar-hover);
+    color: #fff;
+    transform: translateY(-2px);
 }
-.nav-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+
+.nav-item.active {
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Иконки */
+.nav-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    stroke: currentColor; /* Наследует цвет от родителя */
+    fill: none;
+}
+
+.nav-item.active .nav-icon {
+    stroke: currentColor;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Текст под иконкой */
+.nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70px;
+    transition: all 0.2s ease;
+}
+
+/* Адаптивность для больших экранов (можно расширить) */
+@media (min-width: 1200px) {
+    .main-nav {
+        width: 90px;
+    }
+    
+    .nav-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .nav-label {
+        font-size: 12px;
+        max-width: 80px;
+    }
+}
+
+/* Скроллбар для навбара */
+.main-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.main-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.main-nav::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+}
+
+.main-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+
+@media (min-width: 1200px) {
+    .page-content {
+        margin-left: 90px;
+    }
+}
 
 .page-content {
-  margin-left: 240px; flex: 1; padding: 24px;
+  /* margin-left: 240px; */
+  flex: 1; padding: 24px;
   overflow-y: auto; height: 100vh; transition: margin-left 0.3s ease;
 }
 
