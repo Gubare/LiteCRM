@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <title>Настройки - CRM</title>
     <link rel="stylesheet" href="styles.css">
+            <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('crm_theme') || 'blue';
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch(e) {}
+      })();
+    </script>
     <style>
         .settings-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         .settings-section { 
@@ -159,6 +167,7 @@
                 <select id="themeSelect" class="form-control" style="width: 200px;">
                     <option value="blue">Синяя (по умолчанию)</option>
                     <option value="excel">Зелёная (Excel)</option>
+                    <option value="1c">1С:Предприятие</option>
                 </select>
             </div>
 
@@ -464,10 +473,10 @@
 
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Загружаем настройки из файла
+            // Загружаем настройки из файла
             await loadSettings();
             await loadLogSettings();
-            // 2. Применяем состояние чекбоксов
+            // Применяем состояние чекбоксов
             const tooltipsToggle = document.getElementById('toggleTooltips');
             const navTextToggle = document.getElementById('toggleNavText');
             const animateToggle = document.getElementById('toggleRowAnimation');
@@ -519,12 +528,45 @@
             });
         });
 
+            // Инициализация селекта темы
+            const themeSelect = document.getElementById('themeSelect');
+            if (themeSelect) {
+                // Читаем из localStorage (быстро) или из window.settings (если уже загружены)
+                const currentTheme = localStorage.getItem('crm_theme') || 
+                                    window.settings?.['ui.theme'] || 
+                                    'blue';
+                                    
+                themeSelect.value = currentTheme;
+                
+                // Подписываем на изменения (если ещё не подписаны)
+                themeSelect.removeEventListener('change', handleThemeChange);
+                themeSelect.addEventListener('change', handleThemeChange);
+            }
+
+            function handleThemeChange(e) {
+                const newTheme = e.target.value;
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('crm_theme', newTheme);
+                updateSetting('ui.theme', newTheme);
+            }
+
         // Изменение темы
-        document.getElementById('themeSelect').addEventListener('change', (e) => {
-            const theme = e.target.value;
-            document.documentElement.setAttribute('data-theme', theme);
-            updateSetting('ui.theme', theme);
-            showToast(`✅ Тема изменена на ${e.target.options[e.target.selectedIndex].text}`);
+        document.getElementById('themeSelect')?.addEventListener('change', async (e) => {
+            const newTheme = e.target.value;
+            
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            
+            localStorage.setItem('crm_theme', newTheme);
+            
+            
+            try {
+                await updateSetting('ui.theme', newTheme);
+                console.log('✅ Theme saved to settings.json');
+            } catch (err) {
+                console.warn('⚠️ Could not save theme to file:', err);
+            }
         });
 
         // Настройки календаря

@@ -202,6 +202,71 @@ if(NL_OS != "Darwin") {
     setTray();
 }
 
+function initProximityNav() {
+  const nav = document.querySelector('.main-nav');
+  if (!nav) return;
+  
+  const items = Array.from(nav.querySelectorAll('.nav-item'));
+  let mouseX = 0, mouseY = 0;
+  let isTracking = false;
+  const MAX_DISTANCE = 140; // Радиус эффекта в пикселях
+
+  function updateProximity() {
+    // Если мышь ушла далеко от сайдбара, сбрасываем всё
+    const navRect = nav.getBoundingClientRect();
+    if (mouseX > navRect.right + 50) {
+      items.forEach(item => item.style.setProperty('--proximity', 0));
+      isTracking = false;
+      return;
+    }
+
+    items.forEach(item => {
+      // Если кнопка активна, пропускаем расчёт
+      if (item.classList.contains('active')) {
+        item.style.setProperty('--proximity', 0);
+        return;
+      }
+
+      const rect = item.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      // Расстояние от курсора до центра кнопки
+      const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+
+      // Преобразуем дистанцию в значение 0..1
+      let proximity = 1 - (dist / MAX_DISTANCE);
+      proximity = Math.max(0, Math.min(1, proximity));
+
+      // Квадратичное затухание для более естественного "свечения"
+      proximity = Math.pow(proximity, 3);
+
+      item.style.setProperty('--proximity', proximity);
+    });
+
+    // Продолжаем анимацию, пока мышь двигается
+    if (isTracking) {
+      requestAnimationFrame(updateProximity);
+    }
+  }
+
+  nav.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    if (!isTracking) {
+      isTracking = true;
+      requestAnimationFrame(updateProximity);
+    }
+  });
+
+  nav.addEventListener('mouseleave', () => {
+    items.forEach(item => item.style.setProperty('--proximity', 0));
+    isTracking = false;
+  });
+}
+
+
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('main.js: DOMContentLoaded');
@@ -296,6 +361,7 @@ export function applyNavSettings() {
 }
 
 
+document.addEventListener('DOMContentLoaded', initProximityNav);
 // Делаем функции доступными глобально
 window.exportToJSON = exportToJSON;
 window.importFromJSON = importFromJSON;

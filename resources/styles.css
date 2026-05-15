@@ -44,6 +44,61 @@
   --bg-highlight: #e8f5e9;
 }
 
+/* 🟡 Тема 1С (Жёлтая с красным акцентом) */
+[data-theme="1c"] {
+  /* Основные цвета */
+  --color-primary: #d32f2f;           /* Красный 1С */
+  --color-primary-hover: #b71c1c;     /* Тёмно-красный */
+  --color-success: #388e3c;           /* Зелёный */
+  --color-danger: #d32f2f;            /* Красный */
+  --color-warning: #f57c00;           /* Оранжевый */
+  --color-info: #1976d2;              /* Синий */
+  
+  /* Фоны - тёплые бежево-жёлтые */
+  --bg-app: #fff8e1;                  /* Светло-жёлтый фон приложения */
+  --bg-card: #ffffff;                 /* Белый для карточек */
+  --bg-sidebar: #263238;              /* Тёмный сайдбар (как в 1С) */
+  --bg-sidebar-hover: #37474f;        /* При наведении */
+  --bg-highlight: #ffecb3;            /* Выделение строк */
+  
+  /* Текст */
+  --color-text: #212121;              /* Почти чёрный */
+  --color-text-secondary: #757575;    /* Серый */
+  
+  /* Границы */
+  --color-border: #ffe082;            /* Жёлто-золотистый */
+  
+  /* Тени */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.2);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+/* Специфичные стили для темы 1С */
+[data-theme="1c"] .nav-item.active {
+  background: #d32f2f;
+  color: #ffffff;
+}
+
+[data-theme="1c"] .btn-primary {
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+
+[data-theme="1c"] .btn-primary:hover {
+  background: #b71c1c;
+  border-color: #b71c1c;
+}
+
+[data-theme="1c"] .badge-info {
+  background: #ffebee;
+  color: #c62828;
+}
+
+[data-theme="1c"] .chart-card {
+  border-top: 3px solid #d32f2f;
+}
+
 /* =========================================
    2. БАЗОВЫЕ СТИЛИ И СБРОС
    ========================================= */
@@ -99,12 +154,15 @@ body {
 }
 
 .nav-item {
+    position: relative;
+    --proximity: 0;
+    overflow: hidden; 
     background: none;
     border: none;
     padding: 0;
     margin: 0;
     font-family: inherit;
-    color: inherit; /* Наследует цвет текста */
+    color: var(--sidebar-text); /* Наследует цвет текста */
     cursor: pointer; /* Курсор-рука */
     display: flex;
     flex-direction: column;
@@ -121,16 +179,37 @@ body {
     min-height: 72px; /* Достаточно места для иконки + текста */
 }
 
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Цвет подсветки. Можно использовать var(--color-primary) или rgba */
+  background: var(--color-primary);
+  opacity: calc(var(--proximity) * 0.25);
+  border-radius: 12px;
+  pointer-events: none; 
+  z-index: -1;
+  transition: opacity 0.15s ease-out;
+}
+
 .nav-item:hover {
     background: var(--bg-sidebar-hover);
     color: #fff;
     transform: translateY(-2px);
 }
 
+.nav-item:hover::before {
+  opacity: 0.35;
+}
+
 .nav-item.active {
     background: var(--color-primary);
     color: #fff;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.nav-item.active::before {
+  opacity: 0;
 }
 
 /* Иконки */
@@ -159,6 +238,11 @@ body {
     text-overflow: ellipsis;
     max-width: 70px;
     transition: all 0.2s ease;
+}
+
+.nav-icon, .nav-label {
+  position: relative;
+  z-index: 1;
 }
 
 /* Адаптивность для больших экранов (можно расширить) */

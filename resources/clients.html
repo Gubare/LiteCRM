@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Клиенты - CRM</title>
+        <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('crm_theme') || 'blue';
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch(e) {}
+      })();
+    </script>
     <link rel="stylesheet" href="styles.css">
     <style>
         /* === ФИКСИРОВАННАЯ ТАБЛИЦА КЛИЕНТОВ === */
