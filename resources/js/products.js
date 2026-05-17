@@ -1,5 +1,5 @@
 // resources/js/products.js
-import { getAllItems, addItem, updateItem, deleteItem } from './db_indexeddb.js';
+import { getAllItems, addItem, updateItem, deleteItem } from './db_sqlite.js';
 import { getSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
 

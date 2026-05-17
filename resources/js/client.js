@@ -6,7 +6,7 @@ import {
     deleteClient as dbDeleteClient,
     updateClient as dbUpdateClient,
     getAllItems
-} from './db_indexeddb.js';
+} from './db_sqlite.js';
 import { renderPagination } from './partials/pagination.js';
 import { SelectionManager } from './partials/selectionManager.js';
 import { openModal, closeModal, confirmModal } from './partials/modalManager.js';
@@ -147,7 +147,7 @@ function renderTable(clients) {
     }).join('');
 }
 
-// === ВАША ЛОГИКА: Создание/Обновление клиента ===
+// === Создание/Обновление клиента ===
 export async function handleClientFormSubmit() {
     const id = document.getElementById('clientId')?.value;
     const formData = {
@@ -179,7 +179,7 @@ export async function handleClientFormSubmit() {
     }
 }
 
-// === ВАША ЛОГИКА: Удаление ===
+// === Удаление ===
 export async function handleDelete(id) {
     try {
         await dbDeleteClient(id);
@@ -194,7 +194,7 @@ export async function handleDelete(id) {
     }
 }
 
-// === ВАША ЛОГИКА: Расчёт метрик и сегментов ===
+// === Расчёт метрик и сегментов ===
 export function calculateClientDisplayData(client, sales = []) {
     // Фильтруем продажи этого клиента
     const clientSales = sales.filter(s => 
@@ -376,6 +376,3 @@ function showToast(message) {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
-
-// Экспорт для использования в других модулях
-// export { loadClients, handleDelete, calculateClientDisplayData };

@@ -1,5 +1,5 @@
 // resources/js/charts.js
-import { getAllItems } from './db_indexeddb.js';
+import { getAllItems } from './db_sqlite.js';
 import { getSetting, updateSetting } from './settings-manager.js';
 // === КОНФИГУРАЦИЯ ГРАФИКОВ ===
 const CHART_CONFIGS = {

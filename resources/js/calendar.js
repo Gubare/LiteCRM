@@ -1,5 +1,5 @@
 // resources/js/calendar.js
-import { getAllItems } from './db_indexeddb.js';
+import { getAllItems } from './db_sqlite.js';
 import { getSetting, updateSetting } from './settings-manager.js';
 
 // === СОСТОЯНИЕ ===

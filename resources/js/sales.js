@@ -10,7 +10,7 @@ import {
     getItemById,
     updateItem,
     getAllItems
-} from './db_indexeddb.js';
+} from './db_sqlite.js';
 import { getSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
 import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js';

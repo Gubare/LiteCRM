@@ -1,5 +1,5 @@
 // resources/js/tickets.js
-import { getAllItems, addItem, updateItem, deleteItem, getDbInstance } from './db_indexeddb.js';
+import { getAllItems, addItem, updateItem, deleteItem, getDbInstance } from './db_sqlite.js';
 import { getSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
 import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js';
@@ -10,27 +10,6 @@ let currentFilters = {};
 let selectedRows = new Map();
 let ctxTargetId = null;
 
-
-// Создает HTML для обрезки текста с кликом для просмотра
-// function createTruncatableHtml(text, maxLen = 15, fieldName = '') {
-//     if (!text || text === '—') return '<span style="color: #cbd5e1;">—</span>';
-    
-//     const display = text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
-    
-//     const escapedText = text
-//         .replace(/\\/g, '\\\\')
-//         .replace(/"/g, '&quot;')
-//         .replace(/'/g, '&#39;')
-//         .replace(/</g, '&lt;')
-//         .replace(/>/g, '&gt;')
-//         .replace(/\n/g, '\\n');
-    
-//     // Используем data-атрибут и делегирование событий
-//     return `<span class="truncatable-cell" 
-//                    data-fulltext="${escapedText}" 
-//                    onclick="handleTruncateClick(this)"
-//                    title="${text}">${display}</span>`;
-// }
 
 // Обработчик клика по обрезанному тексту
 window.handleTruncateClick = function(element) {

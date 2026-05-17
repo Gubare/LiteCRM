@@ -3,11 +3,12 @@
 
 # Developer tools' files
 .lite_workspace.lua
+.sqlite
 
 # Neutralinojs binaries and builds
 /bin
 /dist
-
+/crm_data
 # Neutralinojs client (minified)
 neutralino.js
 

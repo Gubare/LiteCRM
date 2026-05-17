@@ -1,168 +1,268 @@
-// resources/js/db_indexeddb.js
-import { showErrorWithRetry, executeWithRetry } from './error-handler.js';
+// resources/js/db_sqlite.js
+
+import loadSqlWasm from './sql-wasm-wrapper.js';
 import { logAction } from './logger.js';
-const DB_NAME = 'CRM_Database';
-const DB_VERSION = 6;
-let dbInstance = null;
+import { DB_CONFIG } from './db_config.js';
+
+let db = null;
+let SQL = null;
 
 // Инициализация
 export async function initDatabase() {
-    return await getDbInstance();
+    if (db) return db;
+    
+    console.log('🔌 Loading SQLite WASM module...');
+    
+    try {
+        // Загружаем sql.js через скрипт
+        const initSqlJs = await loadSqlWasm();
+        
+        // Инициализируем с настройками
+        SQL = await initSqlJs({
+            locateFile: file => {
+                console.log('📍 Looking for WASM file:', file);
+                // Путь к wasm файлу относительно HTML
+                return './js/' + file;
+            }
+        });
+        
+        console.log('✅ SQLite WASM initialized');
+        
+        // Пробуем загрузить существующую БД (для Neutralino)
+        if (typeof Neutralino !== 'undefined') {
+            try {
+                const fileData = await Neutralino.filesystem.readFile(DB_CONFIG.sqlite.filename);
+                const u8 = new Uint8Array(fileData.length);
+                for (let i = 0; i < fileData.length; i++) {
+                    u8[i] = fileData.charCodeAt(i);
+                }
+                db = new SQL.Database(u8);
+                console.log('✅ SQLite database loaded from file');
+            } catch (e) {
+                console.log('📄 No existing SQLite file, creating new');
+            }
+        }
+        
+        // Создаём новую БД если не загрузили
+        if (!db) {
+            db = new SQL.Database();
+            await createTables();
+            console.log('✅ New SQLite database created');
+        }
+        
+        return db;
+        
+    } catch (error) {
+        console.error('❌ SQLite initialization failed:', error);
+        throw error;
+    }
 }
 
-export async function getDbInstance() {
-    if (dbInstance) return dbInstance;
+// Создание таблиц (выполняется один раз при создании БД)
+async function createTables() {
+    db.run(`CREATE TABLE IF NOT EXISTS clients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        phone TEXT,
+        email TEXT,
+        total_spent REAL DEFAULT 0,
+        purchase_count INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`);
     
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            const stores = ['clients', 'products', 'sales', 'tickets', 'bulk_adjustments', 'calendar_notes'];
-            
-            stores.forEach(storeName => {
-                if (!db.objectStoreNames.contains(storeName)) {
-                    const store = db.createObjectStore(storeName, { 
-                        keyPath: 'id', 
-                        autoIncrement: true 
-                    });
-                    // Индексы
-                    if (storeName === 'clients') {
-                        store.createIndex('name', 'name', { unique: false });
-                        store.createIndex('phone', 'phone', { unique: false });
-                    } else if (storeName === 'products') {
-                        store.createIndex('sku', 'sku', { unique: true });
-                    } else if (storeName === 'sales') {
-                        store.createIndex('client_id', 'client_id', { unique: false });
-                        store.createIndex('transaction_date', 'transaction_date', { unique: false });
-                    } else if (storeName === 'calendar_notes') {
-                        store.createIndex('date', 'date', { unique: false });
-                    }
-                    console.log(`✅ Store "${storeName}" created`);
-                }
-            });
-        };
-        
-        request.onsuccess = () => {
-            dbInstance = request.result;
-            resolve(dbInstance);
-        };
-        
-        request.onerror = () => reject(request.error);
-    });
+    db.run(`CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sku TEXT UNIQUE,
+        category TEXT,
+        name TEXT,
+        description TEXT,
+        price REAL,
+        quantity INTEGER DEFAULT 0,
+        is_active INTEGER DEFAULT 1,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS sales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        client_id INTEGER,
+        product_id INTEGER,
+        quantity INTEGER,
+        unit_price REAL,
+        total_amount REAL,
+        transaction_date TEXT DEFAULT CURRENT_TIMESTAMP,
+        comment TEXT,
+        type TEXT DEFAULT 'sale',
+        is_bulk INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (client_id) REFERENCES clients(id),
+        FOREIGN KEY (product_id) REFERENCES products(id)
+    )`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS tickets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        client_id INTEGER,
+        client_name TEXT,
+        type TEXT,
+        contact TEXT,
+        status TEXT DEFAULT 'Открыта',
+        description TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS bulk_adjustments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER,
+        quantity INTEGER,
+        period_start TEXT,
+        period_end TEXT,
+        type TEXT,
+        comment TEXT,
+        registered_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id)
+    )`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS calendar_notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT,
+        text TEXT,
+        color TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`);
+    
+    // Индексы для производительности
+    db.run(`CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(client_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(transaction_date)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_notes_date ON calendar_notes(date)`);
+}
+
+export function getDbInstance() {
+    return db;
 }
 
 // === CRUD ===
 
-export async function addItem(storeName, itemData) {
-    const db = await getDbInstance();
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction([storeName], 'readwrite');
-        const store = tx.objectStore(storeName);
-        const req = store.add(itemData);
-        
-        req.onsuccess = () => {
-            logAction('create', storeName, req.result, itemData);
-            resolve(req.result);
-        };
-        req.onerror = () => reject(req.error);
-    });
-}
 
 export async function getAllItems(storeName) {
-    const db = await getDbInstance();
-    return new Promise((resolve, reject) => {
-        if (!db.objectStoreNames.contains(storeName)) {
-            console.warn(`⚠️ Store "${storeName}" not found`);
-            resolve([]);
-            return;
-        }
-        
-        const tx = db.transaction([storeName], 'readonly');
-        const store = tx.objectStore(storeName);
-        const req = store.getAll();
-        
-        req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => reject(req.error);
+    if (!db) await initDatabase();
+    
+    const result = db.exec(`SELECT * FROM ${storeName}`);
+    if (!result.length) return [];
+    
+    const columns = result[0].columns;
+    return result[0].values.map(row => {
+        const item = {};
+        columns.forEach((col, i) => {
+            item[col] = row[i];
+            // Преобразуем 0/1 в boolean для is_active
+            if (col === 'is_active') item[col] = row[i] === 1;
+        });
+        return item;
     });
 }
 
 export async function getItemById(storeName, id) {
-    const db = await getDbInstance();
-    return new Promise((resolve, reject) => {
-        if (!db.objectStoreNames.contains(storeName)) {
-            resolve(null);
-            return;
-        }
-        
-        const tx = db.transaction([storeName], 'readonly');
-        const store = tx.objectStore(storeName);
-        const req = store.get(id);
-        
-        req.onsuccess = () => resolve(req.result || null);
-        req.onerror = () => reject(req.error);
+    if (!db) await initDatabase();
+    
+    const stmt = db.prepare(`SELECT * FROM ${storeName} WHERE id = ?`);
+    stmt.bind([id]);
+    
+    if (!stmt.step()) {
+        stmt.free();
+        return null;
+    }
+    
+    const columns = stmt.getColumnNames();
+    const values = stmt.get();
+    stmt.free();
+    
+    const item = {};
+    columns.forEach((col, i) => {
+        item[col] = values[i];
+        if (col === 'is_active') item[col] = values[i] === 1;
     });
+    return item;
+}
+
+export async function addItem(storeName, itemData) {
+    if (!db) await initDatabase();
+    
+    const columns = Object.keys(itemData).filter(k => k !== 'id');
+    const values = columns.map(k => itemData[k]);
+    const placeholders = columns.map(() => '?').join(', ');
+    
+    const stmt = db.prepare(
+        `INSERT INTO ${storeName} (${columns.join(', ')}) VALUES (${placeholders})`
+    );
+    stmt.bind(values);
+    stmt.step();
+    stmt.free();
+    
+    const result = db.exec(`SELECT last_insert_rowid()`);
+    const newId = result[0]?.values[0]?.[0];
+    
+    logAction('create', storeName, newId, itemData);
+    
+    await saveDatabaseToFile();
+    
+    return newId;
 }
 
 export async function updateItem(storeName, id, updates) {
-    const db = await getDbInstance();
-    return new Promise(async (resolve, reject) => {
-        const tx = db.transaction([storeName], 'readwrite');
-        const store = tx.objectStore(storeName);
-        
-        const getReq = store.get(id);
-        getReq.onsuccess = async () => {
-            const oldData = getReq.result || {};
-            const newData = { ...oldData, ...updates, id, updated_at: new Date().toISOString() };
-            
-            const putReq = store.put(newData);
-            putReq.onsuccess = () => {
-                logAction('update', storeName, id, newData);
-                resolve();
-            };
-            putReq.onerror = () => reject(putReq.error);
-        };
-        getReq.onerror = () => reject(getReq.error);
-    });
+    if (!db) await initDatabase();
+    
+    const oldData = await getItemById(storeName, id);
+    
+    const columns = Object.keys(updates).filter(k => k !== 'id');
+    const setClause = columns.map(col => `${col} = ?`).join(', ');
+    const values = [...columns.map(col => updates[col]), id];
+    
+    const stmt = db.prepare(
+        `UPDATE ${storeName} SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
+    );
+    stmt.bind(values);
+    stmt.step();
+    stmt.free();
+    
+    logAction('update', storeName, id, { ...oldData, ...updates });
+    
+    await saveDatabaseToFile();
 }
 
 export async function deleteItem(storeName, id) {
-    const db = await getDbInstance();
-    return new Promise(async (resolve, reject) => {
-        const tx = db.transaction([storeName], 'readwrite');
-        const store = tx.objectStore(storeName);
-        
-        const getReq = store.get(id);
-        getReq.onsuccess = async () => {
-            const deletedData = getReq.result;
-            const req = store.delete(id);
-            req.onsuccess = () => {
-                logAction('delete', storeName, id, deletedData);
-                resolve();
-            };
-            req.onerror = () => reject(req.error);
-        };
-        getReq.onerror = () => reject(getReq.error);
-    });
+    if (!db) await initDatabase();
+    
+    const oldData = await getItemById(storeName, id);
+    
+    const stmt = db.prepare(`DELETE FROM ${storeName} WHERE id = ?`);
+    stmt.bind([id]);
+    stmt.step();
+    stmt.free();
+    
+    logAction('delete', storeName, id, oldData);
+    
+    await saveDatabaseToFile();
 }
 
 export async function clearStore(storeName) {
-    const db = await getDbInstance();
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction([storeName], 'readwrite');
-        const store = tx.objectStore(storeName);
-        const req = store.clear();
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-    });
+    if (!db) await initDatabase();
+    db.run(`DELETE FROM ${storeName}`);
 }
 
 // === ЭКСПОРТ/ИМПОРТ ===
 
 export async function exportAllData() {
+    if (!db) await initDatabase();
+    
     const stores = ['clients', 'products', 'sales', 'tickets', 'bulk_adjustments', 'calendar_notes'];
     const result = {
-        version: DB_VERSION,
+        version: 6,
         exported_at: new Date().toISOString(),
         stores: []
     };
@@ -180,16 +280,22 @@ export async function exportAllData() {
 }
 
 export async function importAllData(jsonData) {
+    if (!db) await initDatabase();
+    
     const data = JSON.parse(jsonData);
+    
+    // Отключаем внешние ключи для импорта
+    db.run('PRAGMA foreign_keys = OFF');
     
     for (const { store, items } of data.stores) {
         await clearStore(store);
         for (const item of items) {
-            // Удаляем id для autoIncrement
-            const { id, ...itemData } = item;
+            const { id, ...itemData } = item; // Удаляем id для AUTOINCREMENT
             await addItem(store, itemData);
         }
     }
+    
+    db.run('PRAGMA foreign_keys = ON');
 }
 
 export async function exportStoreToJSON(storeName) {
@@ -210,7 +316,26 @@ export async function importStoreFromJSON(storeName, jsonData) {
     }
 }
 
-// === СПЕЦИФИЧНЫЕ ФУНКЦИИ (оставляем как есть) ===
+// Сохранение БД в файл (для Neutralino)
+export async function saveToFile() {
+    if (!db) return;
+    
+    const data = db.export();
+    let binary = '';
+    const len = data.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(data[i]);
+    }
+    
+    await Neutralino.filesystem.writeFile(
+        DB_CONFIG.sqlite.filename,
+        binary
+    );
+    console.log('💾 SQLite saved to file');
+}
+
+// === СПЕЦИФИЧНЫЕ ФУНКЦИИ ===
+// (Оставляем те же сигнатуры, что и в IndexedDB версии)
 
 export function getAllClients() { return getAllItems('clients'); }
 
@@ -246,6 +371,41 @@ export function updateClient(id, data) { return updateItem('clients', { ...data,
 export function getClientById(id) { return getItemById('clients', id); }
 export function clearAllClients() { return clearStore('clients'); }
 
+// generateSKU — чистая функция, копируем из db_indexeddb.js
+export function generateSKU(category, id = null) {
+    const prefix = (category || '').trim().substring(0, 2).toUpperCase();
+    return id ? `${prefix}-${id}` : `${prefix}-NEW`;
+}
+
+export async function createProduct(data) {
+    const tempSKU = generateSKU(data.category);
+    
+    const product = {
+        category: data.category || '',
+        name: data.name || '',
+        description: data.description || '',
+        price: parseFloat(data.price) || 0,
+        quantity: parseInt(data.quantity) || 0,
+        is_active: data.is_active !== false,
+        sku: tempSKU,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+    
+    const id = await addItem('products', product);
+    const finalSKU = generateSKU(data.category, id);
+    await updateItem('products', id, { sku: finalSKU });
+    
+    return id;
+}
+
+export async function getActiveProducts() {
+    const products = await getAllItems('products');
+    return products.filter(p => p.is_active);
+}
+
+// ... createSale, createBulkAdjustment, getSalesPaginated, getProductsForDropdown
+// — копируем из db_indexeddb.js, они используют универсальные функции и будут работать
 
 // === СПЕЦИФИЧНЫЕ ФУНКЦИИ ДЛЯ ПРОДАЖ ===
 
@@ -533,4 +693,43 @@ export async function getProductsForDropdown() {
         is_active: p.is_active
     }));
 }
-///Ошибки:
+
+// === ФУНКЦИЯ СОХРАНЕНИЯ НА ДИСК ===
+export async function saveDatabaseToFile() {
+    if (!db || typeof Neutralino === 'undefined') {
+        console.log('⚠️ Cannot save: DB or Neutralino not available');
+        return false;
+    }
+    
+    try {
+        // Экспортируем БД в бинарный формат
+        const data = db.export();
+        
+        // Конвертируем Uint8Array в строку для Neutralino
+        let binary = '';
+        const len = data.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(data[i]);
+        }
+        
+        // Создаём директорию если нет
+        try {
+            await Neutralino.filesystem.createDirectory('crm_data');
+        } catch (e) {
+            // Директория уже существует
+        }
+        
+        // Записываем файл
+        await Neutralino.filesystem.writeFile(
+            DB_CONFIG.sqlite.filename,
+            binary
+        );
+        
+        console.log('💾 SQLite saved to file:', DB_CONFIG.sqlite.filename);
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Failed to save SQLite:', error);
+        return false;
+    }
+}

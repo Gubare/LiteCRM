@@ -10,14 +10,18 @@ import {
     getAllClients, 
     deleteClient,
     clearAllClients,
-    exportToJSON,
-    importFromJSON, 
-    exportDatabase,
-    importStoreFromJSON, 
     updateClient,
     getAllItems,
+    
+} from './db_sqlite.js';
+
+import {
+    importFromJSON,
+    exportToJSON,
+    exportDatabase,
+    importStoreFromJSON,
     importDatabase
-} from './db_indexeddb.js';
+} from './db.js'
 import { loadSettings, getSetting } from './settings-manager.js';
 import { initLogger } from './logger.js'; 
 // import { startVoiceInput } from './voice-input.js'
