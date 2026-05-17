@@ -3,8 +3,8 @@
 
 # Developer tools' files
 .lite_workspace.lua
-.sqlite
-
+*.sqlite
+*.json
 # Neutralinojs binaries and builds
 /bin
 /dist
