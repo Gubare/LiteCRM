@@ -105,7 +105,7 @@
         <!-- Кнопка создания -->
         <div style="margin-bottom: 20px;">
             <button class="btn-primary" onclick="openModal('createProductModal')" style="padding: 10px 20px; font-size: 15px;">
-                📦 Добавить товар
+                Добавить товар
             </button>
         </div>
         
@@ -141,7 +141,7 @@
         <!-- Панель массовых действий -->
         <div id="bulkActionBar" class="bulk-action-bar">
             <span>Выбрано записей: <span class="count-badge" id="selectedCount">0</span></span>
-            <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="editSelected()">✏️ Изменить</button>
+            <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="editSelected()">Изменить</button>
             <button id="btnBulkDelete" class="btn-action-icon delete" onclick="deleteSelected()">🗑️ Удалить</button>
             <button class="btn-action-icon" onclick="clearSelection()" style="margin-left:auto; font-size:12px; color:#64748b;">✕ Снять выделение</button>
         </div>
@@ -173,7 +173,7 @@
     <div id="createProductModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'createProductModal')">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3 style="margin: 0;">📦 Новый товар</h3>
+                <h3 style="margin: 0;"> Новый товар</h3>
             </div>
             <form id="createProductForm">
                 <div class="form-row">
@@ -229,7 +229,7 @@
     <div id="editProductModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'editProductModal')">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3 style="margin: 0;">✏️ Редактирование товара</h3>
+                <h3 style="margin: 0;">Редактирование товара</h3>
             </div>
             <form id="editProductForm">
                 <input type="hidden" id="editProductId">
@@ -285,11 +285,11 @@
     <!-- Контекстное меню -->
     <div id="ctxMenu" class="ctx-menu">
         <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()">
-            <span>✏️</span> Редактировать
+            <span></span> Редактировать
         </button>
         <div class="ctx-divider"></div>
         <button class="ctx-menu-item danger" id="ctxDelete" onclick="ctxDeleteAction()">
-            <span>🗑️</span> Удалить
+            <span></span> Удалить
         </button>
     </div>
 

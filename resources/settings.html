@@ -238,7 +238,7 @@
                     <h3>Автосохранение</h3>
                     <p>Автоматическое сохранение бэкапа при каждом изменении</p>
                 </div>
-                <span style="color: #10b981; font-weight: 500; font-size: 13px;">✅ Включено</span>
+                <span style="color: #10b981; font-weight: 500; font-size: 13px;">Включено</span>
             </div>
             
             <div class="setting-item">
@@ -251,6 +251,132 @@
                 </button>
             </div>
         </div>
+
+        <!-- === КОНВЕРТЕР ФОРМАТОВ === -->
+        <div class="settings-section">
+            <h3>Конвертер форматов</h3>
+            <p class="section-description">Конвертация между CSV, JSON и SQLite</p>
+            
+            <div class="converter-grid">
+                <!-- Импорт -->
+                <div class="converter-card">
+                    <h4>Импорт</h4>
+                    <p>Внешний файл → crm_data.формат</p>
+                    <button id="btnImportData" class="btn-primary" style="width: 100%;">
+                        Выбрать файл и импортировать
+                    </button>
+                </div>
+                
+                <!-- Экспорт -->
+                <div class="converter-card">
+                    <h4>Экспорт</h4>
+                    <p>crm_data.формат → Ваш файл</p>
+                    <button id="btnExportData" class="btn-action" style="width: 100%;">
+                        Экспортировать в...
+                    </button>
+                </div>
+            </div>
+            <!-- Модальное окно: Импорт -->
+            <div id="importModal" class="modal-overlay">
+                <div class="modal-window" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3>Импорт данных</h3>
+                        <button class="modal-close" onclick="closeModal('importModal')">&times;</button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Исходный файл:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="importFilePath" class="form-control" placeholder="Путь к файлу..." readonly>
+                                <button id="importBrowse" class="btn-action">Обзор</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label>Формат источника:</label>
+                                <select id="importSourceType" class="form-control">
+                                    <option value="csv">CSV (.csv)</option>
+                                    <option value="json" selected>JSON (.json)</option>
+                                    <option value="sql">SQLite (.sqlite)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Целевой формат:</label>
+                                <select id="importTargetType" class="form-control">
+                                    <option value="csv">CSV (.csv)</option>
+                                    <option value="json" selected>JSON (.json)</option>
+                                    <option value="sql">SQLite (.sqlite)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info" style="font-size: 13px;">
+                            Результат будет сохранён как <code>crm_data/crm_data.формат</code>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button class="btn-action" onclick="closeModal('importModal')">Отмена</button>
+                        <button id="btnDoImport" class="btn-primary">Импортировать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно: Экспорт -->
+            <div id="exportModal" class="modal-overlay">
+                <div class="modal-window" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3>Экспорт данных</h3>
+                        <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div>
+                                <label>Источник:</label>
+                                <select id="exportSourceType" class="form-control">
+                                    <option value="csv">CSV (.csv)</option>
+                                    <option value="json" selected>JSON (.json)</option>
+                                    <option value="sql">SQLite (.sqlite)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Целевой формат:</label>
+                                <select id="exportTargetType" class="form-control">
+                                    <option value="csv">CSV (.csv)</option>
+                                    <option value="json" selected>JSON (.json)</option>
+                                    <option value="sql">SQLite (.sqlite)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Папка сохранения:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="exportDirPath" class="form-control" placeholder="Выберите папку..." readonly>
+                                <button id="exportBrowse" class="btn-action">Обзор</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Имя файла (без расширения):</label>
+                            <input type="text" id="exportFileName" class="form-control" value="crm_export" placeholder="crm_export">
+                        </div>
+                        
+                        <div class="alert alert-info" style="font-size: 13px;">
+                            Файл будет сохранён как <code>папка/имя.формат</code>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button class="btn-action" onclick="closeModal('exportModal')">Отмена</button>
+                        <button id="btnDoExport" class="btn-primary">Экспортировать</button>
+                    </div>
+                </div>
+            </div>
+                    </div>
         
         <!-- Секция: Логирование -->
         <div class="settings-section">
@@ -317,7 +443,7 @@
                     <h3>Текущая статистика</h3>
                     <p id="logStatsText">Загрузка...</p>
                 </div>
-                <button id="btnRefreshStats" class="btn-action" style="padding: 6px 12px;">🔄 Обновить</button>
+                <button id="btnRefreshStats" class="btn-action" style="padding: 6px 12px;">Обновить</button>
             </div>
             
             <!-- Действия -->
@@ -327,9 +453,9 @@
                     <p>Экспорт или полная очистка журнала</p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button id="btnExportLogs" class="btn-action" style="padding: 8px 16px;">📥 Экспорт CSV</button>
-                    <button id="btnManualCleanup" class="btn-action" style="padding: 8px 16px;">🗑️ Очистить сейчас</button>
-                    <button id="btnClearAllLogs" class="btn-action delete" style="padding: 8px 16px;">⚠️ Удалить всё</button>
+                    <button id="btnExportLogs" class="btn-action" style="padding: 8px 16px;">Экспорт CSV</button>
+                    <button id="btnManualCleanup" class="btn-action" style="padding: 8px 16px;">Очистить сейчас</button>
+                    <button id="btnClearAllLogs" class="btn-action delete" style="padding: 8px 16px;">Удалить всё</button>
                 </div>
             </div>
         </div>
@@ -346,6 +472,8 @@
             </div>
         </div>
     </div>
+
+    
     
 </main>
     <script src="js/neutralino.js"></script>
@@ -359,7 +487,8 @@
             exportLogsToCSV 
         } from './js/logger.js';
         if (typeof Neutralino !== 'undefined') Neutralino.init();
-        
+        import { initConverter } from './js/converter.js';
+        import { openModal, closeModal, confirmModal } from './js/partials/modalManager.js';
         // Загрузка настроек при старте
         import { loadSettings, updateSetting, getSetting } from './js/settings-manager.js';
 
@@ -651,6 +780,12 @@
             localStorage.setItem('crm_animateRows', e.target.checked);
             showToast(e.target.checked ? '✅ Анимация включена' : '❌ Анимация выключена');
         });
+
+        // Инициализация конвертера
+        if (document.getElementById('btnImportData')) {
+            initConverter();
+            console.log('✅ Converter initialized');
+        }
     </script>
     
 </body>

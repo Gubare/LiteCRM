@@ -257,19 +257,19 @@
         <!-- Панель массовых действий -->
         <div id="bulkActionBar" class="bulk-action-bar">
             <span>Выбрано записей: <span class="count-badge" id="selectedCount">0</span></span>
-            <!-- <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="openEditSale()">✏️ Изменить</button> -->
-            <button id="btnBulkDelete" class="btn-action-icon delete" onclick="deleteSelected()">🗑️ Удалить</button>
+            <!-- <button id="btnBulkEdit" class="btn-action-icon" disabled onclick="openEditSale()">Изменить</button> -->
+            <button id="btnBulkDelete" class="btn-action-icon delete" onclick="deleteSelected()">Удалить</button>
             <button class="btn-action-icon" onclick="clearSelection()" style="margin-left:auto; font-size:12px; color:#64748b;">✕ Снять выделение</button>
         </div>
 
         <!-- Контекстное меню (ПКМ) -->
         <div id="ctxMenu" class="ctx-menu">
             <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()">
-                <span>✏️</span> Редактировать
+                <span></span> Редактировать
             </button>
             <div class="ctx-divider"></div>
             <button class="ctx-menu-item danger" id="ctxDelete" onclick="ctxDeleteAction()">
-                <span>🗑️</span> Удалить
+                <span></span> Удалить
             </button>
         </div>
 
@@ -314,8 +314,8 @@
 <!-- Модальное окно редактирования сделки -->
 <div id="editSaleModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'editSaleModal')">
     <div class="modal-window" onclick="event.stopPropagation()">
-        <div class="modal-hint">💡 Нажмите вне окна, чтобы закрыть</div>
-        <h3>✏️ Редактирование сделки</h3>
+        <div class="modal-hint">Нажмите вне окна, чтобы закрыть</div>
+        <h3>Редактирование сделки</h3>
         <form id="editSaleForm">
             <input type="hidden" id="editSaleId">
             

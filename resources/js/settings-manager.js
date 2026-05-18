@@ -1,5 +1,5 @@
 // resources/js/settings-manager.js
-
+import { initConverter } from './converter.js';
 const SETTINGS_FILE = 'crm_data/settings.json';
 
 // Значения по умолчанию (расширяемы)
