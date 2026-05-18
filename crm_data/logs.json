@@ -31797,5 +31797,4422 @@
       "updated_at": "2026-05-17T20:41:30.740Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 1799,
+    "timestamp": "2026-05-18T17:04:57.304Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1,
+    "data": {
+      "name": "Сергей",
+      "phone": "+79041439014",
+      "email": "35@example.com",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-17T20:32:05.181Z",
+      "updated_at": "2026-05-17T20:32:05.181Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1800,
+    "timestamp": "2026-05-18T17:04:57.447Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 2,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-17T20:41:30.740Z",
+      "updated_at": "2026-05-17T20:41:30.740Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1801,
+    "timestamp": "2026-05-18T17:04:57.573Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 21314412,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-17T20:39:24.508Z",
+      "updated_at": "2026-05-17 20:39:24"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1802,
+    "timestamp": "2026-05-18T17:05:02.931Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 3,
+    "data": {
+      "name": "Сергей",
+      "phone": "+79041439014",
+      "email": "35@example.com",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-17T20:32:05.181Z",
+      "updated_at": "2026-05-17T20:32:05.181Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1803,
+    "timestamp": "2026-05-18T17:05:03.222Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 4,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-17T20:41:30.740Z",
+      "updated_at": "2026-05-17T20:41:30.740Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1804,
+    "timestamp": "2026-05-18T17:05:03.481Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 2,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 21314412,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-17T20:39:24.508Z",
+      "updated_at": "2026-05-17 20:39:24"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1805,
+    "timestamp": "2026-05-18T17:05:37.961Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1,
+    "data": {
+      "name": "Сергей",
+      "phone": "+79041439014",
+      "email": "35@example.com",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-17T20:32:05.181Z",
+      "updated_at": "2026-05-17T20:32:05.181Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1806,
+    "timestamp": "2026-05-18T17:05:38.127Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 2,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-17T20:41:30.740Z",
+      "updated_at": "2026-05-17T20:41:30.740Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1807,
+    "timestamp": "2026-05-18T17:05:38.252Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 21314412,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-17T20:39:24.508Z",
+      "updated_at": "2026-05-17 20:39:24"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1808,
+    "timestamp": "2026-05-18T17:06:30.862Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1809,
+    "timestamp": "2026-05-18T17:06:39.305Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 2,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1810,
+    "timestamp": "2026-05-18T17:06:49.607Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1811,
+    "timestamp": "2026-05-18T17:07:54.629Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 3,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1812,
+    "timestamp": "2026-05-18T17:07:54.928Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 2,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1813,
+    "timestamp": "2026-05-18T17:08:01.413Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 4,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1814,
+    "timestamp": "2026-05-18T17:08:01.686Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 3,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1815,
+    "timestamp": "2026-05-18T17:08:42.518Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 5,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1816,
+    "timestamp": "2026-05-18T17:08:42.896Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 4,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1817,
+    "timestamp": "2026-05-18T17:08:46.143Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 6,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1818,
+    "timestamp": "2026-05-18T17:08:47.081Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 7,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1819,
+    "timestamp": "2026-05-18T17:08:47.358Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 6,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1820,
+    "timestamp": "2026-05-18T17:08:53.950Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 8,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1821,
+    "timestamp": "2026-05-18T17:08:54.242Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 7,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1822,
+    "timestamp": "2026-05-18T17:08:56.128Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 9,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1823,
+    "timestamp": "2026-05-18T17:08:56.398Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 8,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1824,
+    "timestamp": "2026-05-18T17:08:57.972Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 10,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1825,
+    "timestamp": "2026-05-18T17:08:58.239Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 9,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1826,
+    "timestamp": "2026-05-18T17:08:59.294Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 11,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1827,
+    "timestamp": "2026-05-18T17:08:59.560Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 10,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1828,
+    "timestamp": "2026-05-18T17:09:16.287Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 12,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1829,
+    "timestamp": "2026-05-18T17:09:16.551Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 11,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1830,
+    "timestamp": "2026-05-18T17:09:22.920Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 13,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1831,
+    "timestamp": "2026-05-18T17:09:23.214Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 12,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1832,
+    "timestamp": "2026-05-18T17:09:29.045Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 1,
+    "data": {
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1833,
+    "timestamp": "2026-05-18T17:09:32.484Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 14,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1834,
+    "timestamp": "2026-05-18T17:09:32.766Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 13,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1835,
+    "timestamp": "2026-05-18T17:09:33.051Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 2,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1836,
+    "timestamp": "2026-05-18T17:09:36.260Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 15,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1837,
+    "timestamp": "2026-05-18T17:09:36.573Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 14,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1838,
+    "timestamp": "2026-05-18T17:09:36.868Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 3,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1839,
+    "timestamp": "2026-05-18T17:09:41.291Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 16,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1840,
+    "timestamp": "2026-05-18T17:09:41.585Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 15,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1841,
+    "timestamp": "2026-05-18T17:09:41.850Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 4,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1842,
+    "timestamp": "2026-05-18T17:11:24.214Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 17,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1843,
+    "timestamp": "2026-05-18T17:11:24.347Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 16,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1844,
+    "timestamp": "2026-05-18T17:11:24.484Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 5,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1845,
+    "timestamp": "2026-05-18T17:11:27.421Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 18,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1846,
+    "timestamp": "2026-05-18T17:11:27.727Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 17,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1847,
+    "timestamp": "2026-05-18T17:11:28.469Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 19,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1848,
+    "timestamp": "2026-05-18T17:11:28.764Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 18,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1849,
+    "timestamp": "2026-05-18T17:11:29.045Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 7,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1850,
+    "timestamp": "2026-05-18T17:11:30.271Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 20,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1851,
+    "timestamp": "2026-05-18T17:11:30.550Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 19,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1852,
+    "timestamp": "2026-05-18T17:11:30.827Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 8,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1853,
+    "timestamp": "2026-05-18T17:12:54.249Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 21,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1854,
+    "timestamp": "2026-05-18T17:12:54.556Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 20,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1855,
+    "timestamp": "2026-05-18T17:12:54.833Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 9,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1856,
+    "timestamp": "2026-05-18T17:13:04.725Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 22,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1857,
+    "timestamp": "2026-05-18T17:13:04.997Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 21,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1858,
+    "timestamp": "2026-05-18T17:13:05.259Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 10,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1859,
+    "timestamp": "2026-05-18T17:13:05.907Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 23,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1860,
+    "timestamp": "2026-05-18T17:13:06.209Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 22,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1861,
+    "timestamp": "2026-05-18T17:13:06.492Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 11,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1862,
+    "timestamp": "2026-05-18T17:13:07.627Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 24,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1863,
+    "timestamp": "2026-05-18T17:13:07.908Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 23,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1864,
+    "timestamp": "2026-05-18T17:13:08.197Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 12,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1865,
+    "timestamp": "2026-05-18T17:35:07.207Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 25,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1866,
+    "timestamp": "2026-05-18T17:35:07.364Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 24,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1867,
+    "timestamp": "2026-05-18T17:35:07.496Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 13,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1868,
+    "timestamp": "2026-05-18T17:35:10.475Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 26,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1869,
+    "timestamp": "2026-05-18T17:35:10.804Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 25,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1870,
+    "timestamp": "2026-05-18T17:35:11.101Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 14,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1871,
+    "timestamp": "2026-05-18T17:35:12.619Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 27,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1872,
+    "timestamp": "2026-05-18T17:35:12.906Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 26,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1873,
+    "timestamp": "2026-05-18T17:35:13.196Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 15,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1874,
+    "timestamp": "2026-05-18T17:35:14.693Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 28,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1875,
+    "timestamp": "2026-05-18T17:35:14.979Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 27,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1876,
+    "timestamp": "2026-05-18T17:35:15.263Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 16,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1877,
+    "timestamp": "2026-05-18T17:35:16.112Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 29,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1878,
+    "timestamp": "2026-05-18T17:35:16.409Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 28,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1879,
+    "timestamp": "2026-05-18T17:35:16.718Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 17,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1880,
+    "timestamp": "2026-05-18T17:35:17.784Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 30,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1881,
+    "timestamp": "2026-05-18T17:35:18.066Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 29,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1882,
+    "timestamp": "2026-05-18T17:35:18.328Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 18,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1883,
+    "timestamp": "2026-05-18T17:35:19.794Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 31,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1884,
+    "timestamp": "2026-05-18T17:35:20.078Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 30,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1885,
+    "timestamp": "2026-05-18T17:35:20.348Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 19,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1886,
+    "timestamp": "2026-05-18T17:35:21.262Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 32,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1887,
+    "timestamp": "2026-05-18T17:35:21.548Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 31,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1888,
+    "timestamp": "2026-05-18T17:35:22.593Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 33,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1889,
+    "timestamp": "2026-05-18T17:35:22.890Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 32,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1890,
+    "timestamp": "2026-05-18T17:35:23.164Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 21,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1891,
+    "timestamp": "2026-05-18T17:35:23.890Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 34,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1892,
+    "timestamp": "2026-05-18T17:35:24.179Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 33,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1893,
+    "timestamp": "2026-05-18T17:35:24.446Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 22,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1894,
+    "timestamp": "2026-05-18T17:35:25.942Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 35,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1895,
+    "timestamp": "2026-05-18T17:35:26.238Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 34,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1896,
+    "timestamp": "2026-05-18T17:35:26.499Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 23,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1897,
+    "timestamp": "2026-05-18T17:35:28.826Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 36,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1898,
+    "timestamp": "2026-05-18T17:35:29.110Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 35,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1899,
+    "timestamp": "2026-05-18T17:35:29.366Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 24,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1900,
+    "timestamp": "2026-05-18T17:35:47.282Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 37,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1901,
+    "timestamp": "2026-05-18T17:35:47.585Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 36,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1902,
+    "timestamp": "2026-05-18T17:35:47.907Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 25,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1903,
+    "timestamp": "2026-05-18T17:35:54.187Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 38,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1904,
+    "timestamp": "2026-05-18T17:35:54.510Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 37,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1905,
+    "timestamp": "2026-05-18T17:35:54.816Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 26,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1906,
+    "timestamp": "2026-05-18T17:36:23.142Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 39,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1907,
+    "timestamp": "2026-05-18T17:36:23.985Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 40,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1908,
+    "timestamp": "2026-05-18T17:36:24.878Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 41,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1909,
+    "timestamp": "2026-05-18T17:36:25.169Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 39,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1910,
+    "timestamp": "2026-05-18T17:36:25.431Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 27,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1911,
+    "timestamp": "2026-05-18T17:36:30.028Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 42,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1912,
+    "timestamp": "2026-05-18T17:36:30.317Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 40,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1913,
+    "timestamp": "2026-05-18T17:36:31.188Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 43,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1914,
+    "timestamp": "2026-05-18T17:36:31.492Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 41,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1915,
+    "timestamp": "2026-05-18T17:36:31.776Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 29,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1916,
+    "timestamp": "2026-05-18T17:36:36.417Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 44,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1917,
+    "timestamp": "2026-05-18T17:36:37.463Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 45,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1918,
+    "timestamp": "2026-05-18T17:36:37.770Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 43,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1919,
+    "timestamp": "2026-05-18T17:36:38.059Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 30,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1920,
+    "timestamp": "2026-05-18T17:36:39.986Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 46,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1921,
+    "timestamp": "2026-05-18T17:36:41.014Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 47,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1922,
+    "timestamp": "2026-05-18T17:36:41.323Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 45,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1923,
+    "timestamp": "2026-05-18T17:36:41.602Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 31,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1924,
+    "timestamp": "2026-05-18T17:36:44.557Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 48,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1925,
+    "timestamp": "2026-05-18T17:36:44.874Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 46,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1926,
+    "timestamp": "2026-05-18T17:36:45.148Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 32,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1927,
+    "timestamp": "2026-05-18T17:36:47.382Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 49,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1928,
+    "timestamp": "2026-05-18T17:36:47.679Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 47,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1929,
+    "timestamp": "2026-05-18T17:36:47.970Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 33,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1930,
+    "timestamp": "2026-05-18T17:36:54.286Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 50,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1931,
+    "timestamp": "2026-05-18T17:36:54.559Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 48,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1932,
+    "timestamp": "2026-05-18T17:36:54.814Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 34,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1933,
+    "timestamp": "2026-05-18T17:36:55.633Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 51,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1934,
+    "timestamp": "2026-05-18T17:36:55.901Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 49,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1935,
+    "timestamp": "2026-05-18T17:36:56.156Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 35,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1936,
+    "timestamp": "2026-05-18T17:36:57.434Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 52,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1937,
+    "timestamp": "2026-05-18T17:36:58.116Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 52,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1938,
+    "timestamp": "2026-05-18T17:36:58.396Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 50,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1939,
+    "timestamp": "2026-05-18T17:36:58.668Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 36,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1940,
+    "timestamp": "2026-05-18T17:37:08.977Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 53,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1941,
+    "timestamp": "2026-05-18T17:37:09.250Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 51,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1942,
+    "timestamp": "2026-05-18T17:37:09.534Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 37,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1943,
+    "timestamp": "2026-05-18T17:37:10.231Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 54,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1944,
+    "timestamp": "2026-05-18T17:37:10.505Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 52,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1945,
+    "timestamp": "2026-05-18T17:37:10.808Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 38,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1946,
+    "timestamp": "2026-05-18T17:37:11.604Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 55,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1947,
+    "timestamp": "2026-05-18T17:37:11.884Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 53,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:06:49"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1948,
+    "timestamp": "2026-05-18T17:37:12.155Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 39,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1949,
+    "timestamp": "2026-05-18T17:37:21.732Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 1,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1950,
+    "timestamp": "2026-05-18T17:37:22.008Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 53,
+    "data": {
+      "id": 53,
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18T17:37:21.916Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1951,
+    "timestamp": "2026-05-18T17:37:25.067Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 56,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1952,
+    "timestamp": "2026-05-18T17:37:25.340Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 54,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:21"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1953,
+    "timestamp": "2026-05-18T17:37:25.604Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 2,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1954,
+    "timestamp": "2026-05-18T17:37:25.871Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 40,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1955,
+    "timestamp": "2026-05-18T17:37:28.653Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 57,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1956,
+    "timestamp": "2026-05-18T17:37:28.935Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 55,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:21"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1957,
+    "timestamp": "2026-05-18T17:37:29.203Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 3,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1958,
+    "timestamp": "2026-05-18T17:37:29.475Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 41,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1959,
+    "timestamp": "2026-05-18T17:37:41.757Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 4,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1960,
+    "timestamp": "2026-05-18T17:37:42.023Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 55,
+    "data": {
+      "id": 55,
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18T17:37:41.934Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1961,
+    "timestamp": "2026-05-18T17:37:50.437Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 58,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1962,
+    "timestamp": "2026-05-18T17:37:50.715Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 56,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1963,
+    "timestamp": "2026-05-18T17:37:50.981Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 5,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1964,
+    "timestamp": "2026-05-18T17:37:51.258Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 6,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1965,
+    "timestamp": "2026-05-18T17:37:51.494Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 42,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1966,
+    "timestamp": "2026-05-18T17:37:59.374Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 59,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1967,
+    "timestamp": "2026-05-18T17:37:59.658Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 57,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1968,
+    "timestamp": "2026-05-18T17:37:59.931Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 7,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1969,
+    "timestamp": "2026-05-18T17:38:00.247Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 8,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1970,
+    "timestamp": "2026-05-18T17:38:00.552Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 43,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1971,
+    "timestamp": "2026-05-18T17:38:06.122Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 60,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1972,
+    "timestamp": "2026-05-18T17:38:06.455Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 58,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1973,
+    "timestamp": "2026-05-18T17:38:06.768Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 9,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1974,
+    "timestamp": "2026-05-18T17:38:07.062Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 10,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1975,
+    "timestamp": "2026-05-18T17:38:07.368Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 44,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1976,
+    "timestamp": "2026-05-18T17:48:38.360Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 61,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1977,
+    "timestamp": "2026-05-18T17:48:38.741Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 59,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1978,
+    "timestamp": "2026-05-18T17:48:39.039Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 11,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1979,
+    "timestamp": "2026-05-18T17:48:39.331Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 12,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1980,
+    "timestamp": "2026-05-18T17:48:39.582Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 45,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1981,
+    "timestamp": "2026-05-18T17:48:43.443Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 62,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1982,
+    "timestamp": "2026-05-18T17:48:43.763Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 60,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1983,
+    "timestamp": "2026-05-18T17:48:44.050Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 13,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1984,
+    "timestamp": "2026-05-18T17:48:44.332Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 14,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1985,
+    "timestamp": "2026-05-18T17:48:44.584Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 46,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1986,
+    "timestamp": "2026-05-18T17:49:39.978Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 63,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1987,
+    "timestamp": "2026-05-18T17:49:40.746Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 64,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1988,
+    "timestamp": "2026-05-18T17:49:41.033Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 61,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1989,
+    "timestamp": "2026-05-18T17:49:41.310Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 15,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1990,
+    "timestamp": "2026-05-18T17:49:41.596Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 16,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1991,
+    "timestamp": "2026-05-18T17:49:41.850Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 47,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1992,
+    "timestamp": "2026-05-18T18:13:51.955Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 65,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1993,
+    "timestamp": "2026-05-18T18:13:52.328Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 62,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1994,
+    "timestamp": "2026-05-18T18:13:52.663Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 17,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1995,
+    "timestamp": "2026-05-18T18:13:52.978Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 18,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1996,
+    "timestamp": "2026-05-18T18:13:53.244Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 48,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1997,
+    "timestamp": "2026-05-18T18:13:56.072Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 66,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1998,
+    "timestamp": "2026-05-18T18:13:56.397Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 63,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 1999,
+    "timestamp": "2026-05-18T18:13:56.735Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 19,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2000,
+    "timestamp": "2026-05-18T18:13:57.699Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 67,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2001,
+    "timestamp": "2026-05-18T18:13:58.010Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 64,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2002,
+    "timestamp": "2026-05-18T18:13:58.327Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 21,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2003,
+    "timestamp": "2026-05-18T18:13:59.359Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 68,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2004,
+    "timestamp": "2026-05-18T18:13:59.711Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 65,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2005,
+    "timestamp": "2026-05-18T18:14:00.038Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 23,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2006,
+    "timestamp": "2026-05-18T18:14:00.402Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 24,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2007,
+    "timestamp": "2026-05-18T18:14:01.363Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 69,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2008,
+    "timestamp": "2026-05-18T18:14:01.687Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 66,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2009,
+    "timestamp": "2026-05-18T18:14:02.016Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 25,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2010,
+    "timestamp": "2026-05-18T18:14:02.342Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 26,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2011,
+    "timestamp": "2026-05-18T18:14:02.608Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 52,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2012,
+    "timestamp": "2026-05-18T18:14:04.669Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 70,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2013,
+    "timestamp": "2026-05-18T18:14:04.983Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 67,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2014,
+    "timestamp": "2026-05-18T18:14:05.266Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 27,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2015,
+    "timestamp": "2026-05-18T18:14:05.580Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 28,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2016,
+    "timestamp": "2026-05-18T18:14:05.861Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 53,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2017,
+    "timestamp": "2026-05-18T18:14:06.608Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 71,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2018,
+    "timestamp": "2026-05-18T18:14:06.926Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 68,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2019,
+    "timestamp": "2026-05-18T18:14:07.217Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 29,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2020,
+    "timestamp": "2026-05-18T18:14:07.525Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 30,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2021,
+    "timestamp": "2026-05-18T18:14:07.795Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 54,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2022,
+    "timestamp": "2026-05-18T18:14:14.704Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 72,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2023,
+    "timestamp": "2026-05-18T18:14:14.993Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 69,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2024,
+    "timestamp": "2026-05-18T18:14:15.285Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 31,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2025,
+    "timestamp": "2026-05-18T18:14:15.978Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 73,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2026,
+    "timestamp": "2026-05-18T18:14:16.260Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 70,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2027,
+    "timestamp": "2026-05-18T18:14:16.548Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 32,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2028,
+    "timestamp": "2026-05-18T18:14:16.839Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 33,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2029,
+    "timestamp": "2026-05-18T18:14:17.083Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 55,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2030,
+    "timestamp": "2026-05-18T18:14:18.595Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 74,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T17:06:30.783Z",
+      "updated_at": "2026-05-18T17:06:30.783Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2031,
+    "timestamp": "2026-05-18T18:14:18.905Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 71,
+    "data": {
+      "sku": "ПЛ-1",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 212,
+      "quantity": 1,
+      "is_active": true,
+      "created_at": "2026-05-18T17:06:49.528Z",
+      "updated_at": "2026-05-18 17:37:41"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2032,
+    "timestamp": "2026-05-18T18:14:19.218Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 34,
+    "data": {
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2033,
+    "timestamp": "2026-05-18T18:14:19.558Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 35,
+    "data": {
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2034,
+    "timestamp": "2026-05-18T18:14:19.821Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 56,
+    "data": {
+      "client_id": "",
+      "client_name": "Сергей",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-05-18T17:09:28.966Z",
+      "updated_at": "2026-05-18 17:09:28"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2035,
+    "timestamp": "2026-05-18T18:31:39.260Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 75,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T18:31:39.164Z",
+      "updated_at": "2026-05-18T18:31:39.164Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2036,
+    "timestamp": "2026-05-18T18:33:07.407Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 76,
+    "data": {
+      "name": "Анатолий",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-18T18:33:07.322Z",
+      "updated_at": "2026-05-18T18:33:07.322Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2037,
+    "timestamp": "2026-05-18T19:13:17.645Z",
+    "action": "create",
+    "store": "calendar_notes",
+    "recordId": 1,
+    "data": {
+      "date": "2026-05-19",
+      "text": "f2qf33f",
+      "color": "#3b82f6",
+      "created_at": "2026-05-18T19:13:17.559Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2038,
+    "timestamp": "2026-05-18T19:13:23.423Z",
+    "action": "update",
+    "store": "calendar_notes",
+    "recordId": 1,
+    "data": {
+      "id": 1,
+      "date": "2026-05-19",
+      "text": "f2qf33f",
+      "color": "#10b981",
+      "created_at": "2026-05-18T19:13:23.335Z",
+      "updated_at": "2026-05-18T19:13:23.335Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2039,
+    "timestamp": "2026-05-18T19:13:26.002Z",
+    "action": "update",
+    "store": "calendar_notes",
+    "recordId": 1,
+    "data": {
+      "id": 1,
+      "date": "2026-05-19",
+      "text": "f2qf33f",
+      "color": "#f59e0b",
+      "created_at": "2026-05-18T19:13:25.920Z",
+      "updated_at": "2026-05-18T19:13:25.920Z"
+    },
+    "metadata": {}
   }
 ]

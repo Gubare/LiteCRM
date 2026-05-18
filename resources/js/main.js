@@ -24,6 +24,7 @@ import {
 } from './db.js'
 import { loadSettings, getSetting } from './settings-manager.js';
 import { initLogger } from './logger.js'; 
+import { getDBType } from './db_config.js';
 // import { startVoiceInput } from './voice-input.js'
 /*
     Function to display information about the Neutralino app.
@@ -157,23 +158,61 @@ window.saveDataToFile = async function() {
 // Загрузка данных из файла при старте
 // В main.js
 
-// Загрузка данных из файла бэкапа
 window.loadDataFromFile = async function() {
     try {
-        const filePath = 'crm_data/backup.json';
-        try { await Neutralino.filesystem.getStats(filePath); } catch(e) { return; }
+        // Определяем тип активной БД
+        const dbType = getDBType?.() || 'indexeddb';
+        console.log(`📦 Loading data from ${dbType}...`);
         
-        const jsonData = await Neutralino.filesystem.readFile(filePath);
-        const backup = JSON.parse(jsonData);
-        
-        for (const storeData of backup.stores) {
-            await importStoreFromJSON(storeData.store, JSON.stringify(storeData));
-            console.log(`✅ Restored "${storeData.store}"`);
+        if (dbType === 'sqlite') {
+            // === SQLite: данные уже в файле .sqlite ===
+            // Просто проверяем, что БД инициализирована
+            await initDatabase();
+            
+            // Для SQLite НЕ импортируем из backup.json!
+            // Данные уже сохранены в crm_data.sqlite
+            console.log('✅ SQLite: data already persisted in file');
+            
+        } else {
+            // === IndexedDB: загружаем из резервной копии ===
+            const filePath = 'crm_data/backup.json';
+            
+            try {
+                // Проверяем существование файла
+                await Neutralino.filesystem.getStats(filePath);
+            } catch(e) {
+                console.log('⚠️ No backup file found, using empty database');
+                window.isDatabaseReady = true;
+                document.dispatchEvent(new CustomEvent('dbReady'));
+                return;
+            }
+            
+            const jsonData = await Neutralino.filesystem.readFile(filePath);
+            const backup = JSON.parse(jsonData);
+            
+            // Импорт данных в каждое хранилище
+            for (const storeData of backup.stores) {
+                try {
+                    await importStoreFromJSON(storeData.store, JSON.stringify(storeData));
+                    console.log(`✅ Restored "${storeData.store}" (${storeData.items?.length || 0} items)`);
+                } catch (err) {
+                    console.warn(`⚠️ Could not restore "${storeData.store}":`, err.message);
+                }
+            }
         }
+        
         window.isDatabaseReady = true;
         document.dispatchEvent(new CustomEvent('dbReady'));
-    } catch (error) { console.error('Restore error:', error); }
+        console.log('✅ Database ready, data loaded');
+        
+    } catch (error) {
+        console.error('❌ Restore error:', error);
+        // Не блокируем запуск приложения при ошибке загрузки
+        window.isDatabaseReady = true;
+        document.dispatchEvent(new CustomEvent('dbReady'));
+    }
 };
+
 // Обработчик закрытия окна
 async function onWindowClose() {
     console.log('Application closing, saving data...');
@@ -274,35 +313,37 @@ function initProximityNav() {
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('main.js: DOMContentLoaded');
+    
+    // Загрузка настроек
     await loadSettings();
+    
     // Применяем тему
-    const theme = getSetting('ui.theme');
-    document.documentElement.setAttribute('data-theme', theme);
-    const navButtons = document.querySelectorAll('.nav-item[data-url]');
-
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const targetUrl = btn.dataset.url;
-            
-            if (targetUrl) {
-                navButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                window.location.href = targetUrl;
-            }
-        });
-    });
-
-
+    const theme = await getSetting('ui.theme');
+    if (theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+    
+    // Инициализация навбара 
+    initializeNavigation();
+    
     try {
-        // Инициализация IndexedDB
+        // Инициализация БД
         await initDatabase();
         await initLogger();
+        window.isDatabaseReady = true;
         console.log('✅ IndexedDB initialized successfully');
+        document.dispatchEvent(new CustomEvent('dbReady'));
+        // Загрузка данных
         await loadDataFromFile();
-        // Делаем функции доступными глобально для других страниц
+        
+        // Глобальные функции
         window.renderClientTable = renderClientTable;
         window.exportDatabase = exportDatabase;
         window.importDatabase = importDatabase;
+        window.getAllItems = (await import('./db.js')).getAllItems;
+        window.addItem = (await import('./db.js')).addItem;
+        window.updateItem = (await import('./db.js')).updateItem;
+        window.deleteItem = (await import('./db.js')).deleteItem;
         
         console.log("✅ The application has been launched successfully!");
         
@@ -313,14 +354,58 @@ document.addEventListener('DOMContentLoaded', async () => {
                 'Не удалось инициализировать приложение: ' + error.message);
         }
     }
-        if (document.getElementById('nav-container')) {
-        await loadNavigation();
-    }
-    // Display app information
+    
+    // Показ информации
     showInfo();
 });
 
-// Функция для загрузки навигации
+
+//  Инициализация навигации (обработчики для кнопок)
+function initializeNavigation() {
+    const navButtons = document.querySelectorAll('.nav-item[data-url]');
+    
+    console.log(`🔍 Found ${navButtons.length} navigation buttons`);
+    
+    navButtons.forEach(btn => {
+        // Обработчик клика
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetUrl = btn.dataset.url;
+            
+            console.log(`🔘 Navigation clicked: ${targetUrl}`);
+            
+            if (targetUrl) {
+                // Убираем активный класс со всех кнопок
+                navButtons.forEach(b => b.classList.remove('active'));
+                
+                // Добавляем активный класс нажатой кнопке
+                btn.classList.add('active');
+                
+                // Переход на страницу
+                window.location.href = targetUrl;
+            }
+        });
+    });
+    
+    // Подсветка активной страницы при загрузке
+    highlightActiveLink();
+}
+
+
+//  Подсветка активной ссылки
+function highlightActiveLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navButtons = document.querySelectorAll('.nav-item[data-url]');
+    
+    navButtons.forEach(btn => {
+        if (btn.dataset.url === currentPage) {
+            btn.classList.add('active');
+            console.log(`✅ Active page highlighted: ${currentPage}`);
+        }
+    });
+}
+
+
 export async function loadNavigation(selector = '#nav-container') {
     try {
         const response = await fetch('partials/nav.html');
@@ -331,28 +416,27 @@ export async function loadNavigation(selector = '#nav-container') {
         
         if (container) {
             container.innerHTML = html;
-            
-            // Подсветка активной ссылки
-            highlightActiveLink();
+            initializeNavigation(); // Инициализируем кнопки после загрузки
         }
     } catch (error) {
         console.error('Failed to load navigation:', error);
-        // Фолбэк: если не загрузилось, скрываем контейнер
-        const container = document.querySelector(selector);
-        if (container) container.style.display = 'none';
+        // Навбар уже в HTML, просто игнорируем ошибку
     }
 }
 
-// Подсветка текущей страницы в меню
-function highlightActiveLink() {
-    const currentPage = window.location.pathname.split('/').pop();
-    document.querySelectorAll('.main-nav a').forEach(link => {
-        if (link.getAttribute('href') === currentPage) {
-            link.classList.add('active');
-            link.style.fontWeight = 'bold';
-            link.style.color = '#3b82f6';
-        }
-    });
+
+function getStoresForPage(pageName) {
+    const pageStores = {
+        'clients.html': ['clients'],
+        'products.html': ['products'],
+        'sales.html': ['sales', 'products', 'clients'],
+        'tickets.html': ['tickets', 'clients'],
+        'calendar.html': ['calendar_notes'],
+        'charts.html': ['sales', 'clients', 'products', 'tickets'],
+        'reports.html': ['clients', 'products', 'sales'] 
+    };
+    
+    return pageStores[pageName] || [];
 }
 
 export function applyNavSettings() {

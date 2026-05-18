@@ -6,7 +6,7 @@ import {
     updateItem,
     deleteItem,
     getDbInstance
-} from '../../resources/js/db_indexeddb.js';
+} from '../../resources/js/db_sqlite.js';
 
 const TEST_SCALES = [100, 1000, 2000];
 const TEST_STORE = 'clients';

@@ -7,6 +7,7 @@ import * as sqliteAdapter from './db_sqlite.js';
 
 // Кэш экземпляра адаптера
 let activeAdapter = null;
+let initializationPromise = null;
 
 // Получить активный адаптер (ленивая инициализация)
 function getAdapter() {
@@ -32,8 +33,32 @@ function getAdapter() {
 
 // Инициализация БД (вызывается один раз при старте)
 export async function initDatabase() {
+    if (initializationPromise) {
+        return initializationPromise; 
+    }
+    
     const adapter = getAdapter();
-    return await adapter.initDatabase();
+    
+    // Отключаем автосохранение на время инициализации
+    if (adapter.disableAutoSave) {
+        adapter.disableAutoSave();
+    }
+    
+    initializationPromise = adapter.initDatabase();
+    
+    try {
+        const result = await initializationPromise;
+        
+        // Включаем автосохранение после инициализации
+        if (adapter.enableAutoSave) {
+            setTimeout(() => adapter.enableAutoSave(), 1000);
+        }
+        
+        return result;
+    } catch (error) {
+        initializationPromise = null; // Сбрасываем при ошибке
+        throw error;
+    }
 }
 
 // Получить экземпляр БД (для прямого доступа, если нужно)

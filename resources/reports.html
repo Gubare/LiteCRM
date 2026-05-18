@@ -169,12 +169,12 @@
     </div>
     </main>
     <script src="js/neutralino.js"></script>
-    <script type="module" src="js/db_indexeddb.js"></script>
+    <script type="module" src="js/db_sqlite.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/reports-config.js"></script>
     
     <script type="module">
-        import { getAllItems } from './js/db_indexeddb.js';
+        import { getAllItems } from './js/db_sqlite.js';
         import { REPORTS_CONFIG } from './js/reports-config.js';
 
         if (typeof Neutralino !== 'undefined') Neutralino.init();

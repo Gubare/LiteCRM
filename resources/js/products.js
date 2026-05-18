@@ -1,9 +1,7 @@
 // resources/js/products.js
-import { getAllItems, addItem, updateItem, deleteItem } from './db_sqlite.js';
+import { getAllItems, addItem, updateItem, deleteItem } from './db.js';
 import { getSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
-
-
 // === СПИСОК КАТЕГОРИЙ (можно расширять) ===
 const PREDEFINED_CATEGORIES = [
     'Телефон',
@@ -26,12 +24,24 @@ let ctxTargetId = null;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
-    if (typeof Neutralino !== 'undefined') Neutralino.init();
+    console.log('📄 DOMContentLoaded fired');
     
+    if (typeof Neutralino !== 'undefined') {
+        console.log('🔌 Neutralino available');
+        Neutralino.init();
+    }
+    
+    console.log('⏳ Waiting for database...');
     await waitForDatabase();
+    console.log('✅ Database ready, loading products...');
+    
     await loadProducts();
+    console.log('✅ Products loaded, setting up listeners...');
+    
     setupEventListeners();
     populateCategoryDropdowns();
+    
+    console.log('✅ Products page initialized');
 });
 
 async function waitForDatabase() {
@@ -108,13 +118,23 @@ async function getNextSkuId() {
 
 // === ЗАГРУЗКА ДАННЫХ ===
 async function loadProducts() {
+    console.log('🚀 loadProducts started');
+    
     const tbody = document.querySelector('#productTable tbody');
     if (tbody) {
+        console.log('✅ Found tbody');
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">⏳ Загрузка...</td></tr>';
+    } else {
+        console.error('❌ tbody not found!');
+        return;
     }
     
     try {
+        console.log('📦 Loading products from database...');
         let products = await getAllItems('products');
+        
+        console.log(`📊 Raw products from DB:`, products);
+        console.log(`📊 Total products: ${products.length}`);
         
         // Применяем фильтры
         if (currentFilters.category) {
@@ -123,75 +143,118 @@ async function loadProducts() {
         if (currentFilters.name) {
             const search = currentFilters.name.toLowerCase();
             products = products.filter(p => 
-                p.name.toLowerCase().includes(search) || 
-                p.sku.toLowerCase().includes(search)
+                (p.name && p.name.toLowerCase().includes(search)) || 
+                (p.sku && p.sku.toLowerCase().includes(search))
             );
         }
         if (currentFilters.status) {
             products = products.filter(p => p.is_active === (currentFilters.status === 'active'));
         }
         
-        // Сортировка: сначала новые (по ID)
-        products.sort((a, b) => b.id - a.id);
+        console.log(`📊 Products after filters: ${products.length}`);
+        
+        // Сортировка
+        products.sort((a, b) => (b.id || 0) - (a.id || 0));
         
         // Пагинация
         const total = products.length;
         const start = (currentPage - 1) * currentPageSize;
         const pagedProducts = products.slice(start, start + currentPageSize);
         
+        console.log(`📊 Paged products: ${pagedProducts.length}, page: ${currentPage}`);
+        console.log('🎨 Calling renderTable...');
+        
         renderTable(pagedProducts);
         
+        console.log('📄 Calculating pagination...');
         const totalPages = Math.ceil(total / currentPageSize);
-        renderPagination(
-            document.getElementById('pagination'),
-            document.getElementById('paginationInfo'),
-            currentPage,
-            totalPages,
-            total,
-            currentPageSize,
-            goToPage
-        );
+        
+        const paginationEl = document.getElementById('pagination');
+        const paginationInfoEl = document.getElementById('paginationInfo');
+        
+        console.log('📍 Pagination elements:', paginationEl, paginationInfoEl);
+        
+        if (paginationEl && paginationInfoEl) {
+            renderPagination(
+                paginationEl,
+                paginationInfoEl,
+                currentPage,
+                totalPages,
+                total,
+                currentPageSize,
+                goToPage
+            );
+            console.log('✅ Pagination rendered');
+        } else {
+            console.warn('⚠️ Pagination elements not found');
+        }
+        
+        console.log('✅ loadProducts completed successfully');
         
     } catch (error) {
-        console.error('Error loading products:', error);
+        console.error('❌ Error in loadProducts:', error);
+        console.error('Stack:', error.stack);
+        
         if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">❌ Ошибка загрузки</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">❌ Ошибка: ${error.message}</td></tr>`;
         }
     }
 }
 
 function renderTable(products) {
+    console.log('🎨 renderTable called with:', products);
+    
     const shouldAnimate = getSetting('ui.animateRows');
     const tbody = document.querySelector('#productTable tbody');
     
-    if (!tbody) return;
-    
-    if (products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">📭 Нет товаров</td></tr>';
+    if (!tbody) {
+        console.error('❌ Table body not found!');
         return;
     }
     
-    tbody.innerHTML = products.map((product, index) => {
-        const animClass = shouldAnimate ? 'table-row-animate' : '';
-        const animDelay = shouldAnimate ? `style="animation-delay: ${index * 0.04}s;"` : '';
+    if (!products || products.length === 0) {
+        console.log('⚠️ No products to render');
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">📭 Нет товаров. Добавьте первый товар!</td></tr>';
+        return;
+    }
+    
+    try {
+        tbody.innerHTML = products.map((product, index) => {
+            console.log('📦 Rendering product:', product);
+            
+            const animClass = shouldAnimate ? 'table-row-animate' : '';
+            const animDelay = shouldAnimate ? `style="animation-delay: ${index * 0.04}s;"` : '';
+            
+            const statusClass = product.is_active ? 'badge-active' : 'badge-inactive';
+            const statusText = product.is_active ? 'В продаже' : 'Снят';
+            
+            // Проверка на null/undefined значения
+            const sku = product.sku || 'N/A';
+            const category = product.category || 'Без категории';
+            const name = product.name || 'Без названия';
+            const price = parseFloat(product.price) || 0;
+            const quantity = parseInt(product.quantity) || 0;
+            
+            return `
+            <tr data-id="${product.id}" 
+                class="${animClass}" 
+                ${animDelay}
+                onclick="handleRowClick(event, ${product.id})">
+                <td><strong>${sku}</strong></td>
+                <td>${category}</td>
+                <td>${name}</td>
+                <td style="text-align: right;">${price.toFixed(2)} ₽</td>
+                <td style="text-align: center;">${quantity}</td>
+                <td><span class="badge ${statusClass}">${statusText}</span></td>
+            </tr>`; 
+        }).join('');
         
-        const statusClass = product.is_active ? 'badge-active' : 'badge-inactive';
-        const statusText = product.is_active ? 'В продаже' : 'Снят';
+        console.log('✅ Table rendered successfully');
         
-        
-        return `
-        <tr data-id="${product.id}" 
-            class="${animClass}" 
-            ${animDelay}
-            onclick="handleRowClick(event, ${product.id})">
-            <td><strong>${product.sku}</strong></td>
-            <td>${product.category}</td>
-            <td>${product.name}</td>
-            <td style="text-align: right;">${parseFloat(product.price).toFixed(2)} ₽</td>
-            <td style="text-align: center;">${product.quantity}</td>
-            <td><span class="badge ${statusClass}">${statusText}</span></td>
-        </tr>`; 
-    }).join('');
+    } catch (error) {
+        console.error('❌ Error rendering table:', error);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">❌ Ошибка рендеринга</td></tr>`;
+    }
 }
 
 window.goToPage = function(newPage) {

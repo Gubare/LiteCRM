@@ -1,6 +1,6 @@
 // resources/js/partials/selectionManager.js
 import { getSetting } from '../settings-manager.js';
-import { deleteItem } from '../db_indexeddb.js';
+import { deleteItem } from '../db_sqlite.js';
 export class SelectionManager {
     constructor(options) {
         this.tableBodySelector = options.tableBodySelector;
