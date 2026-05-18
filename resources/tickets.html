@@ -105,7 +105,7 @@
         <!-- Кнопка создания -->
         <div style="margin-bottom: 20px;">
             <button class="btn-primary" onclick="openModal('createTicketModal')" style="padding: 10px 20px; font-size: 15px;">
-                🎫 Создать обращение
+                Создать обращение
             </button>
         </div>
         
@@ -185,9 +185,9 @@
     <!-- Модальное окно: Создание обращения -->
     <div id="createTicketModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'createTicketModal')">
         <div class="modal-window" onclick="event.stopPropagation()">
-            <div class="modal-hint">💡 Нажмите в любое место за пределами окна, чтобы закрыть</div>
+            <div class="modal-hint">Нажмите в любое место за пределами окна, чтобы закрыть</div>
             <div class="modal-header">
-                <h3 style="margin: 0;">🎫 Новое обращение</h3>
+                <h3 style="margin: 0;">Новое обращение</h3>
             </div>
             <form id="createTicketForm">
                 <div class="form-row">
@@ -239,7 +239,7 @@
     <div id="editTicketModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'editTicketModal')">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3 style="margin: 0;">✏️ Редактирование обращения</h3>
+                <h3 style="margin: 0;">Редактирование обращения</h3>
             </div>
             <form id="editTicketForm">
                 <input type="hidden" id="editTicketId">
@@ -305,11 +305,11 @@
     <!-- Контекстное меню -->
     <div id="ctxMenu" class="ctx-menu">
         <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()">
-            <span>✏️</span> Редактировать
+            <span></span> Редактировать
         </button>
         <div class="ctx-divider"></div>
         <button class="ctx-menu-item danger" id="ctxDelete" onclick="ctxDeleteAction()">
-            <span>🗑️</span> Удалить
+            <span></span> Удалить
         </button>
     </div>
 

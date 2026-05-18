@@ -7,31 +7,31 @@ const CHART_CONFIGS = {
         'revenueTrend': {
             title: 'Динамика выручки',
             type: 'line',
-            icon: '📈',
+            icon: '',
             description: 'Выручка по дням'
         },
         'salesByType': {
             title: 'Продажи по типам',
             type: 'doughnut',
-            icon: '🍩',
+            icon: '',
             description: 'Продажа/Списание/Поступление'
         },
         'topProducts': {
             title: 'Топ-10 товаров',
             type: 'bar',
-            icon: '📊',
+            icon: '',
             description: 'Самые продаваемые товары'
         },
         'avgCheckTrend': {
             title: 'Средний чек',
             type: 'line',
-            icon: '📈',
+            icon: '',
             description: 'Динамика среднего чека'
         },
         'dealsPerDay': {
             title: 'Количество сделок в день',
             type: 'line',
-            icon: '📊',
+            icon: '',
             description: 'Динамика числа транзакций'
         }
     },
@@ -39,25 +39,25 @@ const CHART_CONFIGS = {
         'clientGrowth': {
             title: 'Прирост клиентов',
             type: 'line',
-            icon: '📈',
+            icon: '',
             description: 'Новые клиенты по периодам'
         },
         'clientSegments': {
             title: 'Сегментация',
             type: 'pie',
-            icon: '🥧',
+            icon: '',
             description: 'Распределение по сегментам'
         },
         'topClients': {
             title: 'Топ-10 клиентов',
             type: 'bar',
-            icon: '📊',
+            icon: '',
             description: 'По сумме покупок'
         },
         'topClientsByCount': {
             title: 'Топ-10 по количеству покупок',
             type: 'bar',
-            icon: '🏆',
+            icon: '',
             description: 'Клиенты с наибольшим числом сделок'
     }
     },
@@ -65,13 +65,13 @@ const CHART_CONFIGS = {
         'stockLevels': {
             title: 'Остатки на складе',
             type: 'bar',
-            icon: '📊',
+            icon: '',
             description: 'Количество товаров'
         },
         'lowStock': {
             title: 'Заканчиваются',
             type: 'bar',
-            icon: '⚠️',
+            icon: '',
             description: 'Товары с остатком < 10'
         }
     },
@@ -79,19 +79,19 @@ const CHART_CONFIGS = {
         'ticketsOverTime': {
             title: 'Обращения по времени',
             type: 'line',
-            icon: '📈',
+            icon: '',
             description: 'Нагрузка на поддержку'
         },
         'ticketsByStatus': {
             title: 'По статусам',
             type: 'pie',
-            icon: '🥧',
+            icon: '',
             description: 'Открытые/Выполненные/Архив'
         },
         'ticketsByType': {
             title: 'По типам',
             type: 'doughnut',
-            icon: '🍩',
+            icon: '',
             description: 'Вопросы/Жалобы/Заказы'
         }
     },
@@ -99,7 +99,7 @@ const CHART_CONFIGS = {
         'dailyActivity': {
             title: 'Активность по дням',
             type: 'line',
-            icon: '📈',
+            icon: '',
             description: 'Сравнение клиентов, продаж и обращений',
             multiDataset: true  // Флаг объединения
         }
@@ -1165,7 +1165,7 @@ export function updatePeriodInfo() {
     if (!infoEl) return;
     
     const periodText = getPeriodDescription(currentPeriod);
-    infoEl.textContent = `📅 ${periodText}`;
+    infoEl.textContent = ` ${periodText}`;
     infoEl.title = `Период: ${periodText}`;
 }
 
