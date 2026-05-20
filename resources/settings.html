@@ -460,6 +460,20 @@
             </div>
         </div>
 
+        <div class="settings-section" id="authSection">
+            <h3>Безопасность</h3>
+            <div class="form-group">
+                <label>Пароль для входа в приложение:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="password" id="appPassword" class="form-control" placeholder="Введите новый пароль">
+                    <button id="btnSavePassword" class="btn-primary" style="width: auto;">Сохранить</button>
+                </div>
+                <small style="color: #94a3b8; margin-top: 5px; display: block;">
+                    Если пароль задан, при следующем запуске потребуется ввод. 
+                </small>
+            </div>
+            <div id="passwordStatus" style="margin-top: 10px; font-size: 13px;"></div>
+        </div>
 
         <!-- Секция: О приложении -->
         <div class="settings-section">
@@ -488,6 +502,7 @@
         } from './js/logger.js';
         if (typeof Neutralino !== 'undefined') Neutralino.init();
         import { initConverter } from './js/converter.js';
+        import { hashPassword } from './js/security.js';
         import { openModal, closeModal, confirmModal } from './js/partials/modalManager.js';
         // Загрузка настроек при старте
         import { loadSettings, updateSetting, getSetting } from './js/settings-manager.js';
@@ -617,6 +632,7 @@
             tooltipsToggle.checked = getSetting('ui.showTooltips');
             navTextToggle.checked = getSetting('ui.showNavText');
             animateToggle.checked = getSetting('ui.animateRows');
+            console.log('🔍', animateRows);
 
             modSelect.addEventListener('change', async (e) => {
                 await updateSetting('ui.selectionModifier', e.target.value);
@@ -786,6 +802,87 @@
             initConverter();
             console.log('✅ Converter initialized');
         }
+
+        // Загрузка статуса пароля
+        // const savedHash = getSetting('auth.passwordHash');
+        const statusEl = document.getElementById('passwordStatus');
+        const inputEl = document.getElementById('appPassword');
+        const btnSave = document.getElementById('btnSavePassword');
+        let savedHash = null;
+        try {
+            const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
+            const settings = JSON.parse(data);
+            savedHash = settings['auth.passwordHash'];
+            window.settings = settings; // Обновляем глобально
+        } catch (e) {
+            console.log('⚠️ Could not read settings file');
+        }
+        
+        if (savedHash) {
+            if (statusEl) {
+                statusEl.innerHTML = '<span style="color: #22c55e;">Пароль установлен</span>';
+            }
+            if (inputEl) {
+                inputEl.placeholder = 'Введите новый пароль (оставьте пустым чтобы не менять)';
+            }
+        } else {
+            if (statusEl) {
+                statusEl.innerHTML = '<span style="color: #f59e0b;">Пароль не задан</span>';
+            }
+        }
+        
+        // Сохранение пароля
+    if (btnSave) {
+        btnSave.addEventListener('click', async () => {
+            const pass = inputEl.value;
+            
+            console.log('💾 Saving password, length:', pass?.length);
+            
+            if (!pass || pass.trim() === '') {
+                showToast('⚠️ Введите пароль', 'warning');
+                return;
+            }
+            
+            try {
+                btnSave.disabled = true;
+                btnSave.textContent = '⏳ Сохранение...';
+                
+                const hash = await hashPassword(pass);
+                console.log('🔐 Generated hash:', hash);
+                const savedHash = getSetting('auth.passwordHash');
+                console.log(savedHash)
+                
+                await updateSetting('auth.passwordHash', hash);
+                console.log('✅ Password saved to settings');
+                
+                showToast('✅ Пароль сохранен! Перезапустите приложение.', 'success');
+                
+                // Обновляем статус сразу
+                if (statusEl) {
+                    statusEl.innerHTML = '<span style="color: #22c55e;">🟢 Пароль установлен</span>';
+                }
+                if (inputEl) {
+                    inputEl.value = '';
+                    inputEl.placeholder = 'Пароль установлен ✓';
+                }
+                
+                // НЕ перезагружаем сразу, даём пользователю увидеть сообщение
+                // setTimeout(() => {
+                //     console.log('🔄 Reloading page...');
+                //     window.location.reload();
+                // }, 1500);
+                
+            } catch (error) {
+                console.error('❌ Error saving password:', error);
+                showToast('❌ Ошибка сохранения: ' + error.message, 'error');
+            } finally {
+                btnSave.disabled = false;
+                btnSave.textContent = 'Сохранить';
+            }
+        });
+    }else {
+        console.error('❌ btnSavePassword button not found!');
+    }
     </script>
     
 </body>

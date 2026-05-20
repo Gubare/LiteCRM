@@ -36214,5 +36214,111 @@
       "updated_at": "2026-05-18T19:13:25.920Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 2040,
+    "timestamp": "2026-05-18T21:53:04.933Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 172,
+    "data": {
+      "sku": "НА-172",
+      "category": "Наушники",
+      "name": "fvv",
+      "description": "",
+      "price": 0.01,
+      "quantity": 2,
+      "is_active": true,
+      "created_at": "2026-05-18T21:53:04.836Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2041,
+    "timestamp": "2026-05-20T11:03:29.059Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 35,
+    "data": {
+      "id": 35,
+      "client_id": 57,
+      "product_id": 55,
+      "quantity": 10,
+      "unit_price": 212,
+      "total_amount": 2120,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:41.680Z",
+      "updated_at": "2026-05-18T17:37:41.680Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2042,
+    "timestamp": "2026-05-20T11:03:29.436Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 34,
+    "data": {
+      "id": 34,
+      "client_id": 55,
+      "product_id": 53,
+      "quantity": 1,
+      "unit_price": 212,
+      "total_amount": 212,
+      "transaction_date": "2026-05-18T20:37",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-18T17:37:21.649Z",
+      "updated_at": "2026-05-18T17:37:21.649Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2043,
+    "timestamp": "2026-05-20T11:03:29.754Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 68,
+    "data": {
+      "id": 68,
+      "client_id": 91,
+      "product_id": 194,
+      "quantity": 17,
+      "unit_price": 10521.74,
+      "total_amount": 178869.58,
+      "transaction_date": "2026-05-14T21:04",
+      "comment": "Комментарий #5671",
+      "type": "restock",
+      "is_bulk": 0,
+      "created_at": "2026-05-14T21:04:58Z",
+      "updated_at": "2026-05-14T21:04:58Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 2044,
+    "timestamp": "2026-05-20T11:03:30.072Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 108,
+    "data": {
+      "id": 108,
+      "client_id": 100,
+      "product_id": 179,
+      "quantity": 14,
+      "unit_price": 19975.33,
+      "total_amount": 279654.62,
+      "transaction_date": "2026-05-14T17:08",
+      "comment": "Комментарий #1204",
+      "type": "sale",
+      "is_bulk": 0,
+      "created_at": "2026-05-14T17:08:10Z",
+      "updated_at": "2026-05-14T17:08:10Z"
+    },
+    "metadata": {}
   }
 ]

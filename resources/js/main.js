@@ -25,7 +25,172 @@ import {
 import { loadSettings, getSetting } from './settings-manager.js';
 import { initLogger } from './logger.js'; 
 import { getDBType } from './db_config.js';
-// import { startVoiceInput } from './voice-input.js'
+// import { verifyPassword, createLockScreen } from './security.js';
+
+let isLocked = false;
+
+
+async function checkAndLock() {
+    const savedHash = await getSetting('auth.passwordHash', true);
+    
+    console.log('🔒 Password hash:', savedHash ? 'EXISTS' : 'NOT SET');
+    
+    // Проверяем: есть ли пароль И не разблокирована ли сессия
+    if (savedHash && savedHash.length > 0) {
+        const isUnlocked = sessionStorage.getItem('app_unlocked') === 'true';
+        
+        console.log('🔐 Session unlocked:', isUnlocked);
+        
+        if (!isUnlocked) {
+            console.log('🔒 Creating lock screen...');
+            createLockScreen();
+            return true;
+        } else {
+            console.log('✅ Session already unlocked, skipping lock screen');
+        }
+    }
+    
+    return false;
+}
+
+// Функция, которая запускает приложение ТОЛЬКО после разблокировки
+async function initApplicationLogic() {
+    resetInactivityTimer();
+    console.log('✅ App unlocked. Loading data...');
+    // Загрузка настроек
+    await loadSettings();
+    
+    // Применяем тему
+    const theme = await getSetting('ui.theme');
+    if (theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+    
+    // Инициализация навбара 
+    initializeNavigation();
+    
+    try {
+        // Инициализация БД
+        await initDatabase();
+        await initLogger();
+        window.isDatabaseReady = true;
+        console.log('✅ IndexedDB initialized successfully');
+        document.dispatchEvent(new CustomEvent('dbReady'));
+        // Загрузка данных
+        await loadDataFromFile();
+        
+        // Глобальные функции
+        window.renderClientTable = renderClientTable;
+        window.exportDatabase = exportDatabase;
+        window.importDatabase = importDatabase;
+        window.getAllItems = (await import('./db.js')).getAllItems;
+        window.addItem = (await import('./db.js')).addItem;
+        window.updateItem = (await import('./db.js')).updateItem;
+        window.deleteItem = (await import('./db.js')).deleteItem;
+        
+        console.log("✅ The application has been launched successfully!");
+        
+    } catch (error) {
+        console.error("❌ Application initialization error:", error);
+        if (typeof Neutralino !== 'undefined' && Neutralino.os) {
+            Neutralino.os.showMessageBox('Ошибка запуска', 
+                'Не удалось инициализировать приложение: ' + error.message);
+        }
+    }
+    
+    // Показ информации
+    showInfo();
+}
+
+
+
+export async function hashPassword(password) {
+    if (!password) return null;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Проверка пароля
+export async function verifyPassword(inputPassword, storedHash) {
+    if (!storedHash) return false; // Если хеша нет, пароль не задан
+    const inputHash = await hashPassword(inputPassword);
+    return inputHash === storedHash;
+}
+
+// Функция создания экрана блокировки
+export function createLockScreen() {
+    // Проверяем, есть ли уже оверлей
+    if (document.getElementById('lockOverlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'lockOverlay';
+    overlay.innerHTML = `
+        <div class="lock-content">
+            <div class="lock-icon"><img src="icons/lock.svg" alt="Главная" class="icon" width="150" height="150"></div>
+            <h2>CRM System</h2>
+            <p>Введите пароль для доступа</p>
+            <input type="password" id="lockPasswordInput" class="lock-input" placeholder="Пароль" autofocus>
+            <button id="btnUnlock" class="btn-primary" style="margin-top: 15px;">Войти</button>
+            <p id="lockError" class="lock-error"></p>
+        </div>
+    `;
+    
+    // Стили прямо в JS для простоты 
+    overlay.style.cssText = `
+        position: fixed; opacity: 97%; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #0f172a; z-index: 99999; display: flex; 
+        align-items: center; justify-content: center;
+        backdrop-filter: blur(10px);
+    `;
+    
+    const content = overlay.querySelector('.lock-content');
+    content.style.cssText = `
+        background: #1e293b; padding: 40px; border-radius: 16px; 
+        text-align: center; width: 350px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    `;
+    
+    // Стили элементов
+    overlay.querySelector('.lock-icon').style.cssText = 'font-size: 64px; margin-bottom: 20px; display: block;';
+    overlay.querySelector('h2').style.cssText = 'color: #fff; margin: 0 0 10px 0;';
+    overlay.querySelector('p').style.cssText = 'color: #94a3b8; margin: 0 0 20px 0;';
+    overlay.querySelector('.lock-input').style.cssText = `
+        width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; 
+        background: #0f172a; color: #fff; font-size: 16px; outline: none;
+    `;
+    overlay.querySelector('.lock-error').style.cssText = 'color: #ef4444; margin-top: 10px; min-height: 20px; font-size: 14px;';
+
+    document.body.appendChild(overlay);
+    
+    // Обработчики
+    const input = overlay.querySelector('#lockPasswordInput');
+    const btn = overlay.querySelector('#btnUnlock');
+    
+    const tryUnlock = async () => {
+        const pass = input.value;
+        const savedHash = await getSetting('auth.passwordHash');
+        
+        if (await verifyPassword(pass, savedHash)) {
+            overlay.remove();
+            isLocked = false;
+            // Разрешаем навигацию и загрузку данных
+            sessionStorage.setItem('app_unlocked', 'true');
+            initApplicationLogic(); 
+        } else {
+            overlay.querySelector('#lockError').textContent = '❌ Неверный пароль';
+            input.value = '';
+            input.focus();
+        }
+    };
+    
+    btn.addEventListener('click', tryUnlock);
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') tryUnlock();
+    });
+}
+
 /*
     Function to display information about the Neutralino app.
 */
@@ -312,51 +477,14 @@ function initProximityNav() {
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('main.js: DOMContentLoaded');
+    console.log('📄 DOMContentLoaded in main.js');
     
-    // Загрузка настроек
-    await loadSettings();
+    const hasPassword = await checkAndLock();
     
-    // Применяем тему
-    const theme = await getSetting('ui.theme');
-    if (theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+    if (!hasPassword) {
+        // Запускаем приложение сразу
+        await initApplicationLogic();
     }
-    
-    // Инициализация навбара 
-    initializeNavigation();
-    
-    try {
-        // Инициализация БД
-        await initDatabase();
-        await initLogger();
-        window.isDatabaseReady = true;
-        console.log('✅ IndexedDB initialized successfully');
-        document.dispatchEvent(new CustomEvent('dbReady'));
-        // Загрузка данных
-        await loadDataFromFile();
-        
-        // Глобальные функции
-        window.renderClientTable = renderClientTable;
-        window.exportDatabase = exportDatabase;
-        window.importDatabase = importDatabase;
-        window.getAllItems = (await import('./db.js')).getAllItems;
-        window.addItem = (await import('./db.js')).addItem;
-        window.updateItem = (await import('./db.js')).updateItem;
-        window.deleteItem = (await import('./db.js')).deleteItem;
-        
-        console.log("✅ The application has been launched successfully!");
-        
-    } catch (error) {
-        console.error("❌ Application initialization error:", error);
-        if (typeof Neutralino !== 'undefined' && Neutralino.os) {
-            Neutralino.os.showMessageBox('Ошибка запуска', 
-                'Не удалось инициализировать приложение: ' + error.message);
-        }
-    }
-    
-    // Показ информации
-    showInfo();
 });
 
 
@@ -369,6 +497,14 @@ function initializeNavigation() {
     navButtons.forEach(btn => {
         // Обработчик клика
         btn.addEventListener('click', (e) => {
+            // ПРОВЕРКА БЛОКИРОВКИ
+            if (isLocked) {
+                e.preventDefault();
+                e.stopPropagation();
+                showToast('Приложение заблокировано', 'warning');
+                return; // Прерываем переход
+            }
+
             e.preventDefault();
             const targetUrl = btn.dataset.url;
             
@@ -456,3 +592,19 @@ window.importFromJSON = importFromJSON;
 window.saveDataToFile = saveDataToFile;
 // Export functions for use in other modules
 export { renderClientTable };
+
+let inactivityTimer;
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        console.log('⏰ Session timeout, locking...');
+        sessionStorage.removeItem('app_unlocked');
+        window.location.reload(); // Перезагружаем для показа блокировки
+    }, 15 * 60 * 1000); // 15 минут
+}
+
+// Сбрасываем таймер при любом действии
+document.addEventListener('mousemove', resetInactivityTimer);
+document.addEventListener('keypress', resetInactivityTimer);
+document.addEventListener('click', resetInactivityTimer);

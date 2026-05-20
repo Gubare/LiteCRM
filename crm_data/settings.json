@@ -2,11 +2,11 @@
   "ui.showTooltips": false,
   "ui.darkMode": false,
   "ui.showNavText": true,
-  "ui.animateRows": true,
+  "ui.animateRows": false,
   "ui.theme": "1c",
   "ui.selectionModifier": "ctrl",
   "calendar.workDays": {
-    "0": false,
+    "0": true,
     "1": true,
     "2": true,
     "3": true,
@@ -25,9 +25,10 @@
     "maxAgeDays": 7
   },
   "charts.period": {
-    "type": "7",
+    "type": "all",
     "from": null,
     "to": null,
-    "appliedAt": "2026-05-14T19:59:57.673Z"
-  }
+    "appliedAt": "2026-05-20T12:54:05.175Z"
+  },
+  "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d"
 }
