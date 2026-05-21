@@ -59,6 +59,8 @@ async function initApplicationLogic() {
     console.log('✅ App unlocked. Loading data...');
     // Загрузка настроек
     await loadSettings();
+    const animateRows = await getSetting('ui.animateRows', true);
+    document.body.setAttribute('data-animate-rows', animateRows);
     
     // Применяем тему
     const theme = await getSetting('ui.theme');
@@ -400,6 +402,12 @@ async function onWindowClose() {
 
 // Initialize Neutralino
 Neutralino.init();
+console.log('🔌 Neutralino initialized in main.js');
+    
+// Делаем доступным глобально
+window.NeutralinoReady = new Promise(resolve => {
+    document.addEventListener('neutralino.ready', resolve);
+});
 
 // Register event listeners
 Neutralino.events.on("trayMenuItemClicked", onTrayMenuItemClicked);
@@ -478,7 +486,11 @@ function initProximityNav() {
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('📄 DOMContentLoaded in main.js');
-    
+    await loadSettings();
+    await syncThemeToLocalStorage();
+    const theme = localStorage.getItem('crm_theme') || 'blue';
+    document.documentElement.setAttribute('data-theme', theme);
+
     const hasPassword = await checkAndLock();
     
     if (!hasPassword) {
@@ -602,6 +614,25 @@ function resetInactivityTimer() {
         sessionStorage.removeItem('app_unlocked');
         window.location.reload(); // Перезагружаем для показа блокировки
     }, 15 * 60 * 1000); // 15 минут
+}
+
+async function syncThemeToLocalStorage() {
+    try {
+        // Читаем тему из файла настроек
+        const fileTheme = await getSetting('ui.theme', true);
+        
+        if (fileTheme) {
+            const localTheme = localStorage.getItem('crm_theme');
+            
+            // Если в localStorage другое значение — обновляем
+            if (localTheme !== fileTheme) {
+                console.log(`🔄 Syncing theme: localStorage="${localTheme}" → file="${fileTheme}"`);
+                localStorage.setItem('crm_theme', fileTheme);
+            }
+        }
+    } catch (error) {
+        console.warn('⚠️ Could not sync theme:', error);
+    }
 }
 
 // Сбрасываем таймер при любом действии

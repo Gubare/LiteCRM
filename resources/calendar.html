@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Календарь - CRM</title>
-        <script>
+    <script>
       (function() {
         try {
-          const savedTheme = localStorage.getItem('crm_theme') || 'blue';
-          document.documentElement.setAttribute('data-theme', savedTheme);
+          // Читаем синхронно из localStorage
+          const theme = localStorage.getItem('crm_theme');
+          // Применяем ДО отрисовки CSS
+          document.documentElement.setAttribute('data-theme', theme);
         } catch(e) {}
       })();
     </script>

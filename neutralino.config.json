@@ -41,7 +41,7 @@
       "center": true,
       "fullScreen": false,
       "alwaysOnTop": false,
-      "icon": "/resources/icons/appIcon.png",
+      "icon": "/resources/icons/logo.png",
       "enableInspector": true, 
       "borderless": false,
       "maximize": true,

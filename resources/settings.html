@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Настройки - CRM</title>
     <link rel="stylesheet" href="styles.css">
-            <script>
+    <script>
       (function() {
         try {
           const savedTheme = localStorage.getItem('crm_theme') || 'blue';
@@ -220,13 +220,13 @@
             </label>
         </div>
         
-        <div class="setting-item">
+        <!-- <div class="setting-item">
             <div class="setting-info">
                 <h3>Сбросить расписание</h3>
                 <p>Вернуть стандартное расписание (Пн-Пт рабочие, Сб-Вс выходные)</p>
             </div>
             <button id="btnResetSchedule" class="btn-action" style="padding: 8px 16px;">Сбросить</button>
-        </div>
+        </div> -->
     </div>
         
         <!-- Секция: Данные -->
@@ -491,347 +491,313 @@
     
 </main>
     <script src="js/neutralino.js"></script>
+    
+    <!-- Инициализируем Neutralino -->
+    <script>
+        if (typeof Neutralino !== 'undefined') {
+            Neutralino.init();
+            console.log('🔌 Neutralino initialized in settings.html');
+            // Делаем доступным глобально
+            window.Neutralino = Neutralino;
+        } else {
+            console.warn('⚠️ Neutralino not loaded!');
+        }
+    </script>
     <script type="module" src="js/main.js"></script>
-    <script type="module">
-        import { 
-            getLogStats, 
-            saveLogSettings, 
-            manualCleanup, 
-            clearAllLogs, 
-            exportLogsToCSV 
-        } from './js/logger.js';
-        if (typeof Neutralino !== 'undefined') Neutralino.init();
-        import { initConverter } from './js/converter.js';
-        import { hashPassword } from './js/security.js';
-        import { openModal, closeModal, confirmModal } from './js/partials/modalManager.js';
-        // Загрузка настроек при старте
-        import { loadSettings, updateSetting, getSetting } from './js/settings-manager.js';
+    
+<script type="module">
+    console.log('🔧 Settings.html module loading...');
+    await loadSettings();
+    import { 
+        getLogStats, 
+        saveLogSettings, 
+        manualCleanup, 
+        clearAllLogs, 
+        exportLogsToCSV 
+    } from './js/logger.js';
+    
+    if (typeof Neutralino !== 'undefined') Neutralino.init();
+    
+    import { initConverter } from './js/converter.js';
+    import { hashPassword } from './js/security.js';
+    import { openModal, closeModal, confirmModal } from './js/partials/modalManager.js';
+    import { loadSettings, updateSetting, getSetting } from './js/settings-manager.js';
 
 
-        // Загрузка настроек логирования
-        async function loadLogSettings() {
-            try {
-                const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
-                const settings = JSON.parse(data);
-                const logging = settings.logging || { cleanupStrategy: 'none' };
-                
-                // Устанавливаем значения
-                document.getElementById('logCleanupStrategy').value = logging.cleanupStrategy || 'none';
-                
-                if (logging.cleanupTime) {
-                    const hours = String(logging.cleanupTime.hour || 0).padStart(2, '0');
-                    const minutes = String(logging.cleanupTime.minute || 0).padStart(2, '0');
-                    document.getElementById('logCleanupTime').value = `${hours}:${minutes}`;
-                }
-                
-                if (logging.maxEntries) {
-                    document.getElementById('logMaxEntries').value = logging.maxEntries;
-                }
-                
-                if (logging.maxAgeDays) {
-                    document.getElementById('logMaxAgeDays').value = logging.maxAgeDays;
-                }
-                
-                updateLogSettingsVisibility();
-                await refreshLogStats();
-                
-            } catch (error) {
-                console.log('⚠️ Using default log settings');
+    
+    console.log('⚙️ === SETTINGS PAGE INITIALIZED ===');
+    
+    // Загрузка настроек логирования
+    async function loadLogSettings() {
+        try {
+            const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
+            const settings = JSON.parse(data);
+            const logging = settings.logging || { cleanupStrategy: 'none' };
+            
+            document.getElementById('logCleanupStrategy').value = logging.cleanupStrategy || 'none';
+            
+            if (logging.cleanupTime) {
+                const hours = String(logging.cleanupTime.hour || 0).padStart(2, '0');
+                const minutes = String(logging.cleanupTime.minute || 0).padStart(2, '0');
+                document.getElementById('logCleanupTime').value = `${hours}:${minutes}`;
             }
-        }
-
-        // Показ/скрытие настроек
-        function updateLogSettingsVisibility() {
-            const strategy = document.getElementById('logCleanupStrategy').value;
             
-            document.getElementById('logTimeSettings').style.display = 
-                (strategy === 'daily' || strategy === 'weekly') ? 'flex' : 'none';
-            document.getElementById('logMaxEntriesSettings').style.display = 
-                strategy === 'maxEntries' ? 'flex' : 'none';
-            document.getElementById('logAgeSettings').style.display = 
-                strategy === 'ageBased' ? 'flex' : 'none';
-        }
-
-        // Обновление статистики
-        async function refreshLogStats() {
-            const stats = await getLogStats();
-            const text = `
-                <strong>Всего записей:</strong> ${stats.total}<br>
-                <strong>Создано:</strong> ${stats.byAction.create || 0} | 
-                <strong>Изменено:</strong> ${stats.byAction.update || 0} | 
-                <strong>Удалено:</strong> ${stats.byAction.delete || 0}<br>
-                <strong>Первая запись:</strong> ${stats.oldest ? new Date(stats.oldest).toLocaleDateString() : '—'}<br>
-                <strong>Последняя:</strong> ${stats.newest ? new Date(stats.newest).toLocaleDateString() : '—'}
-            `;
-            document.getElementById('logStatsText').innerHTML = text;
-        }
-
-        // Сохранение настроек
-        document.getElementById('logCleanupStrategy').addEventListener('change', async () => {
+            if (logging.maxEntries) {
+                document.getElementById('logMaxEntries').value = logging.maxEntries;
+            }
+            
+            if (logging.maxAgeDays) {
+                document.getElementById('logMaxAgeDays').value = logging.maxAgeDays;
+            }
+            
             updateLogSettingsVisibility();
-            await saveCurrentLogSettings();
-        });
-
-        document.getElementById('logCleanupTime').addEventListener('change', saveCurrentLogSettings);
-        document.getElementById('logMaxEntries').addEventListener('change', saveCurrentLogSettings);
-        document.getElementById('logMaxAgeDays').addEventListener('change', saveCurrentLogSettings);
-
-        async function saveCurrentLogSettings() {
-            const strategy = document.getElementById('logCleanupStrategy').value;
-            const [hours, minutes] = document.getElementById('logCleanupTime').value.split(':').map(Number);
+            await refreshLogStats();
             
-            const settings = {
-                cleanupStrategy: strategy,
-                cleanupTime: { hour: hours, minute: minutes },
-                maxEntries: parseInt(document.getElementById('logMaxEntries').value),
-                maxAgeDays: parseInt(document.getElementById('logMaxAgeDays').value)
-            };
-            
-            const success = await saveLogSettings(settings);
-            if (success) showToast('✅ Настройки логирования сохранены');
+        } catch (error) {
+            console.log('⚠️ Using default log settings');
+        }
+    }
+
+    // Показ/скрытие настроек
+    function updateLogSettingsVisibility() {
+        const strategy = document.getElementById('logCleanupStrategy').value;
+        
+        document.getElementById('logTimeSettings').style.display = 
+            (strategy === 'daily' || strategy === 'weekly') ? 'flex' : 'none';
+        document.getElementById('logMaxEntriesSettings').style.display = 
+            strategy === 'maxEntries' ? 'flex' : 'none';
+        document.getElementById('logAgeSettings').style.display = 
+            strategy === 'ageBased' ? 'flex' : 'none';
+    }
+
+    // Обновление статистики
+    async function refreshLogStats() {
+        const stats = await getLogStats();
+        const text = `
+            <strong>Всего записей:</strong> ${stats.total}<br>
+            <strong>Создано:</strong> ${stats.byAction.create || 0} | 
+            <strong>Изменено:</strong> ${stats.byAction.update || 0} | 
+            <strong>Удалено:</strong> ${stats.byAction.delete || 0}<br>
+            <strong>Первая запись:</strong> ${stats.oldest ? new Date(stats.oldest).toLocaleDateString() : '—'}<br>
+            <strong>Последняя:</strong> ${stats.newest ? new Date(stats.newest).toLocaleDateString() : '—'}
+        `;
+        document.getElementById('logStatsText').innerHTML = text;
+    }
+
+    // Сохранение настроек
+    document.getElementById('logCleanupStrategy').addEventListener('change', async () => {
+        updateLogSettingsVisibility();
+        await saveCurrentLogSettings();
+    });
+
+    document.getElementById('logCleanupTime').addEventListener('change', saveCurrentLogSettings);
+    document.getElementById('logMaxEntries').addEventListener('change', saveCurrentLogSettings);
+    document.getElementById('logMaxAgeDays').addEventListener('change', saveCurrentLogSettings);
+
+    async function saveCurrentLogSettings() {
+        const strategy = document.getElementById('logCleanupStrategy').value;
+        const [hours, minutes] = document.getElementById('logCleanupTime').value.split(':').map(Number);
+        
+        const settings = {
+            cleanupStrategy: strategy,
+            cleanupTime: { hour: hours, minute: minutes },
+            maxEntries: parseInt(document.getElementById('logMaxEntries').value),
+            maxAgeDays: parseInt(document.getElementById('logMaxAgeDays').value)
+        };
+        
+        const success = await saveLogSettings(settings);
+        if (success) showToast('Настройки логирования сохранены');
+    }
+
+    // Кнопки действий
+    document.getElementById('btnRefreshStats').addEventListener('click', refreshLogStats);
+
+    document.getElementById('btnExportLogs').addEventListener('click', async () => {
+        const filePath = await exportLogsToCSV();
+        if (filePath) showToast(`Логи экспортированы: ${filePath}`);
+        else showToast('Ошибка экспорта');
+    });
+
+    document.getElementById('btnManualCleanup').addEventListener('click', async () => {
+        await manualCleanup();
+        showToast('Очистка выполнена');
+        await refreshLogStats();
+    });
+
+    document.getElementById('btnClearAllLogs').addEventListener('click', async () => {
+        if (!confirm('ВНИМАНИЕ: Все логи будут безвозвратно удалены! Продолжить?')) return;
+        
+        await clearAllLogs();
+        showToast('Все логи удалены');
+        await refreshLogStats();
+    });
+
+    // ГЛАВНАЯ ИНИЦИАЛИЗАЦИЯ (без DOMContentLoaded!)
+    try {
+        console.log('📥 Loading settings...');
+        await loadSettings();
+        await loadLogSettings();
+        console.log('✅ Settings loaded');
+        
+        // Проверяем наличие элементов
+        const elements = {
+            tooltipsToggle: document.getElementById('toggleTooltips'),
+            navTextToggle: document.getElementById('toggleNavText'),
+            animateToggle: document.getElementById('toggleRowAnimation'),
+            modSelect: document.getElementById('selectionModifier'),
+            themeSelect: document.getElementById('themeSelect'),
+            toggleCalendarEdit: document.getElementById('toggleCalendarEdit')
+        };
+        
+        console.log('🔍 Checking elements:');
+        for (const [name, el] of Object.entries(elements)) {
+            console.log(`  ${name}:`, el ? '✅ FOUND' : '❌ NOT FOUND');
+        }
+        
+        // Применяем настройки
+        console.log('📊 Applying settings from file...');
+        
+        if (elements.tooltipsToggle) {
+            const val = await getSetting('ui.showTooltips', true);
+            elements.tooltipsToggle.checked = val;
+            console.log(`  - ui.showTooltips = ${val}`);
+        }
+        
+        if (elements.navTextToggle) {
+            const val = await getSetting('ui.showNavText', true);
+            elements.navTextToggle.checked = val;
+            console.log(`  - ui.showNavText = ${val}`);
+            if(val) document.body.classList.remove('nav-icons-only');
+            else document.body.classList.add('nav-icons-only');
+        }
+        
+        if (elements.animateToggle) {
+            const val = await getSetting('ui.animateRows', true);
+            elements.animateToggle.checked = val;
+            console.log(`  - ui.animateRows = ${val}`);
+        }
+        
+        if (elements.modSelect) {
+            const val = await getSetting('ui.selectionModifier', true) || 'shift';
+            elements.modSelect.value = val;
+            console.log(`  - ui.selectionModifier = ${val}`);
+        }
+        
+        if (elements.themeSelect) {
+            const val = localStorage.getItem('crm_theme') || 'blue';
+            elements.themeSelect.value = val;
+            console.log(`  - crm_theme (localStorage) = ${val}`);
         }
 
-        // Кнопки действий
-        document.getElementById('btnRefreshStats').addEventListener('click', refreshLogStats);
+        if (elements.toggleCalendarEdit) {
+            const val = await getSetting('calendar.canEditSchedule', true);
+            toggleCalendarEdit.checked = val;
+            console.log('  - calendar.canEditSchedule =', val);
+        }
+        
+        // Навешиваем обработчики
+        console.log('🔗 Attaching event listeners...');
 
-        document.getElementById('btnExportLogs').addEventListener('click', async () => {
-            const filePath = await exportLogsToCSV();
-            if (filePath) showToast(`✅ Логи экспортированы: ${filePath}`);
-            else showToast('❌ Ошибка экспорта');
-        });
-
-        document.getElementById('btnManualCleanup').addEventListener('click', async () => {
-            await manualCleanup();
-            showToast('✅ Очистка выполнена');
-            await refreshLogStats();
-        });
-
-        document.getElementById('btnClearAllLogs').addEventListener('click', async () => {
-            if (!confirm('⚠️ ВНИМАНИЕ: Все логи будут безвозвратно удалены! Продолжить?')) return;
-            
-            await clearAllLogs();
-            showToast('🗑️ Все логи удалены');
-            await refreshLogStats();
-        });
-
-
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Загружаем настройки из файла
-            await loadSettings();
-            await loadLogSettings();
-            // Применяем состояние чекбоксов
-            const tooltipsToggle = document.getElementById('toggleTooltips');
-            const navTextToggle = document.getElementById('toggleNavText');
-            const animateToggle = document.getElementById('toggleRowAnimation');
-            const modSelect = document.getElementById('selectionModifier');
-            const savedModifier = getSetting('ui.selectionModifier') || 'shift';
-            modSelect.value = savedModifier;
-
-            // Устанавливаем галочки согласно файлу настроек
-            tooltipsToggle.checked = getSetting('ui.showTooltips');
-            navTextToggle.checked = getSetting('ui.showNavText');
-            animateToggle.checked = getSetting('ui.animateRows');
-            console.log('🔍', animateRows);
-
-            modSelect.addEventListener('change', async (e) => {
-                await updateSetting('ui.selectionModifier', e.target.value);
-                showToast(`✅ Выделение теперь по клавише ${e.target.value.toUpperCase()}`);
+        if (toggleCalendarEdit) {
+            toggleCalendarEdit.addEventListener('change', async (e) => {
+                console.log('🔘 Calendar toggle:', e.target.checked);
+                await updateSetting('calendar.canEditSchedule', e.target.checked);
+                showToast(e.target.checked ? 'Редактирование включено' : 'Редактирование выключено');
             });
-            // Подсказки
-            tooltipsToggle.addEventListener('change', async (e) => {
+            console.log('  ✅ calendar listener attached');
+        }
+
+        if (elements.tooltipsToggle) {
+            elements.tooltipsToggle.addEventListener('change', async (e) => {
+                console.log('🔘 Toggle: ui.showTooltips =', e.target.checked);
                 await updateSetting('ui.showTooltips', e.target.checked);
-                showToast(e.target.checked ? '✅ Подсказки включены' : '❌ Подсказки выключены');
+                showToast(e.target.checked ? 'Подсказки включены' : 'Подсказки выключены');
             });
-
-            // Текст в меню
-            navTextToggle.addEventListener('change', async (e) => {
+            console.log('  ✅ tooltips listener attached');
+        }
+        
+        if (elements.navTextToggle) {
+            elements.navTextToggle.addEventListener('change', async (e) => {
+                console.log('🔘 Toggle: ui.showNavText =', e.target.checked);
                 await updateSetting('ui.showNavText', e.target.checked);
-                // Применяем визуально сразу
                 if(e.target.checked) document.body.classList.remove('nav-icons-only');
                 else document.body.classList.add('nav-icons-only');
                 showToast(e.target.checked ? '✅ Текст меню включен' : '🔘 Только иконки');
             });
-
-            // Анимация строк
-            animateToggle.addEventListener('change', async (e) => {
+            console.log('  ✅ navText listener attached');
+        }
+        
+        if (elements.animateToggle) {
+            elements.animateToggle.addEventListener('change', async (e) => {
+                console.log('🔘 Toggle: ui.animateRows =', e.target.checked);
                 await updateSetting('ui.animateRows', e.target.checked);
-                showToast(e.target.checked ? '✅ Анимация включена' : '❌ Анимация выключена');
+                showToast(e.target.checked ? 'Анимация включена' : 'Анимация выключена');
             });
-                    // Экспорт данных
-            document.getElementById('btnExport').addEventListener('click', async () => {
-                try {
-                    if (window.saveDataToFile) {
-                        await window.saveDataToFile();
-                        showToast('✅ Бэкап сохранён в папке crm_data/');
-                    } else {
-                        showToast('⚠️ Функция экспорта временно недоступна');
-                    }
-                } catch (error) {
-                    showToast('❌ Ошибка экспорта: ' + error.message);
-                }
+            console.log('  ✅ animateRows listener attached');
+        }
+        
+        if (elements.modSelect) {
+            elements.modSelect.addEventListener('change', async (e) => {
+                console.log('🔘 Select: ui.selectionModifier =', e.target.value);
+                await updateSetting('ui.selectionModifier', e.target.value);
+                showToast(`Выделение теперь по клавише ${e.target.value.toUpperCase()}`);
             });
-        });
-
-            // Инициализация селекта темы
-            const themeSelect = document.getElementById('themeSelect');
-            if (themeSelect) {
-                // Читаем из localStorage (быстро) или из window.settings (если уже загружены)
-                const currentTheme = localStorage.getItem('crm_theme') || 
-                                    window.settings?.['ui.theme'] || 
-                                    'blue';
-                                    
-                themeSelect.value = currentTheme;
-                
-                // Подписываем на изменения (если ещё не подписаны)
-                themeSelect.removeEventListener('change', handleThemeChange);
-                themeSelect.addEventListener('change', handleThemeChange);
-            }
-
-            function handleThemeChange(e) {
+            console.log('  ✅ modifier listener attached');
+        }
+        
+        if (elements.themeSelect) {
+            elements.themeSelect.addEventListener('change', async (e) => {
                 const newTheme = e.target.value;
+                console.log('🎨 Theme changed to:', newTheme);
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('crm_theme', newTheme);
-                updateSetting('ui.theme', newTheme);
-            }
-
-        // Изменение темы
-        document.getElementById('themeSelect')?.addEventListener('change', async (e) => {
-            const newTheme = e.target.value;
-            
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            
-            
-            localStorage.setItem('crm_theme', newTheme);
-            
-            
-            try {
                 await updateSetting('ui.theme', newTheme);
-                console.log('✅ Theme saved to settings.json');
-            } catch (err) {
-                console.warn('⚠️ Could not save theme to file:', err);
-            }
-        });
-
-        // Настройки календаря
-        const calEditToggle = document.getElementById('toggleCalendarEdit');
-        // calEditToggle.checked = await getSetting('calendar.canEditSchedule') ?? true;
-
-        calEditToggle.checked = getSetting('calendar.canEditSchedule');
-
-        calEditToggle.addEventListener('change', async (e) => {
-            await updateSetting('calendar.canEditSchedule', e.target.checked);
-            showToast(e.target.checked ? 'Редактирование расписания включено' : 'Редактирование расписания заблокировано');
-        });
-
-        document.getElementById('btnResetSchedule').addEventListener('click', async () => {
-            if (!confirm('Сбросить расписание к стандартному (Пн-Пт рабочие)?')) return;
-            
-            const defaultSchedule = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 6: false };
-            await updateSetting('calendar.workDays', defaultSchedule);
-            showToast('Расписание сброшено');
-        });
-                
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed; bottom: 20px; right: 20px;
-                background: #1e293b; color: white;
-                padding: 12px 20px; border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 10000; animation: slideIn 0.3s ease;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                showToast(`Тема изменена на ${newTheme}`);
+            });
+            console.log('  ✅ theme listener attached');
         }
         
-        // Настройка модификатора выделения
-        const modSelect = document.getElementById('selectionModifier');
-        modSelect.value = localStorage.getItem('ui.selectionModifier') || 'shift';
-
-        modSelect.addEventListener('change', (e) => {
-            localStorage.setItem('ui.selectionModifier', e.target.value);
-            showToast(`✅ Выделение теперь работает по клавише ${e.target.value.toUpperCase()}`);
-        });
-
-
-        // Добавляем анимации
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        document.getElementById('toggleNavText').addEventListener('change', (e) => {
-            const show = e.target.checked;
-            localStorage.setItem('crm_showNavText', show);
-            
-            if (show) {
-                document.body.classList.remove('nav-icons-only');
-            } else {
-                document.body.classList.add('nav-icons-only');
-            }
-            
-            showToast(show ? '✅ Названия включены' : '🔘 Только иконки');
-        });
-
-        // Загрузка состояния при старте
-        const animateRows = localStorage.getItem('crm_animateRows') !== 'false';
-        document.getElementById('toggleRowAnimation').checked = animateRows;
-
-        // Обработчик переключения
-        document.getElementById('toggleRowAnimation').addEventListener('change', (e) => {
-            localStorage.setItem('crm_animateRows', e.target.checked);
-            showToast(e.target.checked ? '✅ Анимация включена' : '❌ Анимация выключена');
-        });
-
-        // Инициализация конвертера
-        if (document.getElementById('btnImportData')) {
-            initConverter();
-            console.log('✅ Converter initialized');
-        }
-
-        // Загрузка статуса пароля
-        // const savedHash = getSetting('auth.passwordHash');
-        const statusEl = document.getElementById('passwordStatus');
-        const inputEl = document.getElementById('appPassword');
-        const btnSave = document.getElementById('btnSavePassword');
-        let savedHash = null;
-        try {
-            const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
-            const settings = JSON.parse(data);
-            savedHash = settings['auth.passwordHash'];
-            window.settings = settings; // Обновляем глобально
-        } catch (e) {
-            console.log('⚠️ Could not read settings file');
-        }
+        console.log('✅ === SETTINGS PAGE READY ===');
         
-        if (savedHash) {
-            if (statusEl) {
-                statusEl.innerHTML = '<span style="color: #22c55e;">Пароль установлен</span>';
-            }
-            if (inputEl) {
-                inputEl.placeholder = 'Введите новый пароль (оставьте пустым чтобы не менять)';
-            }
-        } else {
-            if (statusEl) {
-                statusEl.innerHTML = '<span style="color: #f59e0b;">Пароль не задан</span>';
-            }
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR in settings init:', error);
+        console.error('Stack:', error.stack);
+    }
+    
+    // Инициализация конвертера
+    if (document.getElementById('btnImportData')) {
+        initConverter();
+        console.log('✅ Converter initialized');
+    }
+
+    // Загрузка статуса пароля
+    const statusEl = document.getElementById('passwordStatus');
+    const inputEl = document.getElementById('appPassword');
+    const btnSave = document.getElementById('btnSavePassword');
+    let savedHash = null;
+    try {
+        const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
+        const settings = JSON.parse(data);
+        savedHash = settings['auth.passwordHash'];
+        window.settings = settings;
+    } catch (e) {
+        console.log('⚠️ Could not read settings file');
+    }
+    
+    if (savedHash) {
+        if (statusEl) {
+            statusEl.innerHTML = '<span style="color: #22c55e;">Пароль установлен</span>';
         }
-        
-        // Сохранение пароля
+        if (inputEl) {
+            inputEl.placeholder = 'Введите новый пароль (оставьте пустым чтобы не менять)';
+        }
+    } else {
+        if (statusEl) {
+            statusEl.innerHTML = '<span style="color: #f59e0b;">Пароль не задан</span>';
+        }
+    }
+    
+    // Сохранение пароля
     if (btnSave) {
         btnSave.addEventListener('click', async () => {
             const pass = inputEl.value;
@@ -845,32 +811,23 @@
             
             try {
                 btnSave.disabled = true;
-                btnSave.textContent = '⏳ Сохранение...';
+                btnSave.textContent = 'Сохранение...';
                 
                 const hash = await hashPassword(pass);
                 console.log('🔐 Generated hash:', hash);
-                const savedHash = getSetting('auth.passwordHash');
-                console.log(savedHash)
                 
                 await updateSetting('auth.passwordHash', hash);
                 console.log('✅ Password saved to settings');
                 
                 showToast('✅ Пароль сохранен! Перезапустите приложение.', 'success');
                 
-                // Обновляем статус сразу
                 if (statusEl) {
-                    statusEl.innerHTML = '<span style="color: #22c55e;">🟢 Пароль установлен</span>';
+                    statusEl.innerHTML = '<span style="color: #22c55e;">Пароль установлен</span>';
                 }
                 if (inputEl) {
                     inputEl.value = '';
                     inputEl.placeholder = 'Пароль установлен ✓';
                 }
-                
-                // НЕ перезагружаем сразу, даём пользователю увидеть сообщение
-                // setTimeout(() => {
-                //     console.log('🔄 Reloading page...');
-                //     window.location.reload();
-                // }, 1500);
                 
             } catch (error) {
                 console.error('❌ Error saving password:', error);
@@ -880,10 +837,26 @@
                 btnSave.textContent = 'Сохранить';
             }
         });
-    }else {
+    } else {
         console.error('❌ btnSavePassword button not found!');
     }
-    </script>
     
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed; bottom: 20px; right: 20px;
+            background: #1e293b; color: white;
+            padding: 12px 20px; border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000; animation: slideIn 0.3s ease;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>    
 </body>
 </html>

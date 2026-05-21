@@ -3,10 +3,10 @@
   "ui.darkMode": false,
   "ui.showNavText": true,
   "ui.animateRows": false,
-  "ui.theme": "1c",
+  "ui.theme": "blue",
   "ui.selectionModifier": "ctrl",
   "calendar.workDays": {
-    "0": true,
+    "0": false,
     "1": true,
     "2": true,
     "3": true,
@@ -14,7 +14,7 @@
     "5": false,
     "6": false
   },
-  "calendar.canEditSchedule": false,
+  "calendar.canEditSchedule": true,
   "logging": {
     "cleanupStrategy": "none",
     "cleanupTime": {
@@ -25,10 +25,10 @@
     "maxAgeDays": 7
   },
   "charts.period": {
-    "type": "all",
+    "type": "30",
     "from": null,
     "to": null,
-    "appliedAt": "2026-05-20T12:54:05.175Z"
+    "appliedAt": "2026-05-21T08:31:31.425Z"
   },
   "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d"
 }

@@ -152,7 +152,7 @@
                 <option value="tickets">Обращения</option>
             </select>
             
-            <button id="refreshBtn" class="refresh-btn">Обновить</button>
+            <button id="refreshBtn" class="btn-primary">Обновить</button>
             <span id="lastUpdate" style="margin-left: auto; font-size: 12px; color: #64748b;"></span>
         </div>
 
@@ -205,7 +205,7 @@
 
             // UI: состояние загрузки
             refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '⏳ Расчёт...';
+            refreshBtn.innerHTML = 'Расчёт...';
             container.innerHTML = '<div class="loading">Загрузка данных и расчёт метрик...</div>';
 
             try {
