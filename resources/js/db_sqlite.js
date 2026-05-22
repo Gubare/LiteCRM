@@ -157,7 +157,31 @@ async function createTables() {
         created_at TEXT DEFAULT (datetime('now')),
         updated_at TEXT DEFAULT (datetime('now'))
     )`);
-    
+
+    // Задачи (новая таблица)
+    db.run(`CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        deadline TEXT,
+        priority TEXT DEFAULT 'not-urgent-important',
+        status TEXT DEFAULT 'todo',
+        
+        -- Связи с другими таблицами
+        related_table TEXT,
+        related_id INTEGER,
+        related_display TEXT,
+        
+        -- Мета-данные
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now')),
+        completed_at TEXT,
+        
+        -- Флаги
+        is_archived INTEGER DEFAULT 0
+    )`);
+
+   
     // Создаём индексы для производительности
     db.run(`CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone)`);
@@ -168,6 +192,11 @@ async function createTables() {
     db.run(`CREATE INDEX IF NOT EXISTS idx_tickets_client ON tickets(client_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_notes_date ON calendar_notes(date)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_deadline ON tasks(deadline)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_related ON tasks(related_table, related_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_archived ON tasks(is_archived)`);
     
     console.log('✅ All tables created successfully');
 }
@@ -863,4 +892,74 @@ export async function saveDatabaseToFile() {
         console.error('❌ Failed to save SQLite:', error);
         return false;
     }
+}
+
+// === ФУНКЦИИ ДЛЯ ЗАДАЧ ===
+
+// Получить все активные задачи
+export async function getAllTasks() {
+    const tasks = await getAllItems('tasks');
+    return tasks.filter(t => !t.is_archived);
+}
+
+// Создать задачу
+export async function createTask(data) {
+    const task = {
+        title: data.title,
+        description: data.description || '',
+        deadline: data.deadline || null,
+        priority: data.priority || 'not-urgent-important',
+        status: data.status || 'todo',
+        related_table: data.related_table || null,
+        related_id: data.related_id || null,
+        related_display: data.related_display || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        completed_at: null,
+        is_archived: 0
+    };
+    
+    const id = await addItem('tasks', task);
+    return id;
+}
+
+// Обновить задачу
+export async function updateTask(id, updates) {
+    return await updateItem('tasks', id, {
+        ...updates,
+        updated_at: new Date().toISOString()
+    });
+}
+
+// Пометить задачу как выполненную
+export async function completeTask(id) {
+    return await updateItem('tasks', id, {
+        status: 'done',
+        completed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    });
+}
+
+// Архивировать задачу
+export async function archiveTask(id) {
+    return await updateItem('tasks', id, {
+        is_archived: 1,
+        updated_at: new Date().toISOString()
+    });
+}
+
+// Получить задачи по приоритету
+export async function getTasksByPriority(priority) {
+    const tasks = await getAllItems('tasks');
+    return tasks.filter(t => t.priority === priority && !t.is_archived);
+}
+
+// Получить задачи, связанные с записью
+export async function getTasksForRecord(tableName, recordId) {
+    const tasks = await getAllItems('tasks');
+    return tasks.filter(t => 
+        t.related_table === tableName && 
+        t.related_id === parseInt(recordId) && 
+        !t.is_archived
+    );
 }

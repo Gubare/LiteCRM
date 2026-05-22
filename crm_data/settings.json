@@ -3,7 +3,7 @@
   "ui.darkMode": false,
   "ui.showNavText": true,
   "ui.animateRows": false,
-  "ui.theme": "corporate",
+  "ui.theme": "1c",
   "ui.selectionModifier": "ctrl",
   "calendar.workDays": {
     "0": false,
@@ -29,6 +29,5 @@
     "from": null,
     "to": null,
     "appliedAt": "2026-05-21T08:31:31.425Z"
-  },
-  "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d"
+  }
 }

@@ -396,3 +396,39 @@ export async function getDBStats() {
     
     return stats;
 }
+
+// === ЗАДАЧИ ===
+export async function getAllTasks() {
+    const adapter = getAdapter();
+    return await adapter.getAllTasks();
+}
+
+export async function createTask(data) {
+    const adapter = getAdapter();
+    return await adapter.createTask(data);
+}
+
+export async function updateTask(id, updates) {
+    const adapter = getAdapter();
+    return await adapter.updateTask(id, updates);
+}
+
+export async function completeTask(id) {
+    const adapter = getAdapter();
+    return await adapter.completeTask(id);
+}
+
+export async function archiveTask(id) {
+    const adapter = getAdapter();
+    return await adapter.archiveTask(id);
+}
+
+export async function getTasksByPriority(priority) {
+    const adapter = getAdapter();
+    return await adapter.getTasksByPriority(priority);
+}
+
+export async function getTasksForRecord(tableName, recordId) {
+    const adapter = getAdapter();
+    return await adapter.getTasksForRecord(tableName, recordId);
+}
