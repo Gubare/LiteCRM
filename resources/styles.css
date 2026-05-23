@@ -33,15 +33,99 @@
   --transition-fast: 0.2s ease;
 }
 
-/* 🟢 Тема Excel (Зелёная) */
+/* 🟢 Тема Excel (Зелёная - Modern Office Style) */
 [data-theme="excel"] {
-  --color-primary: #217346;
-  --color-primary-hover: #1a5c38;
-  --color-danger: #dc2626;
-  --color-info: #0891b2;
-  --bg-app: #f0f4f1;
-  --color-border: #c8d6ce;
-  --bg-highlight: #e8f5e9;
+  /* === БАЗОВАЯ ПАЛИТРА === */
+  /* Более яркий, но привычный Excel-зелёный (Microsoft Brand Color) */
+  --color-primary: #107c41; 
+  --color-primary-hover: #0e6b37;
+  --color-primary-light: #dff6dd;
+  
+  --color-secondary: #4a8c5c;
+  --color-success: #107c41;
+  --color-danger: #d13438;    /* Office Red */
+  --color-warning: #d29034;
+  --color-info: #03787c;      /* Teal */
+  
+  /* === ФОН И ПОВЕРХНОСТИ === */
+  --bg-app: #f3f2f1;          /* Классический светло-серый фон Office */
+  --bg-card: #ffffff;         /* Белый лист таблицы */
+  --bg-sidebar: #185c37;      /* Тёмно-зелёная "лента" меню */
+  --bg-sidebar-hover: #0d4428;
+  --bg-sidebar-active: #ffffff; /* Активный пункт меню белый с зелёным */
+  
+  --bg-input: #ffffff;        /* Инпуты как ячейки таблицы */
+  --bg-highlight: #dff6dd;    /* Цвет выделения строки (как в Excel) */
+  --bg-modal-backdrop: rgba(33, 115, 70, 0.4);
+  
+  /* === ТЕКСТ === */
+  --color-text: #201f1e;      /* Чёрный (как текст в ячейке) */
+  --color-text-secondary: #605e5c;
+  --color-text-on-primary: #ffffff;
+  
+  /* === ГРАНИЦЫ === */
+  --color-border: #e1dfdd;    /* Тонкая серая граница сетки */
+  --color-border-focus: #107c41;
+  
+  /* === ТЕНИ === */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* === СПЕЦИФИЧНЫЕ ЭЛЕМЕНТЫ ДЛЯ EXCEL === */
+
+/* 1. Кнопки: делаем их похожими на кнопки в ленте Ribbon */
+[data-theme="excel"] .btn-primary {
+  background: linear-gradient(180deg, #2b8a58 0%, #107c41 100%);
+  border: 1px solid #107c41;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+[data-theme="excel"] .btn-primary:hover {
+  background: linear-gradient(180deg, #359962 0%, #0e6b37 100%);
+  border-color: #0e6b37;
+}
+
+/* 2. Поля ввода: стиль ячеек */
+[data-theme="excel"] input,
+[data-theme="excel"] select,
+[data-theme="excel"] textarea {
+  background-color: var(--bg-input);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="excel"] input:focus,
+[data-theme="excel"] select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+/* 3. Таблицы: стиль сетки Excel */
+[data-theme="excel"] .crm-table thead {
+  background-color: #f3f2f1;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+[data-theme="excel"] .crm-table tbody tr:hover {
+  background-color: var(--bg-highlight);
+}
+
+/* 4. Навбар: Активный пункт */
+[data-theme="excel"] .nav-item.active {
+  background-color: var(--bg-sidebar-active);
+  color: var(--color-primary);
+  font-weight: 600;
+  border-left: 4px solid var(--color-primary);
+}
+
+/* 5. Бейджи/Статусы */
+[data-theme="excel"] .badge-active {
+  background-color: #dff6dd;
+  color: #107c41;
+  border: 1px solid #107c41;
 }
 
 /* 🟡 Тема 1С (Жёлтая с красным акцентом) */
@@ -1864,4 +1948,74 @@ label { display: block; margin-bottom: 5px; font-weight: 500; color: var(--color
 .task-deadline.overdue {
     color: #ef4444;
     font-weight: 600;
+}
+
+/* Сегменты клиентов */
+.client-segment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.client-segment::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Цвета сегментов */
+.segment-vip { color: #8b5cf6; background: #f5f3ff; }
+.segment-loyal { color: #3b82f6; background: #eff6ff; }
+.segment-active { color: #22c55e; background: #f0fdf4; }
+.segment-new { color: #06b6d4; background: #ecfeff; }
+.segment-atrisk { color: #f59e0b; background: #fffbeb; }
+.segment-dormant { color: #94a3b8; background: #f8fafc; }
+.segment-regular { color: #6b7280; background: #f1f5f9; }
+
+/* Баджи (доп. иконки) */
+.client-badges {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.client-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: help;
+    transition: transform 0.2s;
+    position: relative;
+}
+
+.client-badge:hover {
+    transform: scale(1.1);
+}
+
+/* Тултип для баджа */
+.client-badge[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 100;
+    pointer-events: none;
 }

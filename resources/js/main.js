@@ -56,6 +56,7 @@ async function checkAndLock() {
 // Функция, которая запускает приложение ТОЛЬКО после разблокировки
 async function initApplicationLogic() {
     resetInactivityTimer();
+    await initCustomTitlebar();
     console.log('✅ App unlocked. Loading data...');
     // Загрузка настроек
     await loadSettings();
@@ -320,6 +321,48 @@ window.saveDataToFile = async function() {
         return false;
     }
 };
+
+// resources/js/main.js
+
+export async function initCustomTitlebar() {
+  if (typeof Neutralino === 'undefined') return;
+
+  const btnMin = document.getElementById('btn-minimize');
+  const btnMax = document.getElementById('btn-maximize');
+  const btnClose = document.getElementById('btn-close');
+
+  // Свернуть: window.minimize
+  btnMin?.addEventListener('click', () => {
+    console.log('Minimize clicked');
+    Neutralino.window.minimize();
+  });
+
+  // Развернуть: window.isMaximized, window.maximize, window.unmaximize
+  btnMax?.addEventListener('click', async () => {
+    try {
+      console.log('Maximize clicked');
+      const isMax = await Neutralino.window.isMaximized();
+      
+      if (isMax) {
+        await Neutralino.window.unmaximize();
+        btnMax.textContent = '□';
+      } else {
+        await Neutralino.window.maximize();
+        btnMax.textContent = '❐';
+      }
+    } catch (error) {
+      console.error('Maximize error:', error);
+    }
+  });
+
+  // Закрыть: window.close или app.exit
+  btnClose?.addEventListener('click', () => {
+    console.log('Close clicked');
+    Neutralino.app.exit(); // Или Neutralino.window.close()
+  });
+
+  console.log('✅ Titlebar initialized with permissions');
+}
 
 
 // Загрузка данных из файла при старте

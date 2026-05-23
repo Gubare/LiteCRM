@@ -168,37 +168,89 @@
         </div>
     </main>
     
-    <!-- Модальное окно создания задачи -->
-    <div id="createTaskModal" class="modal-overlay">
-        <div class="modal-window">
-            <h3>Новая задача</h3>
-            <form id="createTaskForm">
-                <input type="text" id="taskTitle" placeholder="Краткое название" required>
-                <textarea id="taskDescription" placeholder="Описание"></textarea>
+        <!-- Модальное окно создания задачи -->
+        <div id="createTaskModal" class="modal-overlay">
+            <div class="modal-window" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3>Новая задача</h3>
+                    <!-- <button class="modal-close" onclick="closeModal('createTaskModal')">&times;</button> -->
+                </div>
                 
-                <select id="taskPriority" required>
-                    <option value="urgent-important">Срочно и Важно</option>
-                    <option value="not-urgent-important">Важно, но не срочно</option>
-                    <option value="urgent-not-important">Срочно, но не важно</option>
-                    <option value="not-urgent-not-important">Не срочно и не важно</option>
-                </select>
-                
-                <input type="date" id="taskDeadline" required>
-                
-                <!-- Связь с записью -->
-                <select id="relatedTable">
-                    <option value="">Не связано</option>
-                    <option value="clients">Клиенты</option>
-                    <option value="products">Товары</option>
-                    <option value="sales">Продажи</option>
-                </select>
-                
-                <select id="relatedRecord" disabled>
-                    <option value="">Выберите запись</option>
-                </select>
-                
-                <button type="submit">Создать задачу</button>
-            </form>
+                <form id="createTaskForm" style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Название -->
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Краткое название
+                        </label>
+                        <input type="text" id="taskTitle" class="form-control" 
+                            placeholder="Позвонить клиенту" required>
+                    </div>
+                    
+                    <!-- Описание -->
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Описание
+                        </label>
+                        <textarea id="taskDescription" class="form-control" rows="3"
+                                placeholder="Подробности задачи..."></textarea>
+                    </div>
+                    
+                    <!-- Приоритет и дедлайн в одну строку -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                                Приоритет
+                            </label>
+                            <select id="taskPriority" class="form-control" required>
+                                <option value="urgent-important">Срочно и Важно</option>
+                                <option value="not-urgent-important">Важно, но не срочно</option>
+                                <option value="urgent-not-important">Срочно, но не важно</option>
+                                <option value="not-urgent-not-important">Не срочно и не важно</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                                Дата выполнения
+                            </label>
+                            <input type="date" id="taskDeadline" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <!-- Связь с записью -->
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Связать с таблицей
+                        </label>
+                        <select id="relatedTable" class="form-control">
+                            <option value="">Не связано</option>
+                            <option value="clients">Клиенты</option>
+                            <option value="products">Товары</option>
+                            <option value="sales">Продажи</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Конкретная запись
+                        </label>
+                        <select id="relatedRecord" class="form-control" disabled>
+                            <option value="">Сначала выберите раздел</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Кнопки -->
+                    <div style="display: flex; gap: 10px; margin-top: 8px;">
+                        <!-- <button type="button" class="btn-action" onclick="closeModal('createTaskModal')" 
+                                style="flex: 1;">
+                            Отмена
+                        </button> -->
+                        <button type="submit" class="btn-primary" style="flex: 2;">
+                            Создать задачу
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <script src="/js/neutralino.js"></script>

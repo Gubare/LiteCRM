@@ -12,7 +12,8 @@ const DEFAULT_SETTINGS = {
     // "calendar.canEditSchedule": true,
     // "calendar.workDays": {
     //     "0": true, "1": true, "2": true, "3": true, "4": true, "5": false, "6": false
-    // }
+    // },
+    // "notifications.deadlineAlerts": true 
 };
 
 console.log('📦 settings-manager.js loaded');

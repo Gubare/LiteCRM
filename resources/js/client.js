@@ -75,11 +75,20 @@ async function loadClients() {
             );
         }
         if (currentFilters.segment) {
-            filtered = filtered.filter(c => c.segment === currentFilters.segment);
+            filtered = filtered.filter(c => getSegmentKey(c.segment) === currentFilters.segment);
         }
         
-        // Сортировка по дате регистрации (новые сверху)
-        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        // Сортировка
+        if (currentFilters.sortBy === 'count_desc') {
+            // По количеству покупок (убывание)
+            filtered.sort((a, b) => b.count - a.count);
+        } else if (currentFilters.sortBy === 'count_asc') {
+            // По количеству покупок (возрастание)
+            filtered.sort((a, b) => a.count - b.count);
+        } else {
+            // По умолчанию: по дате регистрации (новые сверху)
+            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
         
         // Пагинация
         const total = filtered.length;
@@ -112,7 +121,7 @@ function renderTable(clients) {
     if (!tbody) return;
     
     if (clients.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#94a3b8;">📭 Нет клиентов</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#94a3b8;"> Нет клиентов</td></tr>';
         return;
     }
     
@@ -194,50 +203,189 @@ export async function handleDelete(id) {
     }
 }
 
-// === Расчёт метрик и сегментов ===
+// === Обновлённая сегментация клиентов ===
 export function calculateClientDisplayData(client, sales = []) {
     // Фильтруем продажи этого клиента
     const clientSales = sales.filter(s => 
         s.client_id === client.id || s.client_name === client.name
     );
     
+    // === БАЗОВЫЕ МЕТРИКИ ===
     const count = clientSales.length;
     const total = clientSales.reduce((sum, s) => sum + (s.total_amount || 0), 0);
     const avgCheck = count > 0 ? total / count : 0;
+    
+    // === ДАТЫ ДЛЯ RFM ===
+    const now = Date.now();
+    const lastPurchaseDate = clientSales.length > 0 
+        ? Math.max(...clientSales.map(s => new Date(s.transaction_date).getTime()))
+        : null;
+    
+    const daysSinceLastPurchase = lastPurchaseDate 
+        ? Math.floor((now - lastPurchaseDate) / (1000 * 60 * 60 * 24))
+        : null;
+    
+    const daysSinceRegistration = Math.floor(
+        (now - new Date(client.created_at).getTime()) / (1000 * 60 * 60 * 24)
+    );
 
-    // Сегментация
+    // === НАСТРАИВАЕМЫЕ ПОРОГИ (можно вынести в settings) ===
+    const THRESHOLDS = {
+        newClientDays: 30,           // Новый клиент: регистрация < 30 дней
+        atRiskDays: 90,              // Риск ухода: нет покупок > 90 дней
+        dormantDays: 180,            // Неактивный: нет покупок > 180 дней
+        loyalPurchases: 5,           // Лояльный: 5+ покупок
+        loyalTotal: 50000,           // Лояльный: 50к+ ₽
+        vipTotal: 150000,            // VIP: 150к+ ₽
+        vipPercentile: 0.1           // VIP: топ-10% по выручке (опционально)
+    };
+
+    // === СЕГМЕНТАЦИЯ (приоритет сверху вниз) ===
     let segment = 'Обычный';
-    let segmentColor = '#6b7280';
+    let segmentColor = '#6b7280';    // gray-500
     let segmentTooltip = 'Стандартный клиент';
+    let segmentPriority = 3;         // Для сортировки
 
-    if (count === 0) {
-        segment = 'Потенциальный';
-        segmentColor = '#94a3b8';
-        segmentTooltip = 'Клиент без покупок';
-    } else if (count >= 10 || total >= 150000) {
+    // Риск ухода (был активен, но пропал)
+    if (count >= 2 && daysSinceLastPurchase >= THRESHOLDS.atRiskDays) {
+        segment = 'Риск ухода';
+        segmentColor = '#f59e0b';    // amber-500
+        segmentTooltip = `Последняя покупка: ${daysSinceLastPurchase} дн. назад`;
+        segmentPriority = 5;
+    }
+    // Неактивный (никогда не покупал или ушёл давно)
+    else if (count === 0 || daysSinceLastPurchase >= THRESHOLDS.dormantDays) {
+        segment = 'Неактивный';
+        segmentColor = '#94a3b8';    // slate-400
+        segmentTooltip = count === 0 
+            ? 'Клиент без покупок' 
+            : `Не покупал ${daysSinceLastPurchase} дн.`;
+        segmentPriority = 6;
+    }
+    // VIP (топ-клиенты по выручке)
+    else if (total >= THRESHOLDS.vipTotal) {
         segment = 'VIP';
-        segmentColor = '#8b5cf6';
-        segmentTooltip = 'VIP: 10+ покупок или 150к+ ₽';
-    } else if (count >= 3) {
-        segment = 'Постоянный';
-        segmentColor = '#3b82f6';
-        segmentTooltip = 'Постоянный: 3+ покупки';
+        segmentColor = '#8b5cf6';    // violet-500
+        segmentTooltip = `VIP: ${total.toLocaleString('ru-RU')} ₽`;
+        segmentPriority = 1;
+    }
+    // Лояльный (регулярные покупатели)
+    else if (count >= THRESHOLDS.loyalPurchases || total >= THRESHOLDS.loyalTotal) {
+        segment = 'Лояльный';
+        segmentColor = '#3b82f6';    // blue-500
+        segmentTooltip = `Лояльный: ${count} покупок, ${total.toLocaleString('ru-RU')} ₽`;
+        segmentPriority = 2;
+    }
+    // Активный (недавно покупал, но ещё не лояльный)
+    else if (count >= 2 && daysSinceLastPurchase <= 60) {
+        segment = 'Активный';
+        segmentColor = '#22c55e';    // green-500
+        segmentTooltip = `Активный: последняя покупка ${daysSinceLastPurchase} дн. назад`;
+        segmentPriority = 3;
+    }
+    //  Новый (регистрация < 30 дней, 0-1 покупка)
+    else if (daysSinceRegistration <= THRESHOLDS.newClientDays) {
+        segment = 'Новый';
+        segmentColor = '#06b6d4';    // cyan-500
+        segmentTooltip = `Новый: зарегистрирован ${daysSinceRegistration} дн. назад`;
+        segmentPriority = 4;
+    }
+    // Обычный (дефолт)
+    else {
+        segment = 'Обычный';
+        segmentColor = '#6b7280';
+        segmentTooltip = 'Стандартный клиент';
+        segmentPriority = 3;
     }
 
-    // Бейдж "Новый"
-    const daysSinceReg = (Date.now() - new Date(client.created_at).getTime()) / (1000 * 60 * 60 * 24);
-    const isNew = daysSinceReg <= 30;
-    const newBadge = isNew ? {
-        icon: '⭐',
-        tooltip: 'Новый клиент (< 30 дней)',
-        color: '#f59e0b'
-    } : null;
+    // === ДОПОЛНИТЕЛЬНЫЕ БАДЖИ (иконки) ===
+    const badges = [];
 
+    // Бейдж "Новый" (временный, исчезает через 30 дней)
+    if (daysSinceRegistration <= THRESHOLDS.newClientDays && count <= 1) {
+        badges.push({
+            icon: '⭐',
+            tooltip: 'Новый клиент',
+            color: '#f59e0b',
+            type: 'new'
+        });
+    }
+
+    // Бейдж "Опт" (крупные разовые покупки)
+    const hasBulkPurchase = clientSales.some(s => (s.total_amount || 0) >= 50000);
+    if (hasBulkPurchase && !segment.includes('VIP')) {
+        badges.push({
+            icon: '',
+            tooltip: 'Делал крупные покупки',
+            color: '#8b5cf6',
+            type: 'bulk'
+        });
+    }
+
+
+    // Бейдж "Снизил активность" (для риск-менеджмента)
+    if (segment === 'Риск ухода' && count >= 5) {
+        badges.push({
+            icon: '',
+            tooltip: 'Раньше покупал чаще',
+            color: '#ef4444',
+            type: 'declining'
+        });
+    }
+
+    // === РЕЗУЛЬТАТ ===
     return {
+        // Базовые метрики
         total, count, avgCheck,
-        segment, segmentColor, segmentTooltip,
-        newBadge, isNew
+        daysSinceLastPurchase,
+        daysSinceRegistration,
+        
+        // Сегмент
+        segment,
+        segmentColor,
+        segmentTooltip,
+        segmentPriority,  // Для сортировки в таблице
+        
+        // Дополнительные баджи (массив)
+        badges,
+        
+        // Флаги для фильтрации
+        flags: {
+            isNew: daysSinceRegistration <= THRESHOLDS.newClientDays,
+            isAtRisk: segment === 'Риск ухода',
+            isVIP: segment === 'VIP',
+            isLoyal: segment === 'Лояльный',
+            hasBulkPurchase
+        }
     };
+}
+
+// Преобразует название сегмента в ключ для фильтрации
+function getSegmentKey(segmentName) {
+    const map = {
+        'VIP': 'vip',
+        'Лояльный': 'loyal', 
+        'Активный': 'active',
+        'Новый': 'new',
+        'Обычный': 'regular',
+        'Риск ухода': 'at_risk',
+        'Неактивный': 'dormant'
+    };
+    return map[segmentName] || segmentName?.toLowerCase().replace(/\s+/g, '_');
+}
+
+// Преобразует ключ фильтра в название сегмента
+function getSegmentName(key) {
+    const map = {
+        'vip': 'VIP',
+        'loyal': 'Лояльный',
+        'active': 'Активный', 
+        'new': 'Новый',
+        'regular': 'Обычный',
+        'at_risk': 'Риск ухода',
+        'dormant': 'Неактивный'
+    };
+    return map[key] || key;
 }
 
 // === МОДАЛЬНОЕ ОКНО КЛИЕНТА ===
@@ -338,7 +486,8 @@ function setupEventListeners() {
     document.getElementById('btnApplyFilters')?.addEventListener('click', () => {
         currentFilters = {
             search: document.getElementById('filterSearch')?.value || null,
-            segment: document.getElementById('filterSegment')?.value || null
+            segment: document.getElementById('filterSegment')?.value || null,
+            sortBy: document.getElementById('filterSort')?.value || null  
         };
         currentPage = 1;
         loadClients();
@@ -347,6 +496,7 @@ function setupEventListeners() {
     document.getElementById('btnResetFilters')?.addEventListener('click', () => {
         if (document.getElementById('filterSearch')) document.getElementById('filterSearch').value = '';
         if (document.getElementById('filterSegment')) document.getElementById('filterSegment').value = '';
+        if (document.getElementById('filterSort')) document.getElementById('filterSort').value = ''; 
         currentFilters = {};
         loadClients();
     });

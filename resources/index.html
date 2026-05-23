@@ -124,6 +124,17 @@ async function testSave() {
         alert('Ошибка: ' + error.message);
     }
 }
+
+// После инициализации и проверки пароля
+document.addEventListener('DOMContentLoaded', async () => {
+
+    
+    // Проверка дедлайнов
+    setTimeout(async () => {
+        const { checkDeadlinesAndNotify } = await import('./js/deadline-notifier.js');
+        await checkDeadlinesAndNotify();
+    }, 1000);
+});
 </script>
 
       </div>

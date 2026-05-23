@@ -200,7 +200,7 @@
                 <input type="checkbox" id="toggleRowAnimation" checked>
                 <span class="toggle-slider"></span>
             </label>
-        </div>
+            </div>
 
             <div class="setting-item">
                 <div class="setting-info">
@@ -213,8 +213,23 @@
                 </select>
             </div>
 
-        
-    </div>
+        </div>
+        <!-- Секция: Уведомления -->
+        <div class="settings-section" id="notificationsSection">
+            <h2>Уведомления</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Напоминания о сроках выполнения задач</h3>
+                    <p>Показывать уведомления о задачах на сегодня/завтра при запуске</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="deadlineAlertsToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
     <div class="settings-section">
         <h2>Календарь</h2>
         
@@ -655,7 +670,8 @@
             animateToggle: document.getElementById('toggleRowAnimation'),
             modSelect: document.getElementById('selectionModifier'),
             themeSelect: document.getElementById('themeSelect'),
-            toggleCalendarEdit: document.getElementById('toggleCalendarEdit')
+            toggleCalendarEdit: document.getElementById('toggleCalendarEdit'),
+            deadlineAlertsToggle: document.getElementById('deadlineAlertsToggle')
         };
         
         console.log('🔍 Checking elements:');
@@ -764,6 +780,21 @@
                 showToast(`Тема изменена на ${newTheme}`);
             });
             console.log('  ✅ theme listener attached');
+        }
+
+        if (deadlineAlertsToggle) {
+            // Загружаем текущее значение
+            const alertsEnabled = await getSetting('notifications.deadlineAlerts', true);
+            deadlineAlertsToggle.checked = alertsEnabled;
+            
+            // Обработчик
+            deadlineAlertsToggle.addEventListener('change', async (e) => {
+                await updateSetting('notifications.deadlineAlerts', e.target.checked);
+                showToast(e.target.checked ? 
+                    'Уведомления о сроках включены' : 
+                    'Уведомления о сроках выключены'
+                );
+            });
         }
         
         console.log('✅ === SETTINGS PAGE READY ===');

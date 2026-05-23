@@ -182,7 +182,7 @@ function renderSalesTable(items) {
     if (!tbody) return;
     
     if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;">📭 Нет записей</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;"> Нет записей</td></tr>';
         return;
     }
     

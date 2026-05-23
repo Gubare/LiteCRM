@@ -113,20 +113,39 @@
 
     <main class="page-content">
         <h1>Список клиентов</h1>
-        
+            <div class="toolbar-actions" style="margin-bottom: 20px;">
+                <button class="btn-primary" style="padding: 10px 20px; font-size: 15px;" onclick="openClientModal()">Добавить клиента</button>
+            </div>
         <!-- Панель управления -->
         <div class="table-toolbar">
             <div class="toolbar-filters">
-                <input type="text" id="filterSearch" class="form-control" placeholder="Поиск по имени/телефону..." style="width: 250px;">
-                <select id="filterCluster" class="form-control" style="width: 160px;">
-                    <option value="">Все сегменты</option>
-                    <option value="new">Новые</option>
-                    <option value="regular">Обычные</option>
-                    <option value="vip">VIP</option>
-                </select>
-                <button id="btnApplyFilters" class="btn-primary">Применить</button>
-                <button id="btnResetFilters" class="btn-action">Сброс</button>
-            </div>
+                    <!-- Поиск -->
+                    <input type="text" id="filterSearch" class="form-control" 
+                        placeholder="Поиск по имени/телефону..." 
+                        style="width: 250px;">
+                    
+                    <!-- Сегменты -->
+                    <select id="filterSegment" class="form-control" style="width: 160px;">
+                        <option value="">Все сегменты</option>
+                        <option value="vip">VIP</option>
+                        <option value="loyal">Лояльный</option>
+                        <option value="active">Активный</option>
+                        <option value="new">Новый</option>
+                        <option value="regular">Обычный</option>
+                        <option value="at_risk">Риск ухода</option>
+                        <option value="dormant">Неактивный </option>
+                    </select>
+
+                    <!-- Сортировка -->
+                    <select id="filterSort" class="form-control" style="width: 180px;">
+                        <option value="">По дате регистрации ↓</option>
+                        <option value="count_desc">По количеству покупок ↓</option>
+                        <option value="count_asc">По количеству покупок ↑</option>
+                    </select>
+                    
+                    <button id="btnApplyFilters" class="btn-primary">Применить</button>
+                    <button id="btnResetFilters" class="btn-action">Сброс</button>
+                </div>
             <div class="toolbar-actions">
                 <button class="btn-primary" onclick="openClientModal()">Добавить клиента</button>
             </div>

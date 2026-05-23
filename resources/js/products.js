@@ -214,7 +214,7 @@ function renderTable(products) {
     
     if (!products || products.length === 0) {
         console.log('⚠️ No products to render');
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">📭 Нет товаров. Добавьте первый товар!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;"> Нет товаров. Добавьте первый товар!</td></tr>';
         return;
     }
     

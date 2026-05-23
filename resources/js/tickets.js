@@ -134,7 +134,7 @@ function renderTable(tickets) {
     if (!tbody) return;
     
     if (tickets.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">📭 Нет обращений</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;"> Нет обращений</td></tr>';
         return;
     }
     
