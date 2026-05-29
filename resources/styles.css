@@ -2019,3 +2019,93 @@ label { display: block; margin-bottom: 5px; font-weight: 500; color: var(--color
     z-index: 100;
     pointer-events: none;
 }
+
+/* Панель подсказок справа от модалки */
+.modal-shortcuts-panel {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    min-width: 280px;
+    max-width: 320px;
+}
+
+.modal-shortcuts-panel h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f5;
+    font-size: 13px;
+}
+
+.shortcut-item:last-child {
+    border-bottom: none;
+}
+
+.shortcut-desc {
+    color: #495057;
+    flex: 1;
+}
+
+.shortcut-keys {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.shortcut-keys kbd {
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #212529;
+    box-shadow: 0 2px 0 #adb5bd;
+}
+
+.shortcut-keys kbd.active {
+    background: #dc3545;
+    color: white;
+    border-color: #c82333;
+    box-shadow: 0 2px 0 #bd2130;
+}
+
+/* Адаптивность: скрываем на маленьких экранах */
+@media (max-width: 1200px) {
+    .modal-shortcuts-panel {
+        display: none;
+    }
+}
+
+/* Анимация появления */
+.modal-shortcuts-panel {
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
