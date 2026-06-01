@@ -36,7 +36,7 @@
             font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 14px;
             display: flex; align-items: center; gap: 6px;
         }
-        .metric-label::before { content: '📊'; }
+        .metric-label::before { content: ''; }
         .metric-value { 
             font-size: 24px; font-weight: 700; color: #0f172a; margin: 8px 0;
         }
@@ -175,12 +175,53 @@
             Для актуальной статистики нажмите "Обновить" после добавления новых записей.
         </div>
     </div>
+
+    <div id="funnelSection" style="margin-top: 40px; display: none;">
+    <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #1e293b;"> Воронка продаж</h2>
+            <!-- <button id="refreshFunnelBtn" class="refresh-btn" style="font-size: 13px;">
+                🔄 Обновить воронку
+            </button> -->
+        </div>
+        
+        <!-- Контейнер для диаграммы -->
+        <div id="funnelContainer">
+            <div class="loading">Загрузка...</div>
+        </div>
+    </div>
+</div>
+
     </main>
-    <script src="js/neutralino.js"></script>
-    <script type="module" src="js/db_sqlite.js"></script>
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/reports-config.js"></script>
+
+<script src="js/neutralino.js"></script>
+<script type="module" src="js/db_sqlite.js"></script>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/reports-config.js"></script>
+
+<!-- Новый модуль воронки -->
+<script type="module" src="js/funnel-reports.js"></script>
+
+<!-- Инициализация -->
+<script type="module">
+    import { initFunnelReports } from './js/funnel-reports.js';
     
+    document.addEventListener('DOMContentLoaded', () => {
+        // Показываем секцию воронки
+        const funnelSection = document.getElementById('funnelSection');
+        if (funnelSection) {
+            funnelSection.style.display = 'block';
+            // Загружаем воронку после небольшой задержки (чтобы БД успела инициализироваться)
+            setTimeout(() => initFunnelReports(), 300);
+        }
+        
+        // Обработчик кнопки обновления воронки
+        document.getElementById('refreshFunnelBtn')?.addEventListener('click', () => {
+            initFunnelReports();
+        });
+    });
+</script>
+
     <script type="module">
         import { getAllItems } from './js/db_sqlite.js';
         import { REPORTS_CONFIG } from './js/reports-config.js';

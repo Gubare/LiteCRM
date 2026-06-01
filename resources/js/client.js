@@ -20,6 +20,7 @@ let allSales = []; // Кэш продаж для метрик
 window.selectionManager = null;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
+// Этот блок выполняется после загрузки DOM, то есть после полной инициализации страницы
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
     setupShortcutsPanel();
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Инициализация формы
+// Инициализация формы (перенесено из client.js)
 function initClientForm() {
     const form = document.getElementById('clientForm');
     const modal = document.getElementById('clientModal');
@@ -167,6 +168,7 @@ function initClientForm() {
 }
 
 // Функция для управления панелью подсказок
+// === УПРАВЛЕНИЕ ПАНЕЛЯМИ ===
 function setupShortcutsPanel() {
     const modal = document.getElementById('clientModal');
     const panel = document.getElementById('shortcutsPanel');
@@ -183,7 +185,8 @@ function setupShortcutsPanel() {
         panel.style.display = 'none';
     });
 }
-
+// Функция для закрытия модалки
+// === ЗАКРЫТИЕ МОДАЛКИ ===
 export function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -210,6 +213,8 @@ export function closeModal(modalId) {
 }
 
 // === ЗАГРУЗКА И РЕНДЕР ===
+// Эта функция загружает клиентов и обогащает их данными
+// На вход принимает массив клиентов из таблицы клиентов
 async function loadClients() {
     const tbody = document.querySelector('#clientTable tbody');
     // if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">⏳ Загрузка...</td></tr>';
@@ -274,6 +279,11 @@ async function loadClients() {
         }
     }
 }
+
+// === РЕНДЕР ТАБЛИЦЫ ===
+// На вход принимает массив клиентов
+// В ходе работы функция создает HTML таблицу
+// и заполняет ее данными из массива клиентов
 
 function renderTable(clients) {
     const shouldAnimate = getSetting('ui.animateRows');
@@ -425,6 +435,7 @@ export function calculateClientDisplayData(client, sales = []) {
     );
 
     // === НАСТРАИВАЕМЫЕ ПОРОГИ (можно вынести в settings) ===
+    // Правила сегментации по умолчанию усреднены, для истинных данных лучше использовать более точные метрики, которые можно расчитать экспериментально
     const THRESHOLDS = {
         newClientDays: 30,           // Новый клиент: регистрация < 30 дней
         atRiskDays: 90,              // Риск ухода: нет покупок > 90 дней

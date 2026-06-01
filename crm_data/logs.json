@@ -460,5 +460,195 @@
       "updated_at": "2026-05-27T13:21:25.597Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 28,
+    "timestamp": "2026-06-01T19:39:26.615Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 217,
+    "data": {
+      "name": "Никониколай",
+      "phone": "891012",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T19:39:26.560Z",
+      "updated_at": "2026-06-01T19:39:26.560Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 29,
+    "timestamp": "2026-06-01T19:39:26.822Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 218,
+    "data": {
+      "name": "Никониколай",
+      "phone": "891012",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T19:39:26.591Z",
+      "updated_at": "2026-06-01T19:39:26.591Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 30,
+    "timestamp": "2026-06-01T19:39:29.867Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 219,
+    "data": {
+      "name": "Никониколай",
+      "phone": "891012",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T19:39:29.845Z",
+      "updated_at": "2026-06-01T19:39:29.845Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 31,
+    "timestamp": "2026-06-01T19:39:30.057Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 220,
+    "data": {
+      "name": "Никониколай",
+      "phone": "891012",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T19:39:29.851Z",
+      "updated_at": "2026-06-01T19:39:29.851Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 32,
+    "timestamp": "2026-06-01T19:40:03.364Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 211,
+    "data": {
+      "id": 211,
+      "name": "Сохранение нажатием энтер после всех полей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-27T12:29:31.842Z",
+      "updated_at": "2026-05-27T12:29:31.842Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 33,
+    "timestamp": "2026-06-01T19:40:06.138Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 220,
+    "data": {
+      "id": 220,
+      "name": "Никониколай",
+      "phone": "891012",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T19:39:29.851Z",
+      "updated_at": "2026-06-01T19:39:29.851Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 34,
+    "timestamp": "2026-06-01T20:02:00.799Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 177,
+    "data": {
+      "id": 177,
+      "name": "Михаил Терентий",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-05-23T08:02:07.410Z",
+      "updated_at": "2026-05-23T08:02:07.410Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 35,
+    "timestamp": "2026-06-01T21:35:53.859Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 221,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T21:35:53.815Z",
+      "updated_at": "2026-06-01T21:35:53.815Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 36,
+    "timestamp": "2026-06-01T21:35:54.076Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 222,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T21:35:53.834Z",
+      "updated_at": "2026-06-01T21:35:53.834Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 37,
+    "timestamp": "2026-06-01T22:12:57.157Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 223,
+    "data": {
+      "name": "123456",
+      "phone": "13442221",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T22:12:57.062Z",
+      "updated_at": "2026-06-01T22:12:57.062Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 38,
+    "timestamp": "2026-06-01T22:12:57.395Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 224,
+    "data": {
+      "name": "123456",
+      "phone": "13442221",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-01T22:12:57.105Z",
+      "updated_at": "2026-06-01T22:12:57.105Z"
+    },
+    "metadata": {}
   }
 ]

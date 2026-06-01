@@ -1,7 +1,5 @@
 // resources/js/main.js
-// Работа с IndexedDB через db.js
 
-// Импортируем функции из db.js
 import { 
     initDatabase, 
     getDbInstance, 
@@ -77,7 +75,7 @@ async function initApplicationLogic() {
         await initDatabase();
         await initLogger();
         window.isDatabaseReady = true;
-        console.log('✅ IndexedDB initialized successfully');
+        console.log('✅ SQLite initialized successfully');
         document.dispatchEvent(new CustomEvent('dbReady'));
         // Загрузка данных
         await loadDataFromFile();
@@ -294,7 +292,7 @@ window.handleDeleteClient = async function(id) {
     
     try {
         await deleteClient(id);
-        console.log('✅ The client has been removed from IndexedDB');
+        console.log('✅ The client has been removed from SQLite');
         
         // Сохраняем бэкап сразу после удаления
         await saveDataToFile();
