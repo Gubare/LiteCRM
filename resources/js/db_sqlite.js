@@ -135,39 +135,6 @@ async function createTables() {
         updated_at TEXT DEFAULT (datetime('now'))
     )`);
 
-    // Сделки (воронка продаж)
-    db.run(`CREATE TABLE IF NOT EXISTS deals (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        client_id INTEGER,
-        client_name TEXT DEFAULT '',
-        title TEXT DEFAULT '',
-        
-        -- Этап воронки
-        stage TEXT DEFAULT 'lead' CHECK(stage IN ('lead', 'contacted', 'proposal', 'negotiation', 'won', 'lost')),
-        source TEXT DEFAULT 'direct',
-        
-        -- Финансы
-        expected_value REAL DEFAULT 0,
-        actual_value REAL DEFAULT 0,
-        
-        -- Даты
-        created_at TEXT DEFAULT (datetime('now')),
-        updated_at TEXT DEFAULT (datetime('now')),
-        stage_changed_at TEXT,
-        closed_at TEXT,
-        
-        -- Связи
-        ticket_id INTEGER,
-        sale_id INTEGER,
-        
-        -- Мета
-        is_archived INTEGER DEFAULT 0,
-        
-        FOREIGN KEY (client_id) REFERENCES clients(id),
-        FOREIGN KEY (ticket_id) REFERENCES tickets(id),
-        FOREIGN KEY (sale_id) REFERENCES sales(id)
-    )`);
-
     
     // Пакетные корректировки
     db.run(`CREATE TABLE IF NOT EXISTS bulk_adjustments (
@@ -231,11 +198,37 @@ async function createTables() {
     db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_deadline ON tasks(deadline)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_related ON tasks(related_table, related_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_archived ON tasks(is_archived)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_deals_stage ON deals(stage)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_deals_client ON deals(client_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_deals_source ON deals(source)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_deals_created ON deals(created_at)`);
+
     console.log('✅ All tables created successfully');
+}
+
+// Экспорт функции для прямых SQL-запросов
+// === ДОБАВЬТЕ ЭТУ ФУНКЦИЮ ===
+export async function db_all(sql, params = []) {
+    console.log('🔍 Executing SQL:', sql, 'params:', params);
+    
+    return new Promise((resolve, reject) => {
+        if (!db) {
+            console.error('❌ Database not initialized!');
+            reject(new Error('Database not initialized. Call initDatabase() first.'));
+            return;
+        }
+        
+        try {
+            db.run(sql, params, (err, rows) => {
+                if (err) {
+                    console.error('❌ SQL error:', err);
+                    reject(err);
+                } else {
+                    console.log('✅ SQL result:', rows?.length || 0, 'rows');
+                    resolve(rows);
+                }
+            });
+        } catch (error) {
+            console.error('❌ SQL exception:', error);
+            reject(error);
+        }
+    });
 }
 
 export function getDbInstance() {

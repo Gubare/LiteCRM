@@ -650,5 +650,79 @@
       "updated_at": "2026-06-01T22:12:57.105Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 39,
+    "timestamp": "2026-06-02T12:41:33.136Z",
+    "action": "export",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "crm_data.sql",
+      "target": "D:/Distr/VScode/Projects/MVPs/CRM/my-crm-neutralino/crm_data/crm_export.csv",
+      "type": "sql2csv"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 40,
+    "timestamp": "2026-06-02T13:31:14.255Z",
+    "action": "export",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "crm_data.sql",
+      "target": "D:/tmp/crm_export_1780407072872.csv",
+      "type": "sql2csv"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 41,
+    "timestamp": "2026-06-02T13:32:58.962Z",
+    "action": "export",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "crm_data.sql",
+      "target": "D:/tmp/crm_export_1780407177627.csv",
+      "type": "sql2csv"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 42,
+    "timestamp": "2026-06-02T13:45:47.775Z",
+    "action": "export",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "crm_data.sql",
+      "target": "D:/tmp/crm_export_1780407946420.csv",
+      "type": "sql2csv"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 43,
+    "timestamp": "2026-06-02T14:10:38.472Z",
+    "action": "export",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "crm_data.sql",
+      "target": "D:/tmp",
+      "type": "sql2csv",
+      "files": [
+        "clients",
+        "products",
+        "sales",
+        "tickets",
+        "calendar_notes",
+        "tasks"
+      ],
+      "filesCreated": 6
+    },
+    "metadata": {}
   }
 ]

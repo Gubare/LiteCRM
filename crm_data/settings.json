@@ -1,35 +1,7 @@
 {
-  "ui.showTooltips": false,
-  "ui.darkMode": false,
+  "ui.showTooltips": true,
   "ui.showNavText": true,
-  "ui.animateRows": false,
-  "ui.theme": "corporate",
-  "ui.selectionModifier": "ctrl",
-  "calendar.workDays": {
-    "0": false,
-    "1": false,
-    "2": true,
-    "3": false,
-    "4": false,
-    "5": false,
-    "6": false
-  },
-  "calendar.canEditSchedule": false,
-  "logging": {
-    "cleanupStrategy": "none",
-    "cleanupTime": {
-      "hour": 0,
-      "minute": 0
-    },
-    "maxEntries": 100,
-    "maxAgeDays": 7
-  },
-  "charts.period": {
-    "type": "all",
-    "from": null,
-    "to": null,
-    "appliedAt": "2026-05-31T20:46:08.146Z"
-  },
-  "notifications.deadlineAlerts": true,
-  "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d"
+  "ui.animateRows": true,
+  "ui.theme": "blue",
+  "ui.selectionModifier": "ctrl"
 }

@@ -3,17 +3,40 @@
 const SETTINGS_FILE = 'crm_data/settings.json';
 
 const DEFAULT_SETTINGS = {
-    // "ui.showTooltips": true,
-    // "ui.darkMode": false,
-    // "ui.showNavText": true,
-    // "ui.animateRows": false,
-    // "ui.theme": "blue",
-    // "ui.selectionModifier": "shift",
-    // "calendar.canEditSchedule": true,
-    // "calendar.workDays": {
-    //     "0": true, "1": true, "2": true, "3": true, "4": true, "5": false, "6": false
-    // },
-    // "notifications.deadlineAlerts": true 
+// {
+//   "ui.showTooltips": false,
+//   "ui.darkMode": false,
+//   "ui.showNavText": true,
+//   "ui.animateRows": false,
+//   "ui.theme": "corporate",
+//   "ui.selectionModifier": "ctrl",
+//   "calendar.workDays": {
+//     "0": false,
+//     "1": false,
+//     "2": true,
+//     "3": false,
+//     "4": false,
+//     "5": false,
+//     "6": false
+//   },
+//   "calendar.canEditSchedule": false,
+//   "logging": {
+//     "cleanupStrategy": "none",
+//     "cleanupTime": {
+//       "hour": 0,
+//       "minute": 0
+//     },
+//     "maxEntries": 100,
+//     "maxAgeDays": 7
+//   },
+//   "charts.period": {
+//     "type": "all",
+//     "from": null,
+//     "to": null,
+//     "appliedAt": "2026-05-31T20:46:08.146Z"
+//   },
+//   "notifications.deadlineAlerts": true
+// }
 };
 
 console.log('📦 settings-manager.js loaded');
@@ -26,7 +49,7 @@ if (typeof window !== 'undefined' && !window.settings) {
 
 export async function loadSettings() {
     try {
-        // 🔥 ИСПОЛЬЗУЕМ window.Neutralino
+    
         if (typeof window.Neutralino === 'undefined') {
             console.warn('⚠️ Neutralino not available, using defaults');
             window.settings = { ...DEFAULT_SETTINGS };
@@ -40,7 +63,6 @@ export async function loadSettings() {
     } catch (error) {
         console.log('⚠️ Settings file not found, creating with defaults');
         window.settings = { ...DEFAULT_SETTINGS };
-        // 🔥 Проверяем перед вызовом
         if (typeof window.Neutralino !== 'undefined') {
             await saveSettings();
         }
@@ -72,7 +94,6 @@ export async function getSetting(key, fallbackToFile = false) {
 export async function updateSetting(key, value) {
     console.log(`🔧 updateSetting called: ${key} = ${value}`);
     
-    // 🔥 ПРОВЕРКА window.Neutralino
     if (typeof window.Neutralino === 'undefined') {
         console.error('❌ Neutralino not available, cannot save settings');
         window.settings = { ...window.settings, [key]: value };
@@ -115,7 +136,6 @@ export async function updateSetting(key, value) {
 
 async function saveSettings() {
     try {
-        // 🔥 ПРОВЕРКА window.Neutralino
         if (typeof window.Neutralino === 'undefined') {
             console.warn('⚠️ Neutralino not available, skipping saveSettings');
             return false;
