@@ -107,7 +107,11 @@
 </nav> 
 
     <main class="page-content">
-        <h1>Управление товарами</h1>
+        <h1>Управление товарами
+            <span class="tooltip-icon" style="font-size: 20px; margin-bottom: 15px;" data-tooltip="Раздел взаимодействия с товарами.">
+                    ?
+            </span>
+        </h1>
         
         <!-- Кнопка создания -->
         <div style="margin-bottom: 20px;">
@@ -133,10 +137,13 @@
                 
                 <button id="btnApplyFilters" class="btn-primary" style="width: auto; padding: 8px 16px;">Применить</button>
                 <button id="btnResetFilters" class="btn-action-icon" style="width: auto; padding: 8px 16px;">Сброс</button>
+                <span class="tooltip-icon" style="font-size: 20px; margin-bottom: 15px;" data-tooltip="Для поиска по категории, у каждого товара при создании необходимо создать свою. Для применения фильтра, намжмите кнопку 'Применить'. Для сброса всех фильтров, нажмите кнопку 'Сбросить'">
+                         ?
+                </span>
             </div>
             
             <div class="toolbar-pagination">
-                <label style="font-size: 13px; color: #64748b;">Записей:</label>
+                <label style="font-size: 13px; color: #64748b;">Записей на странице:</label>
                 <select id="pageSize" class="form-control" style="width: 70px;">
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -157,12 +164,18 @@
         <table id="productTable" class="crm-table">
             <thead>
                 <tr>
-                    <th>SKU</th>
+                    <th>SKU
+                        <span class="tooltip-icon" data-tooltip="Артикул товара" data-position="right">?</span>
+                    </th>
                     <th>Категория</th>
                     <th>Название</th>
                     <th>Цена</th>
-                    <th>Остаток</th>
-                    <th>Статус</th>
+                    <th>Остаток
+                        <span class="tooltip-icon" data-tooltip="Количество товара на складе">?</span>
+                    </th>
+                    <th>Статус
+                        <span class="tooltip-icon" data-tooltip="Товар в продаже или снят">?</span>
+                    </th>
                     <!-- <th>Действия</th> -->
                 </tr>
             </thead>

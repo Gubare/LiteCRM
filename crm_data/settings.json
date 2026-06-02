@@ -3,5 +3,22 @@
   "ui.showNavText": true,
   "ui.animateRows": true,
   "ui.theme": "blue",
-  "ui.selectionModifier": "ctrl"
+  "ui.selectionModifier": "ctrl",
+  "charts.period": {
+    "type": "7",
+    "from": null,
+    "to": null,
+    "appliedAt": "2026-06-02T20:14:22.467Z"
+  },
+  "ui.showHelpTooltips": true,
+  "calendar.workDays": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": false,
+    "6": false
+  },
+  "calendar.canEditSchedule": false
 }

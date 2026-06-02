@@ -107,7 +107,9 @@
 </nav>  
 <main class="page-content">
     <div class="sales-container">
-        <h1>Управление продажами</h1>
+        <h1>Управление продажами
+            <span class="tooltip-icon" style="font-size: 20px; margin-bottom: 15px;" data-tooltip="Раздел взаимодействия с продажами.">?</span>
+        </h1>
         
 <!-- Кнопки для открытия форм -->
 <div class="sale-actions" style="display: flex; gap: 15px; margin-bottom: 30px;">
@@ -285,13 +287,21 @@
         <table id="salesTable" class="crm-table">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID
+                        <span class="tooltip-icon" data-tooltip="Идентификатор сделки" data-position="right">?</span>
+                    </th>
                     <th>Товар</th>
                     <th>Клиент</th>
-                    <th>Кол-во</th>
-                    <th>Сумма</th>
+                    <th>Кол-во
+                        <span class="tooltip-icon" data-tooltip="Количество товара">?</span>
+                    </th>
+                    <th>Сумма
+                        <span class="tooltip-icon" data-tooltip="Сумма сделки">?</span>
+                    </th>
                     <th>Дата</th>
-                    <th>Тип</th>
+                    <th>Тип
+                        <span class="tooltip-icon" data-tooltip="Тип сделки: поступление, списание, продажа">?</span>
+                    </th>
                     <th>Коммент.</th>
                     <!-- <th>Действия</th> -->
                 </tr>

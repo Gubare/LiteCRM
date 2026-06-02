@@ -60,7 +60,7 @@ async function initApplicationLogic() {
     await loadSettings();
     const animateRows = await getSetting('ui.animateRows', true);
     document.body.setAttribute('data-animate-rows', animateRows);
-    
+    applyUIPreferences();
     // Применяем тему
     const theme = await getSetting('ui.theme');
     if (theme) {
@@ -69,7 +69,7 @@ async function initApplicationLogic() {
     
     // Инициализация навбара 
     initializeNavigation();
-    
+    initTooltips();
     try {
         // Инициализация БД
         await initDatabase();
@@ -112,6 +112,19 @@ export async function hashPassword(password) {
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function applyUIPreferences() {
+    try {
+        const showHelpTooltips = await getSetting('ui.showHelpTooltips', true);
+        if (!showHelpTooltips) {
+            document.body.classList.add('help-tooltips-hidden');
+        } else {
+            document.body.classList.remove('help-tooltips-hidden');
+        }
+    } catch (e) {
+        console.warn('️ Could not load tooltip preference:', e);
+    }
 }
 
 // Проверка пароля
@@ -356,12 +369,102 @@ export async function initCustomTitlebar() {
   // Закрыть: window.close или app.exit
   btnClose?.addEventListener('click', () => {
     console.log('Close clicked');
-    Neutralino.app.exit(); // Или Neutralino.window.close()
+    Neutralino.app.exit(); 
   });
 
   console.log('✅ Titlebar initialized with permissions');
 }
 
+function initTooltips() {
+    console.log('🔍 Initializing tooltips...');
+    
+    const tooltipElements = document.querySelectorAll('.tooltip-icon');
+    
+    tooltipElements.forEach(element => {
+        const tooltipText = element.getAttribute('data-tooltip');
+        if (!tooltipText) return;
+        
+        // Очищаем все классы позиций
+        element.classList.remove('position-top', 'position-bottom', 'position-left', 'position-right');
+        
+        // Проверяем наличие ручной позиции
+        const manualPosition = element.getAttribute('data-position');
+        
+        if (manualPosition) {
+            // Применяем ручную позицию
+            switch (manualPosition.toLowerCase()) {
+                case 'top':
+                case 'up':
+                    element.classList.add('position-top');
+                    break;
+                case 'bottom':
+                case 'down':
+                    element.classList.add('position-bottom');
+                    break;
+                case 'left':
+                    element.classList.add('position-left');
+                    break;
+                case 'right':
+                    element.classList.add('position-right');
+                    break;
+                default:
+                    // Если неизвестное значение, используем автоопределение
+                    applyAutoPosition(element);
+            }
+            console.log(`📍 Manual position "${manualPosition}" applied`);
+        } else {
+            // Автоопределение позиции
+            applyAutoPosition(element);
+        }
+        
+/**
+ * Автоматическое определение позиции на основе расположения элемента
+ */
+function applyAutoPosition(element) {
+    const rect = element.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Расстояние до краёв
+    const distToRight = viewportWidth - rect.right;
+    const distToLeft = rect.left;
+    const distToBottom = viewportHeight - rect.bottom;
+    const distToTop = rect.top;
+    
+    // Определяем лучшее направление
+    if (distToRight < 300 && distToLeft > distToRight) {
+        // Мало места справа → влево
+        element.classList.add('position-left');
+    } else if (distToLeft < 100 && distToRight > distToLeft) {
+        // Мало места слева → вправо
+        element.classList.add('position-right');
+    } else if (distToBottom < 120 && distToTop > distToBottom) {
+        // Мало места снизу → сверху
+        element.classList.add('position-top');
+    } else if (distToTop < 120 && distToBottom > distToTop) {
+        // Мало места сверху → снизу
+        element.classList.add('position-bottom');
+    }
+    // Иначе остаётся стандартное (снизу)
+}
+
+        // Доступность
+        element.setAttribute('tabindex', '0');
+        element.setAttribute('role', 'tooltip');
+        element.setAttribute('aria-label', tooltipText);
+        
+        // Клик для мобильных
+        element.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.tooltip-icon.active').forEach(el => {
+                if (el !== element) el.classList.remove('active');
+            });
+            element.classList.toggle('active');
+        });
+    });
+    
+    console.log(`✅ Tooltips initialized: ${tooltipElements.length} elements`);
+}
 
 // Загрузка данных из файла при старте
 // В main.js
@@ -540,6 +643,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Вызов после загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initTooltips, 100);
+});
+
+// Экспорт
+window.initTooltips = initTooltips;
 
 //  Инициализация навигации (обработчики для кнопок)
 function initializeNavigation() {
@@ -675,7 +785,10 @@ async function syncThemeToLocalStorage() {
         console.warn('⚠️ Could not sync theme:', error);
     }
 }
-
+// Экспортируем функцию для использования в других модулях
+if (typeof window !== 'undefined') {
+    window.initTooltips = initTooltips;
+}
 // Сбрасываем таймер при любом действии
 document.addEventListener('mousemove', resetInactivityTimer);
 document.addEventListener('keypress', resetInactivityTimer);

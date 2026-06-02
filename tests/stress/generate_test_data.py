@@ -3,7 +3,7 @@
 """
 Генератор тестовых данных для CRM System
 Использование:
-py tests/stress/generate_test_data.py --clients 100 --products 100 --sales 100 --tickets 100 --notes 50 --output tests/stress/backup.json
+py tests/stress/generate_test_data.py --clients 1000 --products 1000 --sales 1000 --tickets 1000 --notes 500 --output tests/stress/backup.json
 """
 
 import json
@@ -202,7 +202,7 @@ def main():
     parser.add_argument('--sales', type=int, default=100, help='Количество продаж')
     parser.add_argument('--notes', type=int, default=50, help='Количество заметок календаря')
     parser.add_argument('--start-id', type=int, default=1, help='Начальный ID для записей')
-    parser.add_argument('--output', type=str, default='crm_data/backup.json', help='Путь к выходному файлу')
+    parser.add_argument('--output', type=str, default='tests/stress/backup.json', help='Путь к выходному файлу')
     
     args = parser.parse_args()
     

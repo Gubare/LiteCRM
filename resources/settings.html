@@ -155,13 +155,13 @@
                 </label>
             </div>
             
-            <div class="setting-item" style="opacity: 0.6; pointer-events: none;">
+            <div class="setting-item">
                 <div class="setting-info">
-                    <h3>Тёмная тема</h3>
-                    <p>Скоро будет доступна</p>
+                    <h3>Подсказки по функциям</h3>
+                    <p>Показывать всплывающие подсказки при наведении на значок «?»</p>
                 </div>
                 <label class="toggle-switch">
-                    <input type="checkbox" disabled>
+                    <input type="checkbox" id="toggleHelpTooltips" checked>
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -769,7 +769,26 @@
             });
             console.log('  ✅ modifier listener attached');
         }
-        
+
+        // === ПОДСКАЗКИ ПО ФУНКЦИЯМ ===
+        const helpTooltipsToggle = document.getElementById('toggleHelpTooltips');
+        if (helpTooltipsToggle) {
+            // Загрузка текущего значения
+            const isEnabled = await getSetting('ui.showHelpTooltips', true);
+            helpTooltipsToggle.checked = isEnabled;
+            
+            // Применяем класс сразу при загрузке
+            document.body.classList.toggle('help-tooltips-hidden', !isEnabled);
+
+            // Обработчик переключения
+            helpTooltipsToggle.addEventListener('change', async (e) => {
+                const newVal = e.target.checked;
+                await updateSetting('ui.showHelpTooltips', newVal);
+                document.body.classList.toggle('help-tooltips-hidden', !newVal);
+                showToast(newVal ? '✅ Подсказки включены' : ' Подсказки выключены');
+            });
+        }
+                
         if (elements.themeSelect) {
             elements.themeSelect.addEventListener('change', async (e) => {
                 const newTheme = e.target.value;

@@ -112,9 +112,14 @@
 </nav> 
 
     <main class="page-content">
-        <h1>Список клиентов</h1>
+        <h1>Список клиентов 
+        <span class="tooltip-icon" style="font-size: 20px; margin-bottom: 15px;" data-tooltip="Список всех зарегистрированных клиентов.">
+            ?
+        </span>
+        </h1>
             <div class="toolbar-actions" style="margin-bottom: 20px;">
-                <button class="btn-primary" style="padding: 10px 20px; font-size: 15px;" onclick="openClientModal()">Добавить клиента</button>
+                <button class="btn-primary" style="padding: 10px 20px; font-size: 15px;" onclick="openClientModal()">Добавить клиента
+                </button>
             </div>
         <!-- Панель управления -->
         <div class="table-toolbar">
@@ -162,13 +167,21 @@
         <table id="clientTable" class="crm-table">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID
+                        <span class="tooltip-icon" data-tooltip="Идентификатор клиента" data-position="right">?</span>
+                    </th>
                     <th>Имя</th>
                     <th>Телефон</th>
                     <th>Email</th>
-                    <th>Покупки</th>
-                    <th>Сумма</th>
-                    <th>Ср. чек</th>
+                    <th>Покупки
+                        <span class="tooltip-icon" data-tooltip="Количество покупок клиента">?</span>
+                    </th>
+                    <th>Сумма
+                        <span class="tooltip-icon" data-tooltip="Сумма всех покупок клиента">?</span>
+                    </th>
+                    <th>Ср. чек
+                        <span class="tooltip-icon" data-tooltip="Сколько тратит клиент за одну покупку">?</span>
+                    </th>
                     <th>Сегмент</th>
                 </tr>
             </thead>
