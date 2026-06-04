@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>NeutralinoJs sample app</title>
+    <title>Лад CRM - Главная</title>
     <script>
       (function() {
         try {
@@ -12,139 +12,864 @@
       })();
     </script>
     <link rel="stylesheet" href="/styles.css">
+    <style>
+      /* Дополнительные стили для главной страницы */
+      .guide-section {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+      }
+      
+      .guide-section h3 {
+        margin-top: 0;
+        color: var(--color-text);
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+      
+      .guide-section ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      
+      .guide-section li {
+        margin-bottom: 8px;
+        color: var(--color-text-secondary);
+      }
+      
+      .quick-action-btn {
+        min-width: 150px;
+        height: 60px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    </style>
   </head>
   <body>
     <!-- Навигация -->
-<nav class="main-nav">
-    <button data-url="index.html" class="nav-item">
+    <nav class="main-nav">
+      <button data-url="index.html" class="nav-item active">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
         <span class="nav-label">Главная</span>
-    </button>
-    
-    <button data-url="clients.html" class="nav-item">
+      </button>
+      
+      <button data-url="clients.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
         <span class="nav-label">Клиенты</span>
-    </button>
-    
-    <button data-url="products.html" class="nav-item">
+      </button>
+      
+      <button data-url="products.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
         <span class="nav-label">Товары</span>
-    </button>
-    
-    <button data-url="tickets.html" class="nav-item">
+      </button>
+      
+      <button data-url="tickets.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
         <span class="nav-label">Обращения</span>
-    </button>
-    
-    <button data-url="reports.html" class="nav-item">
+      </button>
+      
+      <button data-url="reports.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="20" x2="18" y2="10"></line>
-            <line x1="12" y1="20" x2="12" y2="4"></line>
-            <line x1="6" y1="20" x2="6" y2="14"></line>
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
         </svg>
         <span class="nav-label">Отчёты</span>
-    </button>
-    
-    <button data-url="sales.html" class="nav-item">
+      </button>
+      
+      <button data-url="sales.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="1" x2="12" y2="23"></line>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
         <span class="nav-label">Продажи</span>
-    </button>
-    
-    <button data-url="settings.html" class="nav-item">
+      </button>
+      
+      <button data-url="settings.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
         <span class="nav-label">Настройки</span>
-    </button>
-    
-    <button data-url="calendar.html" class="nav-item">
+      </button>
+      
+      <button data-url="calendar.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
         <span class="nav-label">Календарь</span>
-    </button>
-    
-    <button data-url="charts.html" class="nav-item">
+      </button>
+      
+      <button data-url="charts.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <!-- Иконка: линейный график -->
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
         <span class="nav-label">Графики</span>
-    </button>
+      </button>
 
-    <button data-url="tasks.html" class="nav-item">
+      <button data-url="tasks.html" class="nav-item">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 11l3 3L22 4"></path>
-            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
         </svg>
         <span class="nav-label">Задачи</span>
-    </button>
-</nav> 
-    <main class="page-content">
-    <div id="neutralinoapp">
-      <h1>NeutralinoJs</h1>
-      <div id="info"></div>
-      <br/>
-      <img src="/icons/logo.gif" alt="Neutralinojs" />
-      <div>
-        <button onclick="testSave()">Тестовое сохранение</button>
-</main>
-<script>
-async function testSave() {
-    console.log('Manual save test...');
-    try {
-        await window.saveDataToFile();
-        alert('✅ Данные сохранены! Проверьте папку crm_data/backup.json');
-    } catch (error) {
-        alert('Ошибка: ' + error.message);
-    }
-}
-
-// После инициализации и проверки пароля
-document.addEventListener('DOMContentLoaded', async () => {
-
+      </button>
+    </nav>
     
-    // Проверка дедлайнов
-    setTimeout(async () => {
-        const { checkDeadlinesAndNotify } = await import('./js/deadline-notifier.js');
-        await checkDeadlinesAndNotify();
-    }, 1000);
-});
-</script>
-
+    <main class="page-content">
+      <h1>Добро пожаловать в Лад CRM</h1>
+      
+      <!-- Экспресс-меню быстрых действий -->
+      <div class="table-toolbar">
+        <h2>Быстрые действия
+              <span class="tooltip-icon" data-tooltip="Панель для добавления записей в доступные таблицы не выходя из главной страницы. Все изменения будут сохранены.">?</span>
+        </h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+          <button class="btn-primary quick-action-btn" onclick="openClientModal()" 
+            data-tooltip="Быстрое добавление клиента за 30 секунд. Введите имя и телефон — система автоматически сохранит и сегментирует.">
+            Добавить клиента
+            <span class="tooltip-icon" data-tooltip="Быстрое добавление клиента: введите имя и телефон, система автоматически сохранит и сегментирует">
+?
+            </span>
+          </button>
+          
+          <button class="btn-primary quick-action-btn" onclick="openModal('createProductModal')"
+            data-tooltip="Добавление товара в каталог. Укажите название, цену и остаток — система автоматически обновит склад.">
+            Добавить товар
+            <span class="tooltip-icon" data-tooltip="Добавление товара: укажите название, цену и остаток">
+?
+            </span>
+          </button>
+          
+          <!-- <button class="btn-primary quick-action-btn" onclick="openModal('createTicketModal')"
+            data-tooltip="Регистрация обращения клиента. Выберите тип (вопрос/жалоба/заказ) и опишите суть.">
+            Добавить обращение
+            <span class="tooltip-icon" data-tooltip="Регистрация обращения: выберите тип и опишите суть">
+?
+            </span>
+          </button> -->
+          
+          <button class="btn-primary quick-action-btn" onclick="openModal('singleSaleModal')"
+            data-tooltip="Оформление продажи. Выберите клиента и товары — система автоматически спишет остатки и обновит метрики.">
+            Добавить сделку
+            <span class="tooltip-icon" data-tooltip="Оформление продажи: выберите клиента и товары, система спишет остатки">
+?
+            </span>
+          </button>
+          
+          <button class="btn-primary quick-action-btn" onclick="openModal('createTaskModal')"
+            data-tooltip="Создание задачи. Укажите срок и приоритет — система напомнит о дедлайне.">
+            Добавить задачу
+            <span class="tooltip-icon" data-tooltip="Создание задачи: укажите срок и приоритет">
+?
+            </span>
+          </button>
+        </div>
       </div>
+      
+      <!-- Руководство по разделам -->
+      <div class="guide-section">
+        <h3>Быстрый старт для работы:</h3>
+        <ul>
+          <li><strong>Клиенты</strong> — управление базой клиентов с автоматической сегментацией (VIP, Лояльные, Новые, Неактивные). Быстрый поиск по имени, телефону или email. История покупок и RFM-анализ.</li>
+          
+          <li><strong>Товары</strong> — каталог продукции с контролем остатков. Автоматическое обновление при продажах, предупреждения о низком запасе (low_stock).</li>
+          
+          <li><strong>Обращения</strong> — регистрация входящих запросов (вопросы, жалобы, заказы). Отслеживание статуса (Открыта/Выполнена/Архив) и канала ответа.</li>
+          
+          <li><strong>Продажи</strong> — журнал сделок с автоматическим пересчётом метрик клиента и остатков товаров. Транзакционная целостность данных.</li>
+          
+          <li><strong>Отчёты</strong> — воронка продаж, статистика клиентов, конверсия между этапами. Экспорт данных в CSV/JSON.</li>
+          
+          <li><strong>Настройки</strong> — конфигурация системы: темы оформления, параметры безопасности (пароль), импорт/экспорт данных, резервное копирование.</li>
+          
+          <li><strong>Графики</strong> — аналитика и визуализация: динамика выручки, топ-10 товаров, средний чек, продажи по типам.</li>
+          
+          <li><strong>Календарь</strong> — планирование задач и событий. Отображение маркеров клиентов, продаж и обращений по датам.</li>
+          
+          <li><strong>Задачи</strong> — канбан-доска для управления задачами. Приоритизация (Срочно/Важно), дедлайны, автоматические уведомления.</li>
+        </ul>
+      </div>
+      
+    </main>
+    
+    <!-- Модальное окно для быстрого добавления -->
+        <!-- Модальное окно Клиента (Создание/Редактирование) -->
+    <div id="clientModal" class="modal-overlay" onclick="closeModal('clientModal')">
+        <div class="modal-window" onclick="event.stopPropagation()" style="max-width: 500px;">
+            <h3 id="clientModalTitle">Добавить клиента</h3>
+            <form id="clientForm" autocomplete="off">
+                <input type="hidden" id="clientId">
+                <div class="form-group">
+                    <label for="clientName">Имя *</label>
+                    <input 
+                        type="text" 
+                        id="clientName" 
+                        name="clientName"
+                        required 
+                        autocomplete="name"
+                        autofocus
+                        data-next="clientPhone"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientPhone">Телефон</label>
+                    <input 
+                        type="tel" 
+                        id="clientPhone" 
+                        name="clientPhone"
+                        autocomplete="tel"
+                        data-next="clientEmail"
+                        placeholder="+7 (___) ___-__-__"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="clientEmail" 
+                        name="clientEmail"
+                        autocomplete="email"
+                        placeholder="mail@example.com"
+                    >
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('clientModal')">
+                        Отмена
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Сохранить
+                    </button>
+                </div>
+                    <div class="form-footer-hint">
+                        <kbd>Enter</kbd> - следующее поле | 
+                        <kbd>Ctrl+Tab</kbd> - сохранить и новый | 
+                        <kbd>Esc</kbd> - сохранить и закрыть
+                    </div>
+            </form>
+        </div>
+    
+
+    <div class="modal-shortcuts-panel" id="shortcutsPanel">
+        <h4>Горячие клавиши</h4>
+        
+        <div class="shortcut-item">
+            <span class="shortcut-desc">Переход к следующему полю</span>
+            <div class="shortcut-keys">
+                <kbd>Enter</kbd>
+            </div>
+        </div>
+        
+        <div class="shortcut-item">
+            <span class="shortcut-desc">Сохранить и добавить нового</span>
+            <div class="shortcut-keys">
+                <kbd>Ctrl</kbd>+<kbd>Tab</kbd>
+            </div>
+        </div>
+        
+        <div class="shortcut-item">
+            <span class="shortcut-desc">Сохранить и закрыть</span>
+            <div class="shortcut-keys">
+                <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
+            </div>
+        </div>
+        
+        <div class="shortcut-item">
+            <span class="shortcut-desc">Закрыть без сохранения</span>
+            <div class="shortcut-keys">
+                <kbd>Esc</kbd>
+            </div>
+        </div>
+        
+        <div class="shortcut-item">
+            <span class="shortcut-desc">Сохранить и закрыть</span>
+            <div class="shortcut-keys">
+                <kbd>Ctrl</kbd>+<kbd>Esc</kbd>
+            </div>
+        </div>
     </div>
-    <!-- Neutralino.js client. This file is gitignored, 
-        because `neu update` typically downloads it.
-        Avoid copy-pasting it. 
-        -->
-  <script src="/js/neutralino.js"></script>
-  <script src="/js/sql-wasm.js"></script>
-  <script type="module" src="js/main.js"></script>
+    </div>
+
+    <!-- Модальное окно: Создание товара -->
+    <div id="createProductModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'createProductModal')">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 style="margin: 0;"> Новый товар</h3>
+            </div>
+            <form id="createProductForm">
+                <div class="form-row">
+                    <!-- <div>
+                        <label>SKU (артикул) *:</label>
+                        <input type="text" id="productSku" class="form-control" style="width: 100%;" required placeholder="TE-1">
+                    </div> -->
+                    <div>
+                        <label>Категория *:</label>
+                        <input type="text" id="productCategory" list="categoryListCreate" 
+                            class="form-control" style="width: 100%;" required 
+                            placeholder="Выберите или введите свою">
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <div>
+                        <label>Название *:</label>
+                        <input type="text" id="productName" class="form-control" style="width: 100%;" required placeholder="iPhone 15">
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <div>
+                        <label>Описание:</label>
+                        <textarea id="productDescription" rows="3" placeholder="Характеристики товара..."></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Цена *:</label>
+                        <input type="number" id="productPrice" class="form-control" style="width: 100%;" required min="0" step="0.01" placeholder="9999.99">
+                    </div>
+                    <div>
+                        <label>Количество *:</label>
+                        <input type="number" id="productQuantity" class="form-control" style="width: 100%;" required min="0" placeholder="10">
+                    </div>
+                    <div>
+                        <label>Статус:</label>
+                        <select id="productStatus" class="form-control" style="width: 100%;">
+                            <option value="active">В продаже</option>
+                            <option value="inactive">Снят</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-action-icon" onclick="closeModal('createProductModal')" style="flex: 1; padding: 10px;">Отмена</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; padding: 10px;">Добавить товар</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Модальное окно: Создание обращения -->
+    <div id="createTicketModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'createTicketModal')">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-hint">Нажмите в любое место за пределами окна, чтобы закрыть</div>
+            <div class="modal-header">
+                <h3 style="margin: 0;">Новое обращение</h3>
+            </div>
+            <form id="createTicketForm">
+                <div class="form-row">
+                    <div>
+                        <label>Клиент:</label>
+                        <select id="ticketClient" class="form-control" style="width: 100%;">
+                            <option value="">Оставить пустым</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Тип обращения:</label>
+                        <select id="ticketType" class="form-control" style="width: 100%;" required>
+                            <option value="Вопрос">Вопрос</option>
+                            <option value="Жалоба">Жалоба</option>
+                            <option value="Заказ">Заказ</option>
+                            <option value="Предложение">Предложение</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Контакт для ответа:</label>
+                        <input type="text" id="ticketContact" class="form-control" style="width: 100%;" placeholder="Телефон / Email / Telegram">
+                    </div>
+                    <div>
+                        <label>Статус:</label>
+                        <select id="ticketStatus" class="form-control" style="width: 100%;">
+                            <option value="Открыта">Открыта</option>
+                            <option value="Выполнена">Выполнена</option>
+                            <option value="Архив">Архив</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <div>
+                        <label>Подробное описание:</label>
+                        <textarea id="ticketDescription" rows="4" placeholder="Суть вопроса или задачи..."></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-action-icon" onclick="closeModal('createTicketModal')" style="flex: 1; padding: 10px;">Отмена</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; padding: 10px;">Создать обращение</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Единичная сделка -->
+<div id="singleSaleModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'singleSaleModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-hint">
+            Нажмите Esc или в любое место за пределами окна, чтобы закрыть
+        </div>
+        <h3>Единичная сделка</h3>
+<form id="singleSaleForm">
+    <div class="form-row">
+        <div>
+            <label>Клиент:</label>
+            <select id="saleClient" class="form-control">
+                <option value="empty">Не указан</option>
+                <option value="new">➕ Создать клиента</option>
+            </select>
+        </div>
+        <div>
+            <label>Товар:</label>
+            <select id="saleProduct" class="form-control" required>
+                <option value="">Выберите товар...</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div>
+            <label>Количество:</label>
+            <input type="number" id="saleQty" class="form-control" min="1" value="1" required>
+        </div>
+        <div>
+            <label>Цена за ед.:</label>
+            <input type="number" id="salePrice" class="form-control" step="0.01" min="0" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div>
+            <label>Тип операции:</label>
+            <select id="saleType" class="form-control">
+                <option style="color: brown;" value="sale">Продажа (-)</option>
+                <option style="color: #0369a1;" value="writeoff">Списание (-)</option>
+                <option style="color: chartreuse;" value="restock">Поступление (+)</option>
+            </select>
+        </div>
+        <div>
+            <label>Дата сделки:</label>
+            <input type="datetime-local" id="saleDate" class="form-control">
+        </div>
+    </div>
+    
+    <!--  Период -->
+    <div class="form-row full" style="margin: 15px 0;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #f8fafc; border-radius: 6px;">
+            <input type="checkbox" id="salePeriodToggle" style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="salePeriodToggle" style="margin: 0; cursor: pointer; font-weight: 500; color: #334155;">
+                Задать период операции
+            </label>
+        </div>
+    </div>
+    
+    <!-- Обычный комментарий -->
+    <div id="saleCommentContainer" class="form-row full">
+        <div>
+            <label>Комментарий:</label>
+            <input type="text" id="saleComment" class="form-control" placeholder="Необязательно">
+        </div>
+    </div>
+    
+    <!-- Контейнер периода -->
+    <div id="salePeriodContainer" class="form-row full" style="display: none;">
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px solid #bae6fd;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #0369a1;">
+                📆 ПЕРИОД ОПЕРАЦИИ
+            </label>
+            <div class="form-row" style="margin-bottom: 0;">
+                <div>
+                    <label style="font-size: 12px; color: #64748b;">С:</label>
+                    <input type="date" id="salePeriodFrom" class="form-control">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #64748b;">ПО:</label>
+                    <input type="date" id="salePeriodTo" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button type="submit" id="btnSingleSale" class="btn-primary" style="margin-top: 15px;">Зарегистрировать сделку</button>
+</form>
+</div>
+</div>
+</div>
+
+ <!-- Модальное окно создания задачи -->
+        <div id="createTaskModal" class="modal-overlay">
+            <div class="modal-window" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3>Новая задача</h3>
+                    <!-- <button class="modal-close" onclick="closeModal('createTaskModal')">&times;</button> -->
+                </div>
+                
+                <form id="createTaskForm" style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Название -->
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Краткое название
+                        </label>
+                        <input type="text" id="taskTitle" class="form-control" 
+                            placeholder="Позвонить клиенту" required>
+                    </div>
+                    
+                    <!-- Описание -->
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Описание
+                        </label>
+                        <textarea id="taskDescription" class="form-control" rows="3"
+                                placeholder="Подробности задачи..."></textarea>
+                    </div>
+                    
+                    <!-- Приоритет и дедлайн в одну строку -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                                Приоритет
+                            </label>
+                            <select id="taskPriority" class="form-control" required>
+                                <option value="urgent-important">Срочно и Важно</option>
+                                <option value="not-urgent-important">Важно, но не срочно</option>
+                                <option value="urgent-not-important">Срочно, но не важно</option>
+                                <option value="not-urgent-not-important">Не срочно и не важно</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                                Дата выполнения
+                            </label>
+                            <input type="date" id="taskDeadline" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <!-- Связь с записью -->
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Связать с таблицей
+                        </label>
+                        <select id="relatedTable" class="form-control">
+                            <option value="">Не связано</option>
+                            <option value="clients">Клиенты</option>
+                            <option value="products">Товары</option>
+                            <option value="sales">Продажи</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #475569;">
+                            Конкретная запись
+                        </label>
+                        <select id="relatedRecord" class="form-control" disabled>
+                            <option value="">Сначала выберите раздел</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Кнопки -->
+                    <div style="display: flex; gap: 10px; margin-top: 8px;">
+                        <!-- <button type="button" class="btn-action" onclick="closeModal('createTaskModal')" 
+                                style="flex: 1;">
+                            Отмена
+                        </button> -->
+                        <button type="submit" class="btn-primary" style="flex: 2;">
+                            Создать задачу
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+    <script src="/js/neutralino.js"></script>
+    <script src="/js/sql-wasm.js"></script>
+    <script type="module" src="js/client.js"></script>
+    <script type="module" src="js/products.js"></script>
+    <script type="module" src="js/tickets.js"></script>
+    <script type="module" src="js/error-handler.js"></script>
+    <script type="module" src="js/sales.js"></script>
+    <script type="module" src="js/tasks.js"></script>
+    <script type="module" src="js/db_sqlite.js"></script>
+    <script type="module">
+      import { initTooltips } from './js/main.js';
+      
+      let currentModalType = null;
+      
+      // Инициализация подсказок
+      document.addEventListener('DOMContentLoaded', () => {
+        initTooltips();
+        console.log('✅ Главная страница загружена');
+      });
+      
+      // Открытие модального окна быстрого добавления
+      window.openQuickAddModal = function(type) {
+        currentModalType = type;
+        const modal = document.getElementById('quickAddModal');
+        const title = document.getElementById('modalTitle');
+        const content = document.getElementById('modalContent');
+        
+        const forms = {
+          client: {
+            title: '👥 Быстрое добавление клиента',
+            fields: `
+              <div class="form-group">
+                <label>Имя клиента *</label>
+                <input type="text" id="quickClientName" class="form-control" placeholder="Иванов Иван" autofocus>
+              </div>
+              <div class="form-group">
+                <label>Телефон</label>
+                <input type="tel" id="quickClientPhone" class="form-control" placeholder="+7 (999) 123-45-67">
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="quickClientEmail" class="form-control" placeholder="email@example.com">
+              </div>
+            `
+          },
+          product: {
+            title: '📦 Добавление товара',
+            fields: `
+              <div class="form-group">
+                <label>Название товара *</label>
+                <input type="text" id="quickProductName" class="form-control" placeholder="Наушники XYZ">
+              </div>
+              <div class="form-row">
+                <div>
+                  <label>Цена (₽) *</label>
+                  <input type="number" id="quickProductPrice" class="form-control" placeholder="1000">
+                </div>
+                <div>
+                  <label>Остаток *</label>
+                  <input type="number" id="quickProductQty" class="form-control" placeholder="10">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Категория</label>
+                <input type="text" id="quickProductCategory" class="form-control" placeholder="Электроника">
+              </div>
+            `
+          },
+          ticket: {
+            title: '📝 Регистрация обращения',
+            fields: `
+              <div class="form-row">
+                <div>
+                  <label>Тип обращения *</label>
+                  <select id="quickTicketType" class="form-control">
+                    <option value="Вопрос">Вопрос</option>
+                    <option value="Жалоба">Жалоба</option>
+                    <option value="Заказ">Заказ</option>
+                    <option value="Консультация">Консультация</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Клиент</label>
+                  <input type="text" id="quickTicketClient" class="form-control" placeholder="Имя или телефон">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Описание *</label>
+                <textarea id="quickTicketDesc" class="form-control" rows="3" placeholder="Опишите суть обращения..."></textarea>
+              </div>
+            `
+          },
+          sale: {
+            title: '💰 Оформление продажи',
+            fields: `
+              <div class="form-group">
+                <label>Клиент *</label>
+                <input type="text" id="quickSaleClient" class="form-control" placeholder="Начните вводить имя...">
+              </div>
+              <div class="form-group">
+                <label>Товары</label>
+                <div id="quickSaleItems">
+                  <div class="form-row" style="margin-bottom: 10px;">
+                    <input type="text" class="form-control" placeholder="Товар" style="flex: 2;">
+                    <input type="number" class="form-control" placeholder="Кол-во" style="flex: 1;">
+                    <input type="number" class="form-control" placeholder="Цена" style="flex: 1;">
+                  </div>
+                </div>
+                <button class="btn-action" onclick="addSaleItem()" style="margin-top: 5px;">+ Добавить товар</button>
+              </div>
+              <div class="form-group">
+                <label>Способ оплаты</label>
+                <select id="quickSalePayment" class="form-control">
+                  <option value="Наличные">Наличные</option>
+                  <option value="Карта">Карта</option>
+                  <option value="Перевод">Перевод</option>
+                </select>
+              </div>
+            `
+          },
+          task: {
+            title: '✅ Создание задачи',
+            fields: `
+              <div class="form-group">
+                <label>Название задачи *</label>
+                <input type="text" id="quickTaskTitle" class="form-control" placeholder="Позвонить клиенту">
+              </div>
+              <div class="form-row">
+                <div>
+                  <label>Дедлайн</label>
+                  <input type="date" id="quickTaskDeadline" class="form-control">
+                </div>
+                <div>
+                  <label>Приоритет</label>
+                  <select id="quickTaskPriority" class="form-control">
+                    <option value="not-urgent-important">Не срочно/Важно</option>
+                    <option value="urgent-important">Срочно/Важно</option>
+                    <option value="urgent-not-important">Срочно/Не важно</option>
+                    <option value="not-urgent-not-important">Не срочно/Не важно</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Описание</label>
+                <textarea id="quickTaskDesc" class="form-control" rows="2" placeholder="Детали задачи..."></textarea>
+              </div>
+            `
+          }
+        };
+        
+        const config = forms[type];
+        title.textContent = config.title;
+        content.innerHTML = config.fields;
+        
+        modal.style.display = 'flex';
+        
+        // Фокус на первое поле
+        setTimeout(() => {
+          const firstInput = content.querySelector('input, select, textarea');
+          if (firstInput) firstInput.focus();
+        }, 100);
+      };
+      
+      // Закрытие модального окна
+      window.closeQuickAddModal = function(event) {
+        if (!event || event.target.id === 'quickAddModal') {
+          document.getElementById('quickAddModal').style.display = 'none';
+          currentModalType = null;
+        }
+      };
+      
+      // Добавление товара в продажу (заглушка)
+      window.addSaleItem = function() {
+        const container = document.getElementById('quickSaleItems');
+        const newItem = document.createElement('div');
+        newItem.className = 'form-row';
+        newItem.style.marginBottom = '10px';
+        newItem.innerHTML = `
+          <input type="text" class="form-control" placeholder="Товар" style="flex: 2;">
+          <input type="number" class="form-control" placeholder="Кол-во" style="flex: 1;">
+          <input type="number" class="form-control" placeholder="Цена" style="flex: 1;">
+          <button class="btn-action" onclick="this.parentElement.remove()" style="padding: 5px 10px;">✕</button>
+        `;
+        container.appendChild(newItem);
+      };
+      
+      // Сохранение данных (ЗАГЛУШКИ - замените на реальные вызовы)
+      window.saveQuickAdd = async function() {
+        console.log('💾 Saving quick add:', currentModalType);
+        
+        try {
+          // Здесь должны быть реальные вызовы к вашей БД
+          // Например: await createClient(), createProduct() и т.д.
+          
+          const stubs = {
+            client: async () => {
+              const name = document.getElementById('quickClientName').value;
+              const phone = document.getElementById('quickClientPhone').value;
+              const email = document.getElementById('quickClientEmail').value;
+              console.log('Creating client:', { name, phone, email });
+              // await createClient(name, phone, email);
+            },
+            product: async () => {
+              const name = document.getElementById('quickProductName').value;
+              const price = parseFloat(document.getElementById('quickProductPrice').value);
+              const qty = parseInt(document.getElementById('quickProductQty').value);
+              const category = document.getElementById('quickProductCategory').value;
+              console.log('Creating product:', { name, price, qty, category });
+              // await createProduct(name, price, qty, category);
+            },
+            ticket: async () => {
+              const type = document.getElementById('quickTicketType').value;
+              const client = document.getElementById('quickTicketClient').value;
+              const desc = document.getElementById('quickTicketDesc').value;
+              console.log('Creating ticket:', { type, client, desc });
+              // await createTicket(type, client, desc);
+            },
+            sale: async () => {
+              const client = document.getElementById('quickSaleClient').value;
+              const payment = document.getElementById('quickSalePayment').value;
+              console.log('Creating sale:', { client, payment });
+              // await createSale(client, payment);
+            },
+            task: async () => {
+              const title = document.getElementById('quickTaskTitle').value;
+              const deadline = document.getElementById('quickTaskDeadline').value;
+              const priority = document.getElementById('quickTaskPriority').value;
+              const desc = document.getElementById('quickTaskDesc').value;
+              console.log('Creating task:', { title, deadline, priority, desc });
+              // await createTask(title, deadline, priority, desc);
+            }
+          };
+          
+          if (stubs[currentModalType]) {
+            await stubs[currentModalType]();
+          }
+          
+          // Успешное сохранение
+          closeQuickAddModal();
+          
+          // Показ уведомления (если есть showToast)
+          if (window.showToast) {
+            showToast('✅ Данные сохранены!', 'success');
+          } else {
+            alert('✅ Данные сохранены!');
+          }
+          
+        } catch (error) {
+          console.error('❌ Error saving:', error);
+          if (window.showToast) {
+            showToast('❌ Ошибка: ' + error.message, 'error');
+          } else {
+            alert('❌ Ошибка: ' + error.message);
+          }
+        }
+      };
+      
+      // Обработка Enter в полях формы
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+          const modal = document.getElementById('quickAddModal');
+          if (modal.style.display === 'flex') {
+            e.preventDefault();
+            saveQuickAdd();
+          }
+        }
+      });
+    </script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>

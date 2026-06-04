@@ -19,7 +19,7 @@ export class SelectionManager {
         const tableBody = document.querySelector(this.tableBodySelector);
         
         if (!tableBody) {
-            console.warn(`⚠️ Table body "${this.tableBodySelector}" not found. Retrying in 100ms...`);
+            // console.warn(`⚠️ Table body "${this.tableBodySelector}" not found. Retrying in 100ms...`);
             setTimeout(() => this.init(), 100);
             return;
         }

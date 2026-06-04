@@ -375,7 +375,7 @@ export async function initCustomTitlebar() {
   console.log('✅ Titlebar initialized with permissions');
 }
 
-function initTooltips() {
+export function initTooltips() {
     console.log('🔍 Initializing tooltips...');
     
     const tooltipElements = document.querySelectorAll('.tooltip-icon');

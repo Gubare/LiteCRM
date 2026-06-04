@@ -9,7 +9,7 @@ import {
 } from './db_sqlite.js';
 import { renderPagination } from './partials/pagination.js';
 import { SelectionManager } from './partials/selectionManager.js';
-import { openModal, confirmModal } from './partials/modalManager.js';
+import { openModal, closeModal, confirmModal } from './partials/modalManager.js';
 
 
 // === СОСТОЯНИЕ ===
@@ -20,11 +20,9 @@ let allSales = []; // Кэш продаж для метрик
 window.selectionManager = null;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
-// Этот блок выполняется после загрузки DOM, то есть после полной инициализации страницы
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
-    setupShortcutsPanel();
-    initClientForm();
+    
     // Инициализация менеджера выделения
     window.selectionManager = new SelectionManager({
         tableBodySelector: '#clientTable tbody',
@@ -50,171 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Инициализация формы (перенесено из client.js)
-function initClientForm() {
-    const form = document.getElementById('clientForm');
-    const modal = document.getElementById('clientModal');
-    
-    // Находим первое ВИДИМОЕ поле (пропускаем hidden)
-    const getFirstVisibleInput = () => {
-        return Array.from(form.querySelectorAll('input'))
-            .find(input => input.type !== 'hidden' && !input.disabled);
-    };
-    
-    // Обработка ESC: сохранить и закрыть
-    modal.addEventListener('keydown', async (e) => {
-        // Ctrl+Escape сохранить и закрыть
-        if (e.key === 'Escape' && e.ctrlKey) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const nameInput = document.getElementById('clientName');
-            if (nameInput.value.trim()) {
-                const saved = await handleClientFormSubmit(e, { 
-                    quickAdd: false,
-                    fromEscape: true 
-                });
-                
-                if (saved) {
-                    closeModal('clientModal');
-                }
-            } else {
-                closeModal('clientModal');
-            }
-        }
-        // Обычный Escape → просто закрыть БЕЗ сохранения
-        else if (e.key === 'Escape' && !e.ctrlKey) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Проверяем, есть ли несохранённые данные
-            const nameInput = document.getElementById('clientName');
-            if (nameInput.value.trim()) {
-                // Показываем предупреждение
-                const confirmed = await confirmModal(
-                    'Закрыть без сохранения?',
-                    'У вас есть несохранённые данные. Закрыть форму?',
-                    { type: 'warning', confirmText: 'Закрыть', cancelText: 'Отмена' }
-                );
-                
-                if (confirmed) {
-                    closeModal('clientModal');
-                }
-            } else {
-                closeModal('clientModal');
-            }
-        }
-    });
-    
-    // Обработка Ctrl+Tab: сохранить и создать нового
-    const inputs = Array.from(form.querySelectorAll('input'))
-        .filter(input => input.type !== 'hidden');
-    
-    inputs.forEach((input, index) => {
-        input.addEventListener('keydown', async (e) => {
-            // Ctrl+Tab или Ctrl+Enter
-            if ((e.key === 'Tab' || e.key === 'Enter') && e.ctrlKey) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const saved = await handleClientFormSubmit(e, { 
-                    quickAdd: true,
-                    fromCtrlTab: true 
-                });
-                
-                if (saved) {
-                    // Очищаем форму
-                    form.reset();
-                    document.getElementById('clientId').value = '';
-                    
-                    // Фокус на первое поле
-                    const firstInput = getFirstVisibleInput();
-                    if (firstInput) {
-                        firstInput.focus();
-                    }
-                    
-                    showToast('Клиент добавлен. Введите следующего:', 'success', 2000);
-                }
-            }
-            // Обычный Enter → следующее поле
-            else if (e.key === 'Enter' && !e.ctrlKey) {
-                e.preventDefault();
-                
-                if (index < inputs.length - 1) {
-                    const nextInput = inputs[index + 1];
-                    nextInput.focus();
-                    if (nextInput.type !== 'checkbox') {
-                        nextInput.select();
-                    }
-                } else {
-                    // Последнее поле → сохраняем
-                    form.dispatchEvent(new Event('submit'));
-                }
-            }
-        });
-    });
-    
-    // Предотвращаем автозаполнение браузера
-    form.setAttribute('autocomplete', 'off');
-    inputs.forEach(input => {
-        input.setAttribute('autocomplete', 'new-password'); // Хак для отключения автозаполнения
-    });
-    
-    // Обработка submit
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await handleClientFormSubmit(e, { quickAdd: false });
-    });
-}
-
-// Функция для управления панелью подсказок
-// === УПРАВЛЕНИЕ ПАНЕЛЯМИ ===
-function setupShortcutsPanel() {
-    const modal = document.getElementById('clientModal');
-    const panel = document.getElementById('shortcutsPanel');
-    
-    if (!modal || !panel) return;
-    
-    // Показываем панель при открытии модалки
-    modal.addEventListener('shown.bs.modal', () => {
-        panel.style.display = 'block';
-    });
-    
-    // Скрываем при закрытии
-    modal.addEventListener('hidden.bs.modal', () => {
-        panel.style.display = 'none';
-    });
-}
-// Функция для закрытия модалки
-// === ЗАКРЫТИЕ МОДАЛКИ ===
-export function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (!modal) return;
-    
-    // Очищаем форму
-    const form = modal.querySelector('form');
-    if (form) {
-        form.reset();
-        const clientId = form.querySelector('#clientId');
-        if (clientId) clientId.value = '';
-    }
-    
-    // Скрываем модалку (Bootstrap или кастомно)
-    if (window.bootstrap && bootstrap.Modal) {
-        const bsModal = bootstrap.Modal.getInstance(modal);
-        if (bsModal) bsModal.hide();
-    } else {
-        modal.style.display = 'none';
-        modal.classList.remove('show');
-    }
-    
-    // Снимаем фокус
-    document.activeElement.blur();
-}
-
 // === ЗАГРУЗКА И РЕНДЕР ===
-// Эта функция загружает клиентов и обогащает их данными
-// На вход принимает массив клиентов из таблицы клиентов
 async function loadClients() {
     const tbody = document.querySelector('#clientTable tbody');
     // if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">⏳ Загрузка...</td></tr>';
@@ -280,11 +114,6 @@ async function loadClients() {
     }
 }
 
-// === РЕНДЕР ТАБЛИЦЫ ===
-// На вход принимает массив клиентов
-// В ходе работы функция создает HTML таблицу
-// и заполняет ее данными из массива клиентов
-
 function renderTable(clients) {
     const shouldAnimate = getSetting('ui.animateRows');
     const tbody = document.querySelector('#clientTable tbody');
@@ -328,71 +157,37 @@ function renderTable(clients) {
 }
 
 // === Создание/Обновление клиента ===
-export async function handleClientFormSubmit(event, options = {}) {
-    const { 
-        quickAdd = false, 
-        fromEscape = false,
-        fromCtrlTab = false 
-    } = options;
-    
-    const nameInput = document.getElementById('clientName');
-    const phoneInput = document.getElementById('clientPhone');
-    const emailInput = document.getElementById('clientEmail');
-    const idInput = document.getElementById('clientId');
-    
+export async function handleClientFormSubmit() {
+    const id = document.getElementById('clientId')?.value;
     const formData = {
-        name: nameInput.value.trim(),
-        phone: phoneInput.value.trim(),
-        email: emailInput.value.trim()
+        name: document.getElementById('clientName').value,
+        phone: document.getElementById('clientPhone').value,
+        email: document.getElementById('clientEmail').value
     };
     
-    // Валидация обязательных полей
-    if (!formData.name) {
-        if (!fromEscape) {
-            showToast('Имя клиента обязательно', 'error');
-            nameInput.focus();
-        }
-        return false;
-    }
-    
     try {
-        const id = idInput.value;
-        
         if (id) {
-            // Обновление
+            // Обновление (ваш код)
             await dbUpdateClient(parseInt(id), formData);
-            showToast(fromCtrlTab ? 'Сохранено' : 'Клиент обновлён');
+            showToast('Клиент обновлён');
         } else {
-            // Создание
+            // Создание (ваш код)
             formData.created_at = new Date().toISOString();
             await dbCreateClient(formData.name, formData.phone, formData.email);
-            showToast(
-                fromCtrlTab ? 'Добавлен' : 'Клиент создан',
-                'success'
-            );
+            showToast('Клиент создан');
         }
         
-        // Если быстрое добавление (Ctrl+Tab)
-        if (quickAdd || fromCtrlTab) {
-            // Перезагружаем список
-            if (window.loadClients) await window.loadClients();
-            return true;
-        }
-        
-        // Обычное сохранение
+        // Сохранение в файл и перезагрузка
         if (window.saveDataToFile) await window.saveDataToFile();
-        
-        // Перезагружаем список
-        if (window.loadClients) await window.loadClients();
-        
-        return true;
+        closeModal('clientModal');
+        loadClients();
         
     } catch (error) {
         console.error('Error saving client:', error);
-        showToast('Ошибка: ' + error.message, 'error');
-        return false;
+        showToast('Ошибка: ' + error.message);
     }
 }
+
 // === Удаление ===
 export async function handleDelete(id) {
     try {
@@ -435,7 +230,6 @@ export function calculateClientDisplayData(client, sales = []) {
     );
 
     // === НАСТРАИВАЕМЫЕ ПОРОГИ (можно вынести в settings) ===
-    // Правила сегментации по умолчанию усреднены, для истинных данных лучше использовать более точные метрики, которые можно расчитать экспериментально
     const THRESHOLDS = {
         newClientDays: 30,           // Новый клиент: регистрация < 30 дней
         atRiskDays: 90,              // Риск ухода: нет покупок > 90 дней
@@ -595,14 +389,8 @@ function getSegmentName(key) {
 }
 
 // === МОДАЛЬНОЕ ОКНО КЛИЕНТА ===
-// === МОДАЛЬНОЕ ОКНО КЛИЕНТА ===
 window.openClientModal = async function(id = null) {
     // Сброс формы
-    console.log('🔍 openClientModal вызван, id=', id);
-    console.log('🔍 clientName элемент:', document.getElementById('clientName'));
-
-    // После openModal:
-    console.log('🔍 openModal вызван, пробуем фокус...');
     const ctxMenu = document.getElementById('ctxMenu');
     if (ctxMenu) ctxMenu.style.display = 'none';
     const form = document.getElementById('clientForm');
@@ -623,18 +411,7 @@ window.openClientModal = async function(id = null) {
         }
     }
     
-    // Открываем модалку
     openModal('clientModal');
-    
-    
-    setTimeout(() => {
-        const nameInput = document.getElementById('clientName');
-        if (nameInput && nameInput.offsetParent !== null) {
-            nameInput.focus();
-            nameInput.select();
-            console.log('✅ Фокус установлен на clientName');
-        }
-    }, 150); // Задержка для гарантированного рендеринга
 };
 
 // === ПРОСМОТР ИНФОРМАЦИИ О СЕГМЕНТЕ ===

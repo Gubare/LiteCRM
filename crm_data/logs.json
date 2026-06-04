@@ -747,5 +747,741 @@
       "is_archived": 1
     },
     "metadata": {}
+  },
+  {
+    "id": 45,
+    "timestamp": "2026-06-04T16:24:34.759Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 811,
+    "data": {
+      "id": 811,
+      "client_id": 122,
+      "client_name": "Михаил Петров",
+      "type": "Претензия",
+      "contact": "+79156073736",
+      "status": "Выполнена",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-06-02T23:03:56Z",
+      "updated_at": "2026-06-02 20:21:12"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 46,
+    "timestamp": "2026-06-04T19:44:52.687Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1001,
+    "data": {
+      "name": "Антошка",
+      "phone": "8902253225",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:44:52.452Z",
+      "updated_at": "2026-06-04T19:44:52.452Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 47,
+    "timestamp": "2026-06-04T19:44:53.888Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1002,
+    "data": {
+      "name": "Антошка",
+      "phone": "8902253225",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:44:52.591Z",
+      "updated_at": "2026-06-04T19:44:52.591Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 48,
+    "timestamp": "2026-06-04T19:45:31.845Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1003,
+    "data": {
+      "name": "Марк",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:45:31.691Z",
+      "updated_at": "2026-06-04T19:45:31.691Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 49,
+    "timestamp": "2026-06-04T19:45:33.165Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1004,
+    "data": {
+      "name": "Марк",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:45:31.780Z",
+      "updated_at": "2026-06-04T19:45:31.780Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 50,
+    "timestamp": "2026-06-04T19:47:03.671Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1004,
+    "data": {
+      "id": 1004,
+      "name": "Марк",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:45:31.780Z",
+      "updated_at": "2026-06-04T19:45:31.780Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 51,
+    "timestamp": "2026-06-04T19:47:05.880Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1003,
+    "data": {
+      "id": 1003,
+      "name": "Марк",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:45:31.691Z",
+      "updated_at": "2026-06-04T19:45:31.691Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 52,
+    "timestamp": "2026-06-04T19:47:07.855Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1003,
+    "data": null,
+    "metadata": {}
+  },
+  {
+    "id": 53,
+    "timestamp": "2026-06-04T19:47:10.081Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1002,
+    "data": {
+      "id": 1002,
+      "name": "Антошка",
+      "phone": "8902253225",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:44:52.591Z",
+      "updated_at": "2026-06-04T19:44:52.591Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 54,
+    "timestamp": "2026-06-04T19:47:12.014Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1001,
+    "data": {
+      "id": 1001,
+      "name": "Антошка",
+      "phone": "8902253225",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:44:52.452Z",
+      "updated_at": "2026-06-04T19:44:52.452Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 55,
+    "timestamp": "2026-06-04T19:47:25.797Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1001,
+    "data": {
+      "sku": "ПЛ-1001",
+      "category": "Планшет",
+      "name": "GE-213981",
+      "description": "",
+      "price": 222,
+      "quantity": 22,
+      "is_active": true,
+      "created_at": "2026-06-04T19:47:25.751Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 56,
+    "timestamp": "2026-06-04T19:48:11.260Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1005,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:48:11.069Z",
+      "updated_at": "2026-06-04T19:48:11.069Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 57,
+    "timestamp": "2026-06-04T19:48:12.416Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1006,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:48:11.156Z",
+      "updated_at": "2026-06-04T19:48:11.156Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 58,
+    "timestamp": "2026-06-04T19:48:16.889Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1006,
+    "data": {
+      "id": 1006,
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:48:11.156Z",
+      "updated_at": "2026-06-04T19:48:11.156Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 59,
+    "timestamp": "2026-06-04T19:48:23.816Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1007,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:48:23.694Z",
+      "updated_at": "2026-06-04T19:48:23.694Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 60,
+    "timestamp": "2026-06-04T19:48:24.746Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1008,
+    "data": {
+      "name": "Сергей",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:48:23.745Z",
+      "updated_at": "2026-06-04T19:48:23.745Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 61,
+    "timestamp": "2026-06-04T19:50:26.702Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1009,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:50:26.613Z",
+      "updated_at": "2026-06-04T19:50:26.613Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 62,
+    "timestamp": "2026-06-04T19:50:50.622Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1010,
+    "data": {
+      "name": "Никониколай",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:50:50.525Z",
+      "updated_at": "2026-06-04T19:50:50.525Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 63,
+    "timestamp": "2026-06-04T19:50:58.431Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1010,
+    "data": {
+      "id": 1010,
+      "name": "Никониколай",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T19:50:50.525Z",
+      "updated_at": "2026-06-04T19:50:50.525Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 64,
+    "timestamp": "2026-06-04T19:58:23.960Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1002,
+    "data": {
+      "sku": "12-1002",
+      "category": "12",
+      "name": "22",
+      "description": "222",
+      "price": 22,
+      "quantity": 22,
+      "is_active": true,
+      "created_at": "2026-06-04T19:58:23.882Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 65,
+    "timestamp": "2026-06-04T19:59:03.111Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1003,
+    "data": {
+      "sku": "11-1003",
+      "category": "111",
+      "name": "111",
+      "description": "11",
+      "price": 11,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-06-04T19:59:03.026Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 66,
+    "timestamp": "2026-06-04T20:06:16.996Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1011,
+    "data": {
+      "name": "Пифагор",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T20:06:16.922Z",
+      "updated_at": "2026-06-04T20:06:16.922Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 67,
+    "timestamp": "2026-06-04T20:06:18.033Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1012,
+    "data": {
+      "name": "Пифагор",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T20:06:17.198Z",
+      "updated_at": "2026-06-04T20:06:17.198Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 68,
+    "timestamp": "2026-06-04T20:07:33.456Z",
+    "action": "delete",
+    "store": "clients",
+    "recordId": 1011,
+    "data": {
+      "id": 1011,
+      "name": "Пифагор",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T20:06:16.922Z",
+      "updated_at": "2026-06-04T20:06:16.922Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 69,
+    "timestamp": "2026-06-04T20:07:42.161Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1013,
+    "data": {
+      "name": "АФАНАСИЙ",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-04T20:07:42.112Z",
+      "updated_at": "2026-06-04T20:07:42.112Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 70,
+    "timestamp": "2026-06-04T20:08:05.380Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1004,
+    "data": {
+      "sku": "33-1004",
+      "category": "333",
+      "name": "333",
+      "description": "",
+      "price": 33,
+      "quantity": 33,
+      "is_active": true,
+      "created_at": "2026-06-04T20:08:05.287Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 71,
+    "timestamp": "2026-06-04T20:08:15.137Z",
+    "action": "delete",
+    "store": "products",
+    "recordId": 1003,
+    "data": {
+      "id": 1003,
+      "sku": "11-1003",
+      "category": "111",
+      "name": "111",
+      "description": "11",
+      "price": 11,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-06-04T19:59:03.026Z",
+      "updated_at": "2026-06-04 19:59:03"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 72,
+    "timestamp": "2026-06-04T20:08:15.723Z",
+    "action": "delete",
+    "store": "products",
+    "recordId": 1002,
+    "data": {
+      "id": 1002,
+      "sku": "12-1002",
+      "category": "12",
+      "name": "22",
+      "description": "222",
+      "price": 22,
+      "quantity": 22,
+      "is_active": true,
+      "created_at": "2026-06-04T19:58:23.882Z",
+      "updated_at": "2026-06-04 19:58:23"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 73,
+    "timestamp": "2026-06-04T20:08:16.197Z",
+    "action": "delete",
+    "store": "products",
+    "recordId": 1004,
+    "data": {
+      "id": 1004,
+      "sku": "33-1004",
+      "category": "333",
+      "name": "333",
+      "description": "",
+      "price": 33,
+      "quantity": 33,
+      "is_active": true,
+      "created_at": "2026-06-04T20:08:05.287Z",
+      "updated_at": "2026-06-04 20:08:05"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 74,
+    "timestamp": "2026-06-04T20:09:55.030Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 1001,
+    "data": {
+      "client_name": "Елена Смирнов",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-06-04T20:09:54.941Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 75,
+    "timestamp": "2026-06-04T20:19:43.691Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 1001,
+    "data": {
+      "client_id": 1,
+      "product_id": 108,
+      "quantity": 1,
+      "unit_price": 12835,
+      "total_amount": 12835,
+      "transaction_date": "2026-06-04T23:19",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-06-04T20:19:43.583Z",
+      "updated_at": "2026-06-04T20:19:43.583Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 76,
+    "timestamp": "2026-06-04T20:19:44.271Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 108,
+    "data": {
+      "id": 108,
+      "sku": "КЛ-1108",
+      "category": "Клавиатура",
+      "name": "Mech-Key-129",
+      "description": "",
+      "price": 12835,
+      "quantity": 42,
+      "is_active": true,
+      "created_at": "2026-05-23T06:23:04Z",
+      "updated_at": "2026-06-04T20:19:43.990Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 77,
+    "timestamp": "2026-06-04T20:20:28.745Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 1002,
+    "data": {
+      "client_id": 4,
+      "product_id": 710,
+      "quantity": 1,
+      "unit_price": 26301.13,
+      "total_amount": 26301.13,
+      "transaction_date": "2026-06-04T23:20",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-06-04T20:20:28.646Z",
+      "updated_at": "2026-06-04T20:20:28.646Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 78,
+    "timestamp": "2026-06-04T20:20:29.305Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 710,
+    "data": {
+      "id": 710,
+      "sku": "ТЕ-1710",
+      "category": "Телефон",
+      "name": "A33-384",
+      "description": "",
+      "price": 26301.13,
+      "quantity": 87,
+      "is_active": true,
+      "created_at": "2026-05-29T19:14:26Z",
+      "updated_at": "2026-06-04T20:20:29.031Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 79,
+    "timestamp": "2026-06-04T20:23:05.092Z",
+    "action": "create",
+    "store": "tasks",
+    "recordId": 1,
+    "data": {
+      "title": "Позвонить ",
+      "description": "",
+      "deadline": "",
+      "priority": "not-urgent-important",
+      "status": "todo",
+      "related_table": "products",
+      "related_id": 13,
+      "related_display": "Curved-32-715 (МО-1013)",
+      "created_at": "2026-06-04T20:23:04.996Z",
+      "updated_at": "2026-06-04T20:23:04.996Z",
+      "completed_at": null,
+      "is_archived": 0
+    },
+    "metadata": {}
+  },
+  {
+    "id": 80,
+    "timestamp": "2026-06-04T20:43:42.857Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1005,
+    "data": {
+      "sku": "11-1002",
+      "category": "111",
+      "name": "111",
+      "description": "232132",
+      "price": 32132121,
+      "quantity": 31231,
+      "is_active": true,
+      "created_at": "2026-06-04T20:43:42.769Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 81,
+    "timestamp": "2026-06-04T20:44:38.243Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1006,
+    "data": {
+      "sku": "33-1006",
+      "category": "33333",
+      "name": "33333",
+      "description": "",
+      "price": 333,
+      "quantity": 3333,
+      "is_active": true,
+      "created_at": "2026-06-04T20:44:38.168Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 82,
+    "timestamp": "2026-06-04T20:45:13.021Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 1003,
+    "data": {
+      "client_id": 5,
+      "product_id": 1006,
+      "quantity": 13,
+      "unit_price": 333,
+      "total_amount": 4329,
+      "transaction_date": "2026-06-04T23:45",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-06-04T20:45:12.944Z",
+      "updated_at": "2026-06-04T20:45:12.944Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 83,
+    "timestamp": "2026-06-04T20:45:13.632Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 1006,
+    "data": {
+      "id": 1006,
+      "sku": "33-1006",
+      "category": "33333",
+      "name": "33333",
+      "description": "",
+      "price": 333,
+      "quantity": 3320,
+      "is_active": true,
+      "created_at": "2026-06-04T20:44:38.168Z",
+      "updated_at": "2026-06-04T20:45:13.312Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 84,
+    "timestamp": "2026-06-04T20:47:26.908Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 1002,
+    "data": {
+      "client_name": null,
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "123141412512",
+      "created_at": "2026-06-04T20:47:26.819Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 85,
+    "timestamp": "2026-06-04T20:55:18.999Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 1003,
+    "data": {
+      "client_name": null,
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "123412421\n",
+      "created_at": "2026-06-04T20:55:18.844Z"
+    },
+    "metadata": {}
   }
 ]

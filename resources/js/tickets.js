@@ -72,7 +72,7 @@ async function populateDropdowns() {
 }
 
 // === ЗАГРУЗКА ДАННЫХ ===
-async function loadTickets() {
+export async function loadTickets() {
     const tbody = document.querySelector('#ticketTable tbody');
     if (tbody) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">⏳ Загрузка...</td></tr>';
@@ -364,7 +364,7 @@ function setupEventListeners() {
     });
 }
 
-async function handleCreateTicket() {
+export async function handleCreateTicket() {
     const formData = {
         client_name: document.getElementById('ticketClient').value || null,
         type: document.getElementById('ticketType').value,
