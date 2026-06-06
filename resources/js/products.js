@@ -1,6 +1,6 @@
 // resources/js/products.js
 import { getAllItems, addItem, updateItem, deleteItem } from './db.js';
-import { getSetting } from './settings-manager.js';
+import { getSetting, updateSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
 // === СПИСОК КАТЕГОРИЙ (можно расширять) ===
 const PREDEFINED_CATEGORIES = [
@@ -23,6 +23,7 @@ let selectedRows = new Map();
 let ctxTargetId = null;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
+// === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('📄 DOMContentLoaded fired');
     
@@ -34,6 +35,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('⏳ Waiting for database...');
     await waitForDatabase();
     console.log('✅ Database ready, loading products...');
+    
+    // Загружаем порог из настроек
+    await loadLowStockThreshold();
     
     await loadProducts();
     console.log('✅ Products loaded, setting up listeners...');
@@ -50,6 +54,15 @@ async function waitForDatabase() {
         const check = () => window.isDatabaseReady ? resolve() : setTimeout(check, 50);
         check();
     });
+}
+
+// Функция загрузки порога
+async function loadLowStockThreshold() {
+    const thresholdInput = document.getElementById('lowStockThreshold');
+    if (thresholdInput) {
+        const savedThreshold = await getSetting('inventory.lowStockThreshold', 10);
+        thresholdInput.value = savedThreshold;
+    }
 }
 
 // Заполнение выпадающих списков категорий
@@ -207,6 +220,9 @@ function renderTable(products) {
     const shouldAnimate = getSetting('ui.animateRows');
     const tbody = document.querySelector('#productTable tbody');
     
+    // Получаем текущий порог
+    const lowStockThreshold = parseInt(document.getElementById('lowStockThreshold')?.value) || 10;
+    
     if (!tbody) {
         console.error('❌ Table body not found!');
         return;
@@ -235,6 +251,12 @@ function renderTable(products) {
             const price = parseFloat(product.price) || 0;
             const quantity = parseInt(product.quantity) || 0;
             
+            // Проверка на низкий остаток
+            const isLowStock = quantity < lowStockThreshold;
+            const stockCellStyle = isLowStock 
+                ? 'text-align: center; background: #fef3c7; color: #d97706; font-weight: 600; border-radius: 4px; padding: 2px 8px;' 
+                : 'text-align: center;';
+            
             return `
             <tr data-id="${product.id}" 
                 class="${animClass}" 
@@ -244,7 +266,7 @@ function renderTable(products) {
                 <td>${category}</td>
                 <td>${name}</td>
                 <td style="text-align: right;">${price.toFixed(2)} ₽</td>
-                <td style="text-align: center;">${quantity}</td>
+                <td style="${stockCellStyle}">${quantity}</td>
                 <td><span class="badge ${statusClass}">${statusText}</span></td>
             </tr>`; 
         }).join('');
@@ -418,6 +440,29 @@ function setupEventListeners() {
         await handleCreateProduct();
     });
 
+    // Обработчик изменения порога низкого остатка
+    const thresholdInput = document.getElementById('lowStockThreshold');
+    if (thresholdInput) {
+        thresholdInput.addEventListener('change', async (e) => {
+            const newValue = parseInt(e.target.value);
+            if (!isNaN(newValue) && newValue >= 0) {
+                // Сохраняем в настройки
+                const { updateSetting } = await import('./settings-manager.js');
+                await updateSetting('inventory.lowStockThreshold', newValue);
+                
+                // Перерисовываем таблицу с новым порогом
+                loadProducts();
+                
+                // Показываем уведомление
+                showToast(`✅ Порог низкого остатка установлен: ${newValue}`);
+            }
+        });
+        
+        // Также обновляем при вводе (без сохранения, только предпросмотр)
+        thresholdInput.addEventListener('input', () => {
+            loadProducts();
+        });
+    }
 
     // Автогенерация SKU при изменении категории (в режиме создания)
     const createCategory = document.getElementById('productCategory');
@@ -433,8 +478,7 @@ function setupEventListeners() {
                 console.log(`📦 Будет сгенерирован SKU: ${generatedSku}`);
             }
         });
-    }
-    
+    }    
     // Форма редактирования
     document.getElementById('editProductForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -506,7 +550,7 @@ async function handleCreateProduct() {
 async function handleEditProduct() {
     const id = parseInt(document.getElementById('editProductId').value);
     const updates = {
-        sku: document.getElementById('editProductSku').value.toUpperCase(), // 🔥 Можно изменить
+        sku: document.getElementById('editProductSku').value.toUpperCase(), //  Можно изменить
         category: document.getElementById('editProductCategory').value,
         name: document.getElementById('editProductName').value,
         description: document.getElementById('editProductDescription').value,

@@ -41,8 +41,8 @@
       "center": true,
       "fullScreen": false,
       "alwaysOnTop": false,
-      "icon": "/resources/icons/logo.png",
-      "enableInspector": true, 
+      "icon": "/resources/icons/logo.ico",
+      "enableInspector": false, 
       "borderless": false,
       "maximize": true,
       "hidden": false,
@@ -54,7 +54,9 @@
         "TEST": "Test value browser"
       },
       "nativeBlockList": [
-        "filesystem.*"
+        "filesystem.*",
+        "os.*",
+        "debug.*"
       ]
     },
     "cloud": {

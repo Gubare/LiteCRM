@@ -33,6 +33,12 @@ const CHART_CONFIGS = {
             type: 'line',
             icon: '',
             description: 'Динамика числа транзакций'
+        },
+        'salesByCategory': {
+            title: 'Продажи по категориям',
+            type: 'pie',
+            icon: '',
+            description: 'Распределение выручки по категориям товаров'
         }
     },
     clients: {
@@ -73,6 +79,18 @@ const CHART_CONFIGS = {
             type: 'bar',
             icon: '',
             description: 'Товары с остатком < 10'
+        },
+        'productsByCategory': {
+            title: 'Товары по категориям',
+            type: 'doughnut',
+            icon: '',
+            description: 'Распределение товаров по категориям'
+        },
+        'categoryProfitability': {
+            title: 'Доходность категорий',
+            type: 'bar',
+            icon: '',
+            description: 'Выручка по категориям'
         }
     },
     tickets: {
@@ -208,7 +226,13 @@ async function loadDataForMode(mode) {
             
         case 'products':
             const prods = await getAllItems('products');
-            return { products: prods, dateRange };
+            // Загружаем порог из настроек
+            const lowStockThreshold = await getSetting('inventory.lowStockThreshold', 10);
+            return { 
+                products: prods, 
+                dateRange,
+                lowStockThreshold  // Передаём порог
+            };
             
         case 'tickets':
             const tickets = await getAllItems('tickets');
@@ -247,6 +271,8 @@ function prepareChartData(mode, chartKey, data, periodDays = 30) {
             return prepareAvgCheckTrend(data.sales, type);
         case 'sales.dealsPerDay':
             return prepareDealsPerDay(data.sales, type);
+        case 'sales.salesByCategory':
+            return prepareSalesByCategory(data.sales, data.products);
             
         // === КЛИЕНТЫ ===
         case 'clients.clientGrowth':
@@ -262,7 +288,11 @@ function prepareChartData(mode, chartKey, data, periodDays = 30) {
         case 'products.stockLevels':
             return prepareStockLevels(data.products);
         case 'products.lowStock':
-            return prepareLowStock(data.products);
+            return prepareLowStock(data.products, data.lowStockThreshold || 10);
+        case 'products.productsByCategory':
+            return prepareProductsByCategory(data.products);
+        case 'products.categoryProfitability':
+            return prepareCategoryProfitability(data.sales, data.products);
             
         // === ОБРАЩЕНИЯ ===
         case 'tickets.ticketsOverTime':
@@ -568,43 +598,76 @@ function prepareClientGrowth(clients, type) {
 
 function prepareClientSegments(clients) {
     const segments = { 
-        potential: 0, 
-        regular: 0, 
-        vip: 0 
+        new: 0,           // Новый
+        active: 0,        // Активный
+        loyal: 0,         // Лояльный
+        regular: 0,       // Обычный
+        vip: 0,          // VIP
+        churnRisk: 0,    // Риск ухода
+        inactive: 0,     // Неактивный
+        potential: 0     // Потенциальный
     };
+    
+    const now = new Date();
+    const days30Ago = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const days90Ago = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
     
     clients.forEach(client => {
         const count = parseInt(client.purchase_count) || 0;
         const total = parseFloat(client.total_spent) || 0;
+        const lastPurchase = client.last_purchase_date ? new Date(client.last_purchase_date) : null;
+        const created = new Date(client.created_at);
         
-        if (count >= 10 || total >= 150000) {
-            segments.vip++;
-        } else if (count >= 3) {
-            segments.regular++;
-        } else {
+        // Логика сегментации
+        if (count === 0 && (now - created) / (1000 * 60 * 60 * 24) <= 30) {
+            // Новый клиент (зарегистрирован менее 30 дней назад и нет покупок)
+            segments.new++;
+        } else if (count === 0) {
+            // Потенциальный (зарегистрирован, но нет покупок)
             segments.potential++;
+        } else if (count >= 10 || total >= 150000) {
+            // VIP (много покупок или большая сумма)
+            segments.vip++;
+        } else if (count >= 5 && total >= 50000) {
+            // Лояльный (регулярные покупки)
+            segments.loyal++;
+        } else if (lastPurchase && lastPurchase >= days30Ago && count >= 2) {
+            // Активный (недавние покупки)
+            segments.active++;
+        } else if (lastPurchase && lastPurchase >= days90Ago && lastPurchase < days30Ago) {
+            // Риск ухода (был активен 1-3 месяца назад)
+            segments.churnRisk++;
+        } else if (lastPurchase && lastPurchase < days90Ago) {
+            // Неактивный (давно не покупал)
+            segments.inactive++;
+        } else {
+            // Обычный (всё остальное)
+            segments.regular++;
         }
     });
     
-    // Фильтруем пустые сегменты
+    // Фильтруем пустые сегменты и формируем данные
+    const segmentConfig = {
+        new: { label: 'Новый', color: '#10b981' },
+        active: { label: 'Активный', color: '#3b82f6' },
+        loyal: { label: 'Лояльный', color: '#8b5cf6' },
+        regular: { label: 'Обычный', color: '#64748b' },
+        vip: { label: 'VIP', color: '#f59e0b' },
+        churnRisk: { label: 'Риск ухода', color: '#f97316' },
+        inactive: { label: 'Неактивный', color: '#ef4444' },
+        potential: { label: 'Потенциальный', color: '#94a3b8' }
+    };
+    
     const labels = [];
     const data = [];
     const colors = [];
     
-    if (segments.potential > 0) {
-        labels.push('Потенциальный');
-        data.push(segments.potential);
-        colors.push('#94a3b8');
-    }
-    if (segments.regular > 0) {
-        labels.push('Обычный');
-        data.push(segments.regular);
-        colors.push('#3b82f6');
-    }
-    if (segments.vip > 0) {
-        labels.push('VIP');
-        data.push(segments.vip);
-        colors.push('#8b5cf6');
+    for (const [key, value] of Object.entries(segments)) {
+        if (value > 0) {
+            labels.push(segmentConfig[key].label);
+            data.push(value);
+            colors.push(segmentConfig[key].color);
+        }
     }
     
     return {
@@ -735,28 +798,41 @@ function prepareStockLevels(products) {
     };
 }
 
-function prepareLowStock(products) {
+function prepareLowStock(products, lowStockThreshold = 10) {
     const low = products.filter(p => {
         const qty = parseInt(p.quantity) || 0;
-        return qty < 10 && qty > 0;
+        return qty < lowStockThreshold && qty > 0 && (p.is_active !== false);
     });
+    
+    // Сортируем по возрастанию остатка (сначала самые критичные)
+    low.sort((a, b) => (parseInt(a.quantity) || 0) - (parseInt(b.quantity) || 0));
     
     if (low.length === 0) {
         return {
-            labels: ['Все товары в наличии'],
+            labels: ['Все товары в наличии (выше порога)'],
             datasets: [{
+                label: `Остаток (порог: ${lowStockThreshold})`,
                 data: [0],
-                backgroundColor: ['#cbd5e1']
+                backgroundColor: ['#10b981']
             }]
         };
     }
     
+    //  Цвета: красный для критически низких (0-3), оранжевый для остальных
+    const backgroundColors = low.map(p => {
+        const qty = parseInt(p.quantity) || 0;
+        if (qty === 0) return 'rgba(239, 68, 68, 0.8)';      // Красный - нет в наличии
+        if (qty <= 3) return 'rgba(239, 68, 68, 0.7)';       // Красный - критически мало
+        if (qty <= 5) return 'rgba(249, 115, 22, 0.7)';      // Оранжевый - мало
+        return 'rgba(251, 191, 36, 0.7)';                     // Жёлтый - ниже порога
+    });
+    
     return {
         labels: low.map(p => `${p.sku} ${p.name}`),
         datasets: [{
-            label: 'Остаток',
+            label: `Остаток (порог: ${lowStockThreshold})`,
             data: low.map(p => parseInt(p.quantity) || 0),
-            backgroundColor: '#ef4444'
+            backgroundColor: backgroundColors
         }]
     };
 }
@@ -1256,4 +1332,111 @@ function toggleExpandChart(card) {
         }
         expandedChart = card;
     }
+}
+
+// Продажи по категориям товаров
+export function prepareSalesByCategory(sales, products) {
+    const categorySales = {};
+    
+    sales.forEach(sale => {
+        if (sale.type !== 'sale') return;
+        
+        const product = products.find(p => p.id == sale.product_id);
+        const category = product?.category || 'Без категории';
+        const amount = parseFloat(sale.total_amount) || 0;
+        
+        categorySales[category] = (categorySales[category] || 0) + amount;
+    });
+    
+    const sorted = Object.entries(categorySales)
+        .sort((a, b) => b[1] - a[1]);
+    
+    // Если категорий больше 8, объединяем остальные в "Другие"
+    let labels, data;
+    if (sorted.length > 8) {
+        const top = sorted.slice(0, 7);
+        const others = sorted.slice(7).reduce((sum, [, val]) => sum + val, 0);
+        
+        labels = top.map(([cat]) => cat);
+        labels.push('Другие');
+        data = top.map(([, val]) => Number(val) || 0);
+        data.push(Number(others) || 0);
+    } else {
+        labels = sorted.map(([cat]) => cat);
+        data = sorted.map(([, val]) => Number(val) || 0);
+    }
+    
+    // Цвета для категорий
+    const colors = [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+        '#8b5cf6', '#06b6d4', '#f97316', '#84cc16',
+        '#ec4899', '#64748b'
+    ];
+    
+    return {
+        labels,
+        datasets: [{
+            label: 'Выручка (₽)',
+            data,
+            backgroundColor: colors.slice(0, labels.length)
+        }]
+    };
+}
+
+// Товары по категориям
+export function prepareProductsByCategory(products) {
+    const categoryCount = {};
+    
+    products.forEach(product => {
+        const category = product.category || 'Без категории';
+        categoryCount[category] = (categoryCount[category] || 0) + 1;
+    });
+    
+    const sorted = Object.entries(categoryCount)
+        .sort((a, b) => b[1] - a[1]);
+    
+    const labels = sorted.map(([cat]) => cat);
+    const data = sorted.map(([, count]) => count);
+    
+    const colors = [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+        '#8b5cf6', '#06b6d4', '#f97316', '#84cc16'
+    ];
+    
+    return {
+        labels,
+        datasets: [{
+            label: 'Количество товаров',
+            data,
+            backgroundColor: colors.slice(0, labels.length)
+        }]
+    };
+}
+
+// Доходность категорий
+export function prepareCategoryProfitability(sales, products) {
+    const categoryRevenue = {};
+    
+    sales.forEach(sale => {
+        if (sale.type !== 'sale') return;
+        
+        const product = products.find(p => p.id == sale.product_id);
+        const category = product?.category || 'Без категории';
+        const amount = parseFloat(sale.total_amount) || 0;
+        
+        categoryRevenue[category] = (categoryRevenue[category] || 0) + amount;
+    });
+    
+    const sorted = Object.entries(categoryRevenue)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+    
+    return {
+        labels: sorted.map(([cat]) => cat),
+        datasets: [{
+            label: 'Выручка (₽)',
+            data: sorted.map(([, val]) => Number(val) || 0),
+            backgroundColor: '#3b82f6'
+        }]
+    };
 }

@@ -17,6 +17,12 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 ; Исполняемый файл
 Source: "..\bin\neutralino-win_x64.exe"; DestDir: "{app}"; DestName: "crm-app.exe"; Flags: ignoreversion
 
+Source: "..\АННОТАЦИЯ_К_СОГЛАШЕНИЯМ.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\ПОЛИТИКА_КОНФИДЕНЦИАЛЬНОСТИ.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\ПОЛЬЗОВАТЕЛЬСКОЕ_СОГЛАШЕНИЕ.md"; DestDir: "{app}"; Flags: ignoreversion
+
+; Файл настроек по умолчанию
+Source: "settings.json"; DestDir: "{app}\crm_data"; DestName: "settings.json"; Flags: onlyifdoesntexist
 ; ВСЕ файлы ресурсов (рекурсивно)
 Source: "..\resources\*"; DestDir: "{app}\resources"; Flags: recursesubdirs createallsubdirs ignoreversion
 
@@ -30,9 +36,8 @@ Source: "LICENSE.rtf"; DestDir: "{app}\docs"; DestName: "Лицензионно�
 Source: "..\package.json"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\CRM для малого бизнеса"; Filename: "{app}\crm-app.exe"
-Name: "{autodesktop}\CRM для малого бизнеса"; Filename: "{app}\crm-app.exe"
-
+Name: "{group}\CRM для малого бизнеса"; Filename: "{app}\crm-app.exe"; IconFilename: "{app}\resources\icons\logo.ico"
+Name: "{autodesktop}\CRM для малого бизнеса"; Filename: "{app}\crm-app.exe"; IconFilename: "{app}\resources\icons\logo.ico"
 [Run]
 Filename: "{app}\crm-app.exe"; Description: "{cm:LaunchProgram,CRM для малого бизнеса}"; Flags: nowait postinstall skipifsilent
 

@@ -3,23 +3,25 @@
   "ui.showNavText": true,
   "ui.animateRows": true,
   "ui.theme": "blue",
-  "ui.selectionModifier": "shift",
+  "inventory.lowStockThreshold": 50,
+  "ui.selectionModifier": "ctrl",
   "charts.period": {
     "type": "7",
     "from": null,
     "to": null,
-    "appliedAt": "2026-06-02T20:14:22.467Z"
+    "appliedAt": "2026-06-06T20:53:19.141Z"
   },
   "ui.showHelpTooltips": true,
   "calendar.workDays": {
-    "0": false,
-    "1": false,
-    "2": false,
+    "0": true,
+    "1": true,
+    "2": true,
     "3": true,
     "4": true,
     "5": false,
     "6": false
   },
-  "calendar.canEditSchedule": false,
-  "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d"
+  "calendar.canEditSchedule": true,
+  "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d",
+  "notifications.deadlineAlerts": true
 }

@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
     
     await waitForDatabase();
-    await populateDropdowns();
+    // await populateDropdowns();
     await loadTickets();
     setupEventListeners();
     initTextViewer();
@@ -50,27 +50,6 @@ async function waitForDatabase() {
     });
 }
 
-async function populateDropdowns() {
-    try {
-        const clients = await getAllItems('clients');
-        const clientOptions = clients.map(c => {
-            // Формируем подпись: телефон -> email -> пусто
-            let contactInfo = '';
-            if (c.phone) contactInfo = ` (${c.phone})`;
-            else if (c.email) contactInfo = ` (${c.email})`;
-            return `<option value="${c.name}">${c.name}${contactInfo}</option>`;
-        }).join('');
-        
-        const ticketClient = document.getElementById('ticketClient');
-        const editTicketClient = document.getElementById('editTicketClient');
-        const filterClient = document.getElementById('filterClient');
-        
-        if (ticketClient) ticketClient.innerHTML = '<option value="">Оставить пустым</option>' + clientOptions;
-        if (editTicketClient) editTicketClient.innerHTML = '<option value="">Оставить пустым</option>' + clientOptions;
-        if (filterClient) filterClient.innerHTML = '<option value="">Все клиенты</option>' + clientOptions;
-    } catch (error) { console.error('Error populating dropdowns:', error); }
-}
-
 // === ЗАГРУЗКА ДАННЫХ ===
 export async function loadTickets() {
     const tbody = document.querySelector('#ticketTable tbody');
@@ -78,18 +57,43 @@ export async function loadTickets() {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">⏳ Загрузка...</td></tr>';
     }
     
-    const sortValue = document.getElementById('sortSelect').value;
+    const sortValue = document.getElementById('sortSelect')?.value || 'date_desc';
     
     try {
         let tickets = await getAllItems('tickets');
+        
+        // Загружаем клиентов для поиска по имени/телефону
+        const clients = await getAllItems('clients');
         
         // Применяем фильтры
         if (currentFilters.type) {
             tickets = tickets.filter(t => t.type === currentFilters.type);
         }
+        
+        // Поиск по клиенту (имя или телефон)
         if (currentFilters.client_name) {
-            tickets = tickets.filter(t => t.client_name === currentFilters.client_name);
+            const searchQuery = currentFilters.client_name.toLowerCase();
+            tickets = tickets.filter(t => {
+                // Ищем совпадение в имени клиента
+                if (t.client_name && t.client_name.toLowerCase().includes(searchQuery)) {
+                    return true;
+                }
+                
+                // Или ищем клиента по телефону/имени и проверяем, относится ли обращение к нему
+                const matchingClient = clients.find(c => {
+                    const clientName = (c.name || '').toLowerCase();
+                    const clientPhone = (c.phone || '').replace(/\D/g, '');
+                    const queryDigits = searchQuery.replace(/\D/g, '');
+                    
+                    return clientName.includes(searchQuery) || 
+                           clientPhone.includes(queryDigits) ||
+                           (c.email && c.email.toLowerCase().includes(searchQuery));
+                });
+                
+                return matchingClient && t.client_name === matchingClient.name;
+            });
         }
+        
         if (currentFilters.status) {
             tickets = tickets.filter(t => t.status === currentFilters.status);
         }
@@ -106,10 +110,9 @@ export async function loadTickets() {
         const start = (currentPage - 1) * currentPageSize;
         const pagedTickets = tickets.slice(start, start + currentPageSize);
         const paginationContainer = document.getElementById('pagination');
-        const paginationInfo = document.getElementById('paginationInfo')
+        const paginationInfo = document.getElementById('paginationInfo');
         
         renderTable(pagedTickets);
-        // Вызываем функцию из импортированного модуля
         renderPagination(
             paginationContainer, 
             paginationInfo, 
@@ -117,7 +120,7 @@ export async function loadTickets() {
             Math.ceil(total / currentPageSize), 
             total, 
             currentPageSize, 
-            goToPage // Функция, которую вызывает модуль при клике
+            goToPage
         );        
     } catch (error) {
         console.error('Error loading tickets:', error);
@@ -125,6 +128,60 @@ export async function loadTickets() {
             tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">❌ Ошибка загрузки</td></tr>`;
         }
     }
+}
+
+// === ОБРАБОТЧИКИ СОБЫТИЙ ===
+function setupEventListeners() {
+    // Форма создания
+    document.getElementById('createTicketForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleCreateTicket();
+    });
+    
+    // Форма редактирования
+    document.getElementById('editTicketForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleEditTicket();
+    });
+    
+    // Фильтры с поиском
+    document.getElementById('btnApplyFilters')?.addEventListener('click', () => {
+        currentFilters = {
+            type: document.getElementById('filterType')?.value || null,
+            client_name: document.getElementById('filterClient')?.value || null,  // Теперь это текст, а не select
+            status: document.getElementById('filterStatus')?.value || null
+        };
+        currentPage = 1;
+        loadTickets();
+    });
+    
+    document.getElementById('btnResetFilters')?.addEventListener('click', () => {
+        if (document.getElementById('filterType')) document.getElementById('filterType').value = '';
+        if (document.getElementById('filterClient')) document.getElementById('filterClient').value = '';
+        if (document.getElementById('filterStatus')) document.getElementById('filterStatus').value = '';
+        currentFilters = {};
+        currentPage = 1;
+        loadTickets();
+    });
+    
+    // Поиск по Enter
+    document.getElementById('filterClient')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('btnApplyFilters')?.click();
+        }
+    });
+    
+    // Пагинация и сортировка
+    document.getElementById('pageSize')?.addEventListener('change', (e) => {
+        currentPageSize = parseInt(e.target.value);
+        currentPage = 1;
+        loadTickets();
+    });
+    
+    document.getElementById('sortSelect')?.addEventListener('change', () => {
+        currentPage = 1;
+        loadTickets();
+    });
 }
 
 function renderTable(tickets) {
@@ -316,53 +373,6 @@ window.deleteSelected = async function() {
         showToast('❌ Ошибка: ' + err.message);
     }
 };
-
-// === ОБРАБОТЧИКИ СОБЫТИЙ ===
-function setupEventListeners() {
-    // Форма создания
-    document.getElementById('createTicketForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await handleCreateTicket();
-    });
-    
-    // Форма редактирования
-    document.getElementById('editTicketForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await handleEditTicket();
-    });
-    
-    // Фильтры
-    document.getElementById('btnApplyFilters').addEventListener('click', () => {
-        currentFilters = {
-            type: document.getElementById('filterType').value || null,
-            client_name: document.getElementById('filterClient').value || null,
-            status: document.getElementById('filterStatus').value || null
-        };
-        currentPage = 1;
-        loadTickets();
-    });
-    
-    document.getElementById('btnResetFilters').addEventListener('click', () => {
-        document.getElementById('filterType').value = '';
-        document.getElementById('filterClient').value = '';
-        document.getElementById('filterStatus').value = '';
-        currentFilters = {};
-        currentPage = 1;
-        loadTickets();
-    });
-    
-    // Пагинация и сортировка
-    document.getElementById('pageSize').addEventListener('change', (e) => {
-        currentPageSize = parseInt(e.target.value);
-        currentPage = 1;
-        loadTickets();
-    });
-    
-    document.getElementById('sortSelect').addEventListener('change', () => {
-        currentPage = 1;
-        loadTickets();
-    });
-}
 
 export async function handleCreateTicket() {
     const formData = {

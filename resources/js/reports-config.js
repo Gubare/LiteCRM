@@ -96,18 +96,6 @@ export const REPORTS_CONFIG = {
                 hint: 'Общее количество записей'
             },
             {
-                id: 'by_status',
-                label: 'По статусам',
-                calculate: (items) => {
-                    const stats = { open: 0, done: 0, archive: 0 };
-                    items.forEach(t => { if (stats[t.status] !== undefined) stats[t.status]++; });
-                    return stats;
-                },
-                format: (val) => `🟡 ${val.open} | 🟢 ${val.done} | ⚪ ${val.archive}`,
-                hint: 'Открыта | Выполнена | Архив',
-                isComplex: true
-            },
-            {
                 id: 'by_type',
                 label: 'По типам',
                 calculate: (items) => {

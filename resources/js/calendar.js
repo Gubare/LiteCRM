@@ -1,7 +1,7 @@
 // resources/js/calendar.js
 import { getAllItems } from './db_sqlite.js';
 import { getSetting, updateSetting } from './settings-manager.js';
-
+import { showToast } from './partials/toast.js'; // Подключаем всплывающие уведомления
 // === СОСТОЯНИЕ ===
 let currentDate = new Date();
 let activeModes = new Set(['notes']);

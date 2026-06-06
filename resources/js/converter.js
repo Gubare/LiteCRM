@@ -253,6 +253,81 @@ export async function sql2json(sourceFile = 'crm_data.sqlite', stores = null) {
     }
 }
 
+// 5. CSV → SQLite
+export async function csv2sql(csvText, targetFile = 'crm_data.sqlite', tableName = 'imported_data', delimiter = ';') {
+    try {
+        const { initDatabase, saveDatabaseToFile } = await import('./db_sqlite.js');
+        
+        // Сначала конвертируем CSV в JSON
+        const jsonData = await csv2json(csvText, delimiter);
+        const data = JSON.parse(jsonData);
+        
+        if (!data || data.length === 0) {
+            throw new Error('CSV файл пуст или некорректен');
+        }
+        
+        // Инициализируем БД
+        await initDatabase();
+        const db = getSqliteInstance();
+        if (!db) throw new Error('SQLite not initialized');
+        
+        // Определяем колонки из первой записи
+        const columns = Object.keys(data[0]);
+        
+        // Определяем типы колонок
+        const colTypes = columns.map(col => {
+            const sampleValue = data[0][col];
+            if (sampleValue === null || sampleValue === '') return `${col} TEXT`;
+            if (!isNaN(sampleValue) && sampleValue !== '') {
+                return Number.isInteger(parseFloat(sampleValue)) ? `${col} INTEGER` : `${col} REAL`;
+            }
+            return `${col} TEXT`;
+        });
+        
+        // Создаём таблицу
+        const colDefs = colTypes.join(', ');
+        db.run(`DROP TABLE IF EXISTS ${tableName}`);
+        db.run(`CREATE TABLE ${tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, ${colDefs})`);
+        
+        // Вставляем данные
+        for (const row of data) {
+            const cols = columns;
+            const vals = cols.map(k => {
+                const val = row[k];
+                // Пытаемся конвертировать в число если возможно
+                if (val === '' || val === null) return null;
+                if (!isNaN(val) && val !== '') {
+                    return parseFloat(val);
+                }
+                return val;
+            });
+            const placeholders = cols.map(() => '?').join(', ');
+            
+            const stmt = db.prepare(`INSERT INTO ${tableName} (${cols.join(', ')}) VALUES (${placeholders})`);
+            stmt.bind(vals);
+            stmt.step();
+            stmt.free();
+        }
+        
+        // Сохраняем на диск
+        if (typeof Neutralino !== 'undefined' && saveDatabaseToFile) {
+            await saveDatabaseToFile();
+        }
+        
+        logAction('import', 'converter', null, { 
+            source: 'CSV', 
+            target: tableName, 
+            type: 'csv2sql',
+            records: data.length 
+        });
+        
+        return { tableName, records: data.length };
+        
+    } catch (error) {
+        throw new Error(`CSV to SQLite error: ${error.message}`);
+    }
+}
+
 // === ИМПОРТ/ЭКСПОРТ ФАЙЛОВ ===
 
 // Импорт: внешний файл → crm_data.{type}
@@ -282,6 +357,10 @@ export async function importFile(sourcePath, sourceType, targetType) {
             case 'sql2json':
                 converted = await sql2json();
                 break;
+            case 'csv2sql':
+                await csv2sql(data, 'crm_data.sqlite', 'imported_data');
+                converted = 'success';
+                break;
             default:
                 throw new Error(`Unsupported conversion: ${sourceType} → ${targetType}`);
         }
@@ -291,6 +370,10 @@ export async function importFile(sourcePath, sourceType, targetType) {
             // await Neutralino.filesystem.createDirectory('crm_data');
             await Neutralino.filesystem.writeFile(outputPath, typeof converted === 'object' ? JSON.stringify(converted, null, 2) : converted);
             logAction('import', 'converter', null, { source: sourcePath, target: outputPath, type: `${sourceType}2${targetType}` });
+        }
+
+        if (targetType === 'sql' && converted === 'success') {
+            logAction('import', 'converter', null, { source: sourcePath, target: 'crm_data.sqlite', type: `${sourceType}2${targetType}` });
         }
         
         showToast(`✅ Конвертация завершена: ${sourceType} → ${targetType}`, 'success');
@@ -551,6 +634,7 @@ window.converter = {
     json2csv,
     json2sql,
     sql2json,
+    csv2sql,
     initConverter,
     showToast,
     openModal,

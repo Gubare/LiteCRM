@@ -139,38 +139,94 @@ async function populateDropdowns() {
     }
 }
 
-// === ЗАГРУЗКА ТАБЛИЦЫ ===
-export async function loadSalesTable(customSort = null) {
+// === ЗАГРУЗКА И РЕНДЕР ===
+export async function loadSalesTable(sortBy = 'date_desc') {
     const tbody = document.querySelector('#salesTable tbody');
-    if (tbody) tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;">⏳ Загрузка...</td></tr>';
-    
-    const sortValue = customSort || document.getElementById('sortSelect')?.value;
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;">⏳ Загрузка...</td></tr>';
+    }
     
     try {
-        const result = await getSalesPaginated(currentPage, currentPageSize, currentFilters, sortValue);
+        let sales = await getAllItems('sales');
+        const products = await getAllItems('products');
+        const clients = await getAllItems('clients');
         
-        renderSalesTable(result.items);
+        const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+        const clientMap = Object.fromEntries(clients.map(c => [String(c.id), c]));
         
-        // Универсальная пагинация
+        //  Применяем фильтры
+        if (currentFilters.type && currentFilters.type !== 'all') {
+            sales = sales.filter(s => s.type === currentFilters.type);
+        }
+        
+        if (currentFilters.product_id) {
+            sales = sales.filter(s => s.product_id == currentFilters.product_id);
+        }
+        
+        // Поиск по клиенту (имя или телефон)
+        if (currentFilters.client_name) {
+            const searchQuery = currentFilters.client_name.toLowerCase();
+            sales = sales.filter(s => {
+                if (!s.client_id) return false;
+                const client = clientMap[String(s.client_id)];
+                if (!client) return false;
+                
+                const clientName = (client.name || '').toLowerCase();
+                const clientPhone = (client.phone || '').replace(/\D/g, '');
+                const queryDigits = searchQuery.replace(/\D/g, '');
+                console.log('🔍 Debug client search:', {
+                    clientMapKeys: Object.keys(clientMap).slice(0, 5),
+                    sampleSaleClientId: sales[0]?.client_id,
+                    lookupResult: clientMap[String(sales[0]?.client_id)]
+                });
+                return clientName.includes(searchQuery) || 
+                       clientPhone.includes(queryDigits) ||
+                       (client.email && client.email.toLowerCase().includes(searchQuery));
+            });
+        }
+        
+        // Фильтр по датам
+        if (currentFilters.date_from) {
+            const fromDate = new Date(currentFilters.date_from);
+            sales = sales.filter(s => new Date(s.transaction_date) >= fromDate);
+        }
+        
+        if (currentFilters.date_to) {
+            const toDate = new Date(currentFilters.date_to);
+            toDate.setHours(23, 59, 59, 999);
+            sales = sales.filter(s => new Date(s.transaction_date) <= toDate);
+        }
+        
+        // Сортировка
+        sales.sort((a, b) => {
+            if (sortBy === 'date_asc') return new Date(a.transaction_date) - new Date(b.transaction_date);
+            if (sortBy === 'date_desc') return new Date(b.transaction_date) - new Date(a.transaction_date);
+            if (sortBy === 'amount_desc') return (b.total_amount || 0) - (a.total_amount || 0);
+            if (sortBy === 'amount_asc') return (a.total_amount || 0) - (b.total_amount || 0);
+            return new Date(b.transaction_date) - new Date(a.transaction_date);
+        });
+        
+        // Пагинация
+        const total = sales.length;
+        const start = (currentPage - 1) * currentPageSize;
+        const pagedSales = sales.slice(start, start + currentPageSize);
+        
+        renderSalesTable(pagedSales);
         renderPagination(
             document.getElementById('pagination'),
             document.getElementById('paginationInfo'),
             currentPage,
-            result.pagination.total_pages,
-            result.pagination.total_items,
+            Math.ceil(total / currentPageSize),
+            total,
             currentPageSize,
-            (page) => { currentPage = page; loadSalesTable(); }
+            (page) => { currentPage = page; loadSalesTable(sortBy); }
         );
-        
-        const table = document.getElementById('salesTable');
-        if (table) table.classList.add('loaded');
         
     } catch (error) {
         console.error('Error loading sales:', error);
         if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#ef4444;">❌ ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#ef4444;padding:20px;">Ошибка загрузки: ${error.message}</td></tr>`;
         }
-        showError('Ошибка загрузки данных');
     }
 }
 
@@ -187,13 +243,12 @@ function renderSalesTable(items) {
     }
     
     Promise.all([getAllItems('products'), getAllItems('clients')]).then(([products, clients]) => {
-        const productMap = Object.fromEntries(products.map(p => [p.id, p]));
-        const clientMap = Object.fromEntries(clients.map(c => [c.id, c]));
+        const productMap = Object.fromEntries(products.map(p => [String(p.id), p]));
+        const clientMap = Object.fromEntries(clients.map(c => [String(c.id), c]));
         
         tbody.innerHTML = items.map((item, index) => {
-            const product = productMap[item.product_id];
-            const client = item.client_id ? (clientMap[item.client_id]?.name || `ID:${item.client_id}`) : '—';
-            
+            const product = productMap[String(item.product_id)];
+            const client = item.client_id ? (clientMap[String(item.client_id)]?.name || `ID:${item.client_id}`) : '—';            
             // Анимация
             const animClass = shouldAnimate ? 'table-row-animate' : '';
             const animDelay = shouldAnimate ? `style="animation-delay:${index * 0.04}s"` : '';
@@ -253,10 +308,12 @@ function setupEventListeners() {
         loadSalesTable();
     });
     
+    // Обновлённый обработчик фильтров
     document.getElementById('btnApplyFilters')?.addEventListener('click', () => {
         currentFilters = {
             type: document.getElementById('filterType')?.value || null,
             product_id: document.getElementById('filterProduct')?.value || null,
+            client_name: document.getElementById('filterClient')?.value || null,  
             date_from: document.getElementById('filterDateFrom')?.value || null,
             date_to: document.getElementById('filterDateTo')?.value || null
         };
@@ -264,14 +321,22 @@ function setupEventListeners() {
         loadSalesTable();
     });
     
+    // Обновлённый сброс фильтров
     document.getElementById('btnResetFilters')?.addEventListener('click', () => {
-        ['filterType', 'filterProduct', 'filterDateFrom', 'filterDateTo'].forEach(id => {
+        ['filterType', 'filterProduct', 'filterClient', 'filterDateFrom', 'filterDateTo'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
         currentFilters = {};
         currentPage = 1;
         loadSalesTable();
+    });
+    
+    // Поиск по Enter
+    document.getElementById('filterClient')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('btnApplyFilters')?.click();
+        }
     });
     
     document.getElementById('sortSelect')?.addEventListener('change', (e) => {

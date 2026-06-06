@@ -1483,5 +1483,459 @@
       "created_at": "2026-06-04T20:55:18.844Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 86,
+    "timestamp": "2026-06-06T21:44:09.574Z",
+    "action": "delete",
+    "store": "calendar_notes",
+    "recordId": 472,
+    "data": {
+      "id": 472,
+      "date": "2026-06-04",
+      "text": "Позвонить клиенту",
+      "color": "#ef4444",
+      "created_at": "2026-05-25T23:01:26Z",
+      "updated_at": "2026-05-25T23:01:26Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 87,
+    "timestamp": "2026-06-06T21:45:10.064Z",
+    "action": "create",
+    "store": "calendar_notes",
+    "recordId": 501,
+    "data": {
+      "date": "2026-06-04",
+      "text": "1232414214",
+      "color": "#3b82f6",
+      "created_at": "2026-06-06T21:45:09.964Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 88,
+    "timestamp": "2026-06-06T21:45:30.750Z",
+    "action": "update",
+    "store": "calendar_notes",
+    "recordId": 501,
+    "data": {
+      "id": 501,
+      "date": "2026-06-04",
+      "text": "1232414214",
+      "color": "#ec4899",
+      "created_at": "2026-06-06T21:45:30.692Z",
+      "updated_at": "2026-06-06T21:45:30.692Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 89,
+    "timestamp": "2026-06-06T21:45:34.785Z",
+    "action": "update",
+    "store": "calendar_notes",
+    "recordId": 378,
+    "data": {
+      "id": 378,
+      "date": "2026-06-04",
+      "text": "h.t.t",
+      "color": "#ec4899",
+      "created_at": "2026-06-06T21:45:34.701Z",
+      "updated_at": "2026-06-06T21:45:34.701Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 90,
+    "timestamp": "2026-06-06T21:45:39.084Z",
+    "action": "update",
+    "store": "calendar_notes",
+    "recordId": 32,
+    "data": {
+      "id": 32,
+      "date": "2026-06-04",
+      "text": "Подготовить отчет",
+      "color": "#ef4444",
+      "created_at": "2026-06-06T21:45:39.060Z",
+      "updated_at": "2026-06-06T21:45:39.060Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 91,
+    "timestamp": "2026-06-06T21:46:03.169Z",
+    "action": "update",
+    "store": "tasks",
+    "recordId": 1,
+    "data": {
+      "id": 1,
+      "title": "Позвонить ",
+      "description": "",
+      "deadline": "",
+      "priority": "not-urgent-important",
+      "status": "done",
+      "related_table": "products",
+      "related_id": 13,
+      "related_display": "Curved-32-715 (МО-1013)",
+      "created_at": "2026-06-04T20:23:04.996Z",
+      "updated_at": "2026-06-04T20:23:04.996Z",
+      "completed_at": "2026-06-06T21:46:03.093Z",
+      "is_archived": 0
+    },
+    "metadata": {}
+  },
+  {
+    "id": 92,
+    "timestamp": "2026-06-06T21:46:05.390Z",
+    "action": "update",
+    "store": "tasks",
+    "recordId": 1,
+    "data": {
+      "id": 1,
+      "title": "Позвонить ",
+      "description": "",
+      "deadline": "",
+      "priority": "not-urgent-important",
+      "status": "todo",
+      "related_table": "products",
+      "related_id": 13,
+      "related_display": "Curved-32-715 (МО-1013)",
+      "created_at": "2026-06-04T20:23:04.996Z",
+      "updated_at": "2026-06-06 21:46:03",
+      "completed_at": null,
+      "is_archived": 0
+    },
+    "metadata": {}
+  },
+  {
+    "id": 93,
+    "timestamp": "2026-06-06T21:46:06.760Z",
+    "action": "update",
+    "store": "tasks",
+    "recordId": 1,
+    "data": {
+      "id": 1,
+      "title": "Позвонить ",
+      "description": "",
+      "deadline": "",
+      "priority": "not-urgent-important",
+      "status": "todo",
+      "related_table": "products",
+      "related_id": 13,
+      "related_display": "Curved-32-715 (МО-1013)",
+      "created_at": "2026-06-04T20:23:04.996Z",
+      "updated_at": "2026-06-06T21:46:06.716Z",
+      "completed_at": null,
+      "is_archived": 1
+    },
+    "metadata": {}
+  },
+  {
+    "id": 94,
+    "timestamp": "2026-06-06T21:49:20.861Z",
+    "action": "update",
+    "store": "tickets",
+    "recordId": 905,
+    "data": {
+      "id": 905,
+      "client_id": null,
+      "client_name": null,
+      "type": "",
+      "contact": "+79260004658",
+      "status": "Выполнена",
+      "description": "Краткое описание",
+      "created_at": "2026-06-02T19:59:29Z",
+      "updated_at": "2026-06-06T21:49:20.749Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 95,
+    "timestamp": "2026-06-06T21:49:27.245Z",
+    "action": "update",
+    "store": "tickets",
+    "recordId": 905,
+    "data": {
+      "id": 905,
+      "client_id": null,
+      "client_name": null,
+      "type": "",
+      "contact": "+79260004658",
+      "status": "Архив",
+      "description": "Краткое описание",
+      "created_at": "2026-06-02T19:59:29Z",
+      "updated_at": "2026-06-06T21:49:27.148Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 96,
+    "timestamp": "2026-06-06T21:49:31.414Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 944,
+    "data": {
+      "id": 944,
+      "client_id": 482,
+      "client_name": "Елена Соколов",
+      "type": "Жалоба",
+      "contact": "",
+      "status": "Выполнена",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-06-02T19:20:30Z",
+      "updated_at": "2026-06-02T19:20:30Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 97,
+    "timestamp": "2026-06-06T22:02:43.673Z",
+    "action": "update",
+    "store": "tickets",
+    "recordId": 307,
+    "data": {
+      "id": 307,
+      "client_id": null,
+      "client_name": null,
+      "type": "Предложение",
+      "contact": "",
+      "status": "Архив",
+      "description": "",
+      "created_at": "2026-05-30T07:30:00Z",
+      "updated_at": "2026-06-06T22:02:43.576Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 98,
+    "timestamp": "2026-06-06T22:02:51.939Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 451,
+    "data": {
+      "id": 451,
+      "client_id": null,
+      "client_name": "Анонимный-2567",
+      "type": "Предложение",
+      "contact": "+79941361843",
+      "status": "Выполнена",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-05-30T05:25:54Z",
+      "updated_at": "2026-06-02 20:21:12"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 99,
+    "timestamp": "2026-06-06T22:02:52.459Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 80,
+    "data": {
+      "id": 80,
+      "client_id": null,
+      "client_name": "Анонимный-6729",
+      "type": "Вопрос",
+      "contact": "+79176398200",
+      "status": "Архив",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-05-27T23:59:17Z",
+      "updated_at": "2026-05-27T23:59:17Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 100,
+    "timestamp": "2026-06-06T22:02:52.911Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 398,
+    "data": {
+      "id": 398,
+      "client_id": 278,
+      "client_name": "Александр Козлов",
+      "type": "Жалоба",
+      "contact": "+79922946841",
+      "status": "Архив",
+      "description": "Краткое описание",
+      "created_at": "2026-05-20T16:00:46Z",
+      "updated_at": "2026-05-20T16:00:46Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 101,
+    "timestamp": "2026-06-06T22:02:53.427Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 932,
+    "data": {
+      "id": 932,
+      "client_id": null,
+      "client_name": "Анонимный-7867",
+      "type": "Претензия",
+      "contact": "+79223432979",
+      "status": "Выполнена",
+      "description": "Краткое описание",
+      "created_at": "2026-05-15T01:55:49Z",
+      "updated_at": "2026-05-15T01:55:49Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 102,
+    "timestamp": "2026-06-06T22:02:53.912Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 223,
+    "data": {
+      "id": 223,
+      "client_id": 191,
+      "client_name": "Александр Козлов",
+      "type": "Заказ",
+      "contact": "",
+      "status": "Открыта",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-05-12T10:12:57Z",
+      "updated_at": "2026-05-12T10:12:57Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 103,
+    "timestamp": "2026-06-06T22:02:54.330Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 114,
+    "data": {
+      "id": 114,
+      "client_id": null,
+      "client_name": "Анонимный-4867",
+      "type": "Жалоба",
+      "contact": "+79775689703",
+      "status": "Выполнена",
+      "description": "вчфслыяюмшдрфидрфышгпарыфот.зампфыяриосшыщпшднврл\nпышвимшдфигшмиыф\nырпавываявчпаспршощжжшдглноавсп\nдлинный текст для проверки обрезки и прокрутки в модальном окне",
+      "created_at": "2026-05-13T15:53:21Z",
+      "updated_at": "2026-05-13T15:53:21Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 104,
+    "timestamp": "2026-06-06T22:03:05.117Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 1003,
+    "data": {
+      "id": 1003,
+      "client_id": null,
+      "client_name": null,
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "123412421\n",
+      "created_at": "2026-06-04T20:55:18.844Z",
+      "updated_at": "2026-06-04 20:55:18"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 105,
+    "timestamp": "2026-06-06T22:03:05.648Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 1002,
+    "data": {
+      "id": 1002,
+      "client_id": null,
+      "client_name": null,
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "123141412512",
+      "created_at": "2026-06-04T20:47:26.819Z",
+      "updated_at": "2026-06-04 20:47:26"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 106,
+    "timestamp": "2026-06-06T22:03:06.063Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 1001,
+    "data": {
+      "id": 1001,
+      "client_id": null,
+      "client_name": "Елена Смирнов",
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "",
+      "created_at": "2026-06-04T20:09:54.941Z",
+      "updated_at": "2026-06-04 20:09:54"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 107,
+    "timestamp": "2026-06-06T22:03:06.572Z",
+    "action": "delete",
+    "store": "tickets",
+    "recordId": 724,
+    "data": {
+      "id": 724,
+      "client_id": null,
+      "client_name": "Анонимный-6492",
+      "type": "Вопрос",
+      "contact": "+79403014881",
+      "status": "Архив",
+      "description": "Краткое описание",
+      "created_at": "2026-06-02T22:43:11Z",
+      "updated_at": "2026-06-02 20:21:12"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 108,
+    "timestamp": "2026-06-06T22:30:14.056Z",
+    "action": "create",
+    "store": "sales",
+    "recordId": 1004,
+    "data": {
+      "client_id": 157,
+      "product_id": 1006,
+      "quantity": 1,
+      "unit_price": 333,
+      "total_amount": 333,
+      "transaction_date": "2026-06-07T01:29",
+      "comment": "",
+      "type": "sale",
+      "is_bulk": false,
+      "created_at": "2026-06-06T22:30:13.956Z",
+      "updated_at": "2026-06-06T22:30:13.956Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 109,
+    "timestamp": "2026-06-06T22:30:14.654Z",
+    "action": "update",
+    "store": "products",
+    "recordId": 1006,
+    "data": {
+      "id": 1006,
+      "sku": "33-1006",
+      "category": "33333",
+      "name": "33333",
+      "description": "",
+      "price": 333,
+      "quantity": 3319,
+      "is_active": true,
+      "created_at": "2026-06-04T20:44:38.168Z",
+      "updated_at": "2026-06-06T22:30:14.365Z"
+    },
+    "metadata": {}
   }
 ]

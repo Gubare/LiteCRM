@@ -144,7 +144,7 @@
         <div class="settings-section">
             <h2>Интерфейс</h2>
             
-            <div class="setting-item">
+            <!-- <div class="setting-item">
                 <div class="setting-info">
                     <h3>Подсказки по категориям клиентов</h3>
                     <p>Показывать всплывающие подсказки с описанием сегментов</p>
@@ -153,7 +153,7 @@
                     <input type="checkbox" id="toggleTooltips" checked>
                     <span class="toggle-slider"></span>
                 </label>
-            </div>
+            </div> -->
             
             <div class="setting-item">
                 <div class="setting-info">
@@ -177,39 +177,6 @@
                     <option value="1c">1С:Предприятие</option>
                     <option value="corporate">Корпоративная</option>
                     <option value="dark">Тёмная (В разработке)</option>
-                </select>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>Названия в меню</h3>
-                    <p>Показывать текст рядом с иконками в боковой панели</p>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="toggleNavText" checked>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-            <div class="setting-info">
-                <h3>Анимация появления записей</h3>
-                <p>Строки в таблицах появляются поочередно с задержкой</p>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleRowAnimation" checked>
-                <span class="toggle-slider"></span>
-            </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>Модификатор выделения</h3>
-                    <p>Клавиша для добавления нескольких записей</p>
-                </div>
-                <select id="selectionModifier" class="form-control" style="width: 130px; height: 38px;">
-                    <option value="shift">Shift</option>
-                    <option value="ctrl">Ctrl / Cmd</option>
                 </select>
             </div>
 
@@ -483,7 +450,6 @@
                 </div>
             </div>
         </div>
-
         <div class="settings-section" id="authSection">
             <h3>Безопасность</h3>
             <div class="form-group">
@@ -499,13 +465,74 @@
             <div id="passwordStatus" style="margin-top: 10px; font-size: 13px;"></div>
         </div>
 
+        <!-- Удаление приложения -->
+        <div class="settings-section">
+            <h3>Управление приложением</h3>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Удалить приложение</h3>
+                    <p>Полностью удалить программу и все данные с устройства</p>
+                </div>
+                <button id="btnUninstall" class="btn-action delete" style="width: auto; padding: 8px 16px;">
+                    Удалить приложение
+                </button>
+            </div>
+            <small style="color: #94a3b8; margin-top: 5px; display: block;">
+                Все данные будут безвозвратно удалены. Это действие нельзя отменить.
+            </small>
+        </div>
+
         <!-- Секция: О приложении -->
         <div class="settings-section">
             <h2>О приложении</h2>
             <div class="setting-item">
                 <div class="setting-info">
                     <h3>CRM для малого бизнеса</h3>
-                    <p>Версия 1.1.0 | NeutralinoJS + IndexedDB</p>
+                    <p>Версия 1.1.0 | NeutralinoJS + SQLite</p>
+                </div>
+            </div>
+            
+            <!-- Документы (Markdown файлы) -->
+            <div class="docs-section" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: var(--color-text);">Документация</h3>
+                
+                <!-- Аннотация -->
+                <div class="markdown-accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('annotation-content')">
+                        <span class="accordion-title">Аннотация к соглашениям</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="annotation-content" class="accordion-content" style="display: none;">
+                        <div class="markdown-body" id="annotation-markdown">
+                            <p style="color: #64748b; text-align: center; padding: 20px;">Загрузка...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Пользовательское соглашение -->
+                <div class="markdown-accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('agreement-content')">
+                        <span class="accordion-title">Пользовательское соглашение</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="agreement-content" class="accordion-content" style="display: none;">
+                        <div class="markdown-body" id="agreement-markdown">
+                            <p style="color: #64748b; text-align: center; padding: 20px;">Загрузка...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Политика конфиденциальности -->
+                <div class="markdown-accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('privacy-content')">
+                        <span class="accordion-title">Политика конфиденциальности</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="privacy-content" class="accordion-content" style="display: none;">
+                        <div class="markdown-body" id="privacy-markdown">
+                            <p style="color: #64748b; text-align: center; padding: 20px;">Загрузка...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -916,6 +943,166 @@
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
+
+    document.getElementById('btnUninstall')?.addEventListener('click', async () => {
+        // 1. Подтверждение удаления
+        const confirmed = await confirmModal(
+            'Удаление приложения',
+            'Вы уверены, что хотите удалить приложение?\n\nВсе данные (клиенты, продажи, настройки) будут безвозвратно удалены.',
+            { type: 'danger', confirmText: 'Да, удалить', cancelText: 'Отмена' }
+        );
+        
+        if (!confirmed) return;
+        
+        try {
+            // ✅ Получаем путь к папке установки (работает в Neutralino v4+)
+            const result = await Neutralino.os.execCommand('cd');
+            const appDir = result.stdOut.trim();
+            const uninstallerPath = `${appDir}\\unins000.exe`;
+            
+            // ✅ Проверка существования файла (в Neutralino нет метода .exists)
+            try {
+                await Neutralino.filesystem.getStats(uninstallerPath);
+            } catch {
+                 showToast('⚠️ Деинсталлятор не найден. Возможно, это портативная версия или приложение запущено из исходников.', 'warning');
+                return;
+            }
+            
+            // ✅ Запуск деинсталлятора Inno Setup
+            // /SILENT — скрывает мастер установки, но показывает прогресс
+            // /VERYSILENT — полностью тихое удаление (без окон)
+            await Neutralino.os.execCommand(`"${uninstallerPath}" /SILENT`);
+            
+            // ✅ Немедленно закрываем приложение
+            Neutralino.app.exit();
+            
+        } catch (error) {
+            console.error('❌ Uninstall error:', error);
+            showToast('Ошибка удаления: ' + error.message, 'error');
+        }
+    });
+
+    function parseMarkdown(markdown) {
+        if (!markdown) return '';
+        
+        let html = markdown;
+        
+        // Заголовки
+        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+        
+        // Жирный текст
+        html = html.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>');
+        html = html.replace(/__(.*)__/gim, '<strong>$1</strong>');
+        
+        // Курсив
+        html = html.replace(/\*(.*)\*/gim, '<em>$1</em>');
+        html = html.replace(/_(.*)_/gim, '<em>$1</em>');
+        
+        // Код (inline)
+        html = html.replace(/`([^`]+)`/gim, '<code>$1</code>');
+        
+        // Блоки кода
+        html = html.replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>');
+        
+        // Цитаты
+        html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+        
+        // Ссылки
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank">$1</a>');
+        
+        // Изображения
+        html = html.replace(/!\[([^\]]+)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1">');
+        
+        // Списки (неупорядоченные)
+        html = html.replace(/^\- (.*$)/gim, '<ul><li>$1</li></ul>');
+        html = html.replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>');
+        
+        // Списки (упорядоченные)
+        html = html.replace(/^\d+\. (.*$)/gim, '<ol><li>$1</li></ol>');
+        
+        // Объединение соседних li
+        html = html.replace(/<\/ul>\s*<ul>/gim, '');
+        html = html.replace(/<\/ol>\s*<ol>/gim, '');
+        
+        // Параграфы (простая эвристика)
+        html = html.replace(/\n\n/gim, '</p><p>');
+        html = '<p>' + html + '</p>';
+        
+        // Убираем пустые параграфы
+        html = html.replace(/<p><\/p>/gim, '');
+        html = html.replace(/<p>(<h[1-6]>)/gim, '$1');
+        html = html.replace(/(<\/h[1-6]>)<\/p>/gim, '$1');
+        html = html.replace(/<p>(<ul>)/gim, '$1');
+        html = html.replace(/(<\/ul>)<\/p>/gim, '$1');
+        html = html.replace(/<p>(<ol>)/gim, '$1');
+        html = html.replace(/(<\/ol>)<\/p>/gim, '$1');
+        html = html.replace(/<p>(<pre>)/gim, '$1');
+        html = html.replace(/(<\/pre>)<\/p>/gim, '$1');
+        html = html.replace(/<p>(<blockquote>)/gim, '$1');
+        html = html.replace(/(<\/blockquote>)<\/p>/gim, '$1');
+        
+        return html;
+    }
+
+    // Переключение accordion
+    window.toggleAccordion = function(contentId) {
+        const content = document.getElementById(contentId);
+        const header = content.previousElementSibling;
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            header.classList.add('active');
+            
+            // Загружаем контент, если ещё не загружен
+            if (content.querySelector('.markdown-body').innerHTML.includes('Загрузка...')) {
+                loadMarkdownFile(contentId);
+            }
+        } else {
+            content.style.display = 'none';
+            header.classList.remove('active');
+        }
+    };
+
+    // Загрузка markdown файла
+    async function loadMarkdownFile(contentId) {
+        const fileName = contentId.replace('-content', '');
+        const markdownElement = document.getElementById(`${fileName}-markdown`);
+        
+        try {
+            let filePath;
+            
+            // Маппинг ID файлов к именам
+            const fileMap = {
+                'readme': 'README.md',
+                'annotation': 'АННОТАЦИЯ_К_СОГЛАШЕНИЯМ.md',
+                'agreement': 'ПОЛЬЗОВАТЕЛЬСКОЕ_СОГЛАШЕНИЕ.md',
+                'privacy': 'ПОЛИТИКА_КОНФИДЕНЦИАЛЬНОСТИ.md',
+                'license': 'LICENSE'
+            };
+            
+            filePath = fileMap[fileName] || `${fileName}.md`;
+            
+            // Читаем файл через Neutralino
+            if (typeof Neutralino !== 'undefined' && Neutralino.filesystem) {
+                const content = await Neutralino.filesystem.readFile(filePath);
+                const html = parseMarkdown(content);
+                markdownElement.innerHTML = html;
+            } else {
+                // Fallback для веба
+                const response = await fetch(filePath);
+                const content = await response.text();
+                const html = parseMarkdown(content);
+                markdownElement.innerHTML = html;
+            }
+        } catch (error) {
+            console.error(`Error loading ${fileName}:`, error);
+            markdownElement.innerHTML = `<p style="color: #ef4444; text-align: center;">Ошибка загрузки файла: ${error.message}</p>`;
+        }
+    }
+
 </script>    
 </body>
 </html>

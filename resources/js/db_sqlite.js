@@ -685,7 +685,7 @@ export async function createBulkAdjustment(data, retry = true) {
 
 // Обновить остаток товара (вспомогательная функция)
 async function updateProductStock(productId, quantityChange) {
-    // 🔥 ВАЖНО: Приводим к числу!
+    //  Приводим к числу
     const numericId = typeof productId === 'number' ? productId : parseInt(productId);
     
     console.log(`🔄 Updating stock: product_id=${numericId} (was ${productId}), change=${quantityChange}`);
