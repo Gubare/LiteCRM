@@ -8,6 +8,7 @@ OutputDir=..\output\installer
 OutputBaseFilename=CRM-Setup
 Compression=lzma
 SolidCompression=yes
+LicenseFile=LICENSE.rtf
 
 [Languages]
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
@@ -22,7 +23,10 @@ Source: "..\resources\*"; DestDir: "{app}\resources"; Flags: recursesubdirs crea
 ; Конфигурация
 Source: "..\neutralino.config.json"; DestDir: "{app}"; Flags: ignoreversion
 
-; Дополнительные файлы (если есть)
+; Лицензионные документы (копируем для ознакомления)
+Source: "LICENSE.rtf"; DestDir: "{app}\docs"; DestName: "Лицензионное_соглашение.rtf"; Flags: ignoreversion
+
+; Дополнительные файлы
 Source: "..\package.json"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
