@@ -10,7 +10,7 @@ import {
 import { renderPagination } from './partials/pagination.js';
 import { SelectionManager } from './partials/selectionManager.js';
 import { openModal, closeModal, confirmModal } from './partials/modalManager.js';
-
+import { exportToCSV, showExportDialog, getSelectedRowsData, getVisibleRowsData } from './export-utils.js';
 
 // === СОСТОЯНИЕ ===
 let currentPage = 1;
@@ -525,4 +525,77 @@ function showToast(message) {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+window.handleExport = async function() {
+    const columns = [
+        { key: 'id', label: 'ID' },
+        { key: 'name', label: 'Имя' },
+        { key: 'phone', label: 'Телефон' },
+        { key: 'email', label: 'Email' },
+        { key: 'purchase_count', label: 'Покупки' },
+        { key: 'total_spent', label: 'Сумма' },
+        { key: 'avg_check', label: 'Ср. чек' },
+        { key: 'segment', label: 'Сегмент' }
+    ];
+    
+    showExportDialog(async (mode) => {
+        let dataToExport = [];
+        let filename = 'clients';
+        
+        try {
+            switch (mode) {
+                case 'selected': {
+                    dataToExport = getSelectedRowsData('#clientTable', columns);
+                    if (dataToExport.length === 0) {
+                        alert('⚠️ Нет выделенных строк');
+                        return;
+                    }
+                    filename = 'clients_selected';
+                    break;
+                }
+                
+                case 'visible': {
+
+                    dataToExport = getVisibleRowsData('#clientTable', columns);
+                    if (dataToExport.length === 0) {
+                        alert('⚠️ Нет отображённых строк');
+                        return;
+                    }
+                    filename = 'clients_filtered';
+                    break;
+                }
+                
+                case 'all': {
+                    const allRows = document.querySelectorAll('#clientTable tbody tr');
+                    dataToExport = extractRowsDataFromDOM(allRows, columns);
+                    filename = 'clients_all';
+                    break;
+                }
+            }
+            
+            exportToCSV(dataToExport, columns, filename, {
+                addTotalRow: true,
+                tableName: 'clients'
+            });
+            
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('❌ Ошибка экспорта: ' + error.message);
+        }
+    });
+};
+
+// Вспомогательная функция (нужна для режима 'all')
+function extractRowsDataFromDOM(rows, columns) {
+    return Array.from(rows).map(row => {
+        const cells = row.querySelectorAll('td');
+        const item = {};
+        cells.forEach((cell, index) => {
+            if (columns[index]) {
+                const key = columns[index].key;
+                item[key] = cell.innerText.trim();
+            }
+        });
+        return item;
+    });
 }

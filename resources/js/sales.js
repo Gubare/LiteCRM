@@ -149,7 +149,6 @@ export async function loadSalesTable(sortBy = 'date_desc') {
     }
     
     try {
-        // 🔥 ИСПОЛЬЗУЕМ ХЕЛПЕР ВМЕСТО getAllItems
         const sales = await getSalesWithItems({
             type: currentFilters.type !== 'all' ? currentFilters.type : null
         });
@@ -158,7 +157,6 @@ export async function loadSalesTable(sortBy = 'date_desc') {
         const clients = await getAllItems('clients');
         const clientMap = Object.fromEntries(clients.map(c => [String(c.id), c]));
         
-        // 🔥 ФИЛЬТРАЦИЯ (теперь sale.items - это массив)
         let filteredSales = sales;
         
         if (currentFilters.product_id) {
@@ -245,13 +243,10 @@ function renderSalesTable(sales) {
         const animClass = shouldAnimate ? 'table-row-animate' : '';
         const animDelay = shouldAnimate ? `style="animation-delay:${index * 0.04}s"` : '';
         
-        // 🔥 Получаем клиента
         const client = sale.client_id ? sale.client_name || `ID:${sale.client_id}` : '—';
         
-        // 🔥 Получаем количество товаров в чеке
         const itemsCount = sale.items?.length || 0;
         
-        // 🔥 Получаем первый товар для отображения (или "N товаров")
         let productDisplay = '-';
         if (itemsCount === 1) {
             const item = sale.items[0];
@@ -420,7 +415,6 @@ async function handleSingleSaleSubmit() {
         comment = document.getElementById('saleComment')?.value || '';
     }
     
-    // 🔥 СОБИРАЕМ НЕСКОЛЬКО ТОВАРОВ
     const items = collectSaleItems();
     
     if (items.length === 0) { 
@@ -438,9 +432,9 @@ async function handleSingleSaleSubmit() {
         transaction_date: document.getElementById('saleDate')?.value || new Date().toISOString(),
         comment,
         type: document.getElementById('saleType')?.value,
-        payment_type: document.getElementById('salePaymentType')?.value,  // 🔥 Добавлено
+        payment_type: document.getElementById('salePaymentType')?.value,  
         total_amount: totalAmount,
-        items: items  // 🔥 ПЕРЕДАЁМ МАССИВ ТОВАРОВ
+        items: items  
     };
     
     if (formData.type === 'writeoff') {

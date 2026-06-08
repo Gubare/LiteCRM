@@ -664,7 +664,6 @@ export async function createSale(saleData) {
         
         db.run('COMMIT');
         
-        // 🔥 ДОБАВИТЬ: Сохранение БД на диск после успешной транзакции
         if (typeof Neutralino !== 'undefined' && shouldSaveToFile) {
             await saveDatabaseToFile();
         }

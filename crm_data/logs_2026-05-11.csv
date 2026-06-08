@@ -1,7 +1,0 @@
-ID,Дата,Действие,Таблица,ID записи,Данные
-1,"2026-05-11T15:17:47.925Z",create,clients,9,"{""name"":""Петр"",""phone"":"""",""email"":"""",""total_spent"":0,""purchase_count"":0,""created_at"":""2026-05-11T15:17:47.921Z"",""updated_at"":""2026-05-11T15:17:47.921Z""}"
-2,"2026-05-11T15:18:34.228Z",create,clients,10,"{""name"":""Сергей"",""phone"":"""",""email"":"""",""total_spent"":0,""purchase_count"":0,""created_at"":""2026-05-11T15:18:34.218Z"",""updated_at"":""2026-05-11T15:18:34.218Z""}"
-3,"2026-05-11T15:20:20.926Z",update,clients,10,"{""name"":""Сергей"",""phone"":""23214141214341"",""email"":"""",""total_spent"":0,""purchase_count"":0,""created_at"":""2026-05-11T15:18:34.218Z"",""updated_at"":""2026-05-11T15:20:20.922Z"",""id"":10}"
-4,"2026-05-11T15:21:33.684Z",delete,clients,10,"null"
-5,"2026-05-11T15:23:52.533Z",create,clients,11,"{""name"":""Николай"",""phone"":"""",""email"":"""",""total_spent"":0,""purchase_count"":0,""created_at"":""2026-05-11T15:23:52.530Z"",""updated_at"":""2026-05-11T15:23:52.530Z""}"
-6,"2026-05-11T15:33:54.389Z",create,clients,12,"{""name"":""Сергей"",""phone"":"""",""email"":"""",""total_spent"":0,""purchase_count"":0,""created_at"":""2026-05-11T15:33:54.385Z"",""updated_at"":""2026-05-11T15:33:54.385Z""}"

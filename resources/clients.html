@@ -120,7 +120,7 @@
             <div class="toolbar-actions" style="margin-bottom: 20px;">
                 <button class="btn-primary" style="padding: 10px 20px; font-size: 15px;" onclick="openClientModal()">Добавить клиента
                 </button>
-            </div>
+            </div>         
         <!-- Панель управления -->
         <div class="table-toolbar">
             <div class="toolbar-filters">
@@ -152,8 +152,9 @@
                     <button id="btnResetFilters" class="btn-action">Сброс</button>
                 </div>
             <div class="toolbar-actions">
-                <button class="btn-primary" onclick="openClientModal()">Добавить клиента</button>
-            </div>
+                <button class="btn-action" onclick="handleExport()" title="Экспорт данных" style="padding: 8px 12px;">
+                    Экспорт
+                </button>            </div>
         </div>
 
         <!-- Панель массовых действий -->

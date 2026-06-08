@@ -2,6 +2,7 @@
 import { getAllItems, addItem, updateItem, deleteItem } from './db.js';
 import { getSetting, updateSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
+import { exportToCSV, showExportDialog, getSelectedRowsData, getVisibleRowsData } from './export-utils.js';
 // === СПИСОК КАТЕГОРИЙ (можно расширять) ===
 const PREDEFINED_CATEGORIES = [
     'Телефон',
@@ -138,7 +139,7 @@ async function loadProducts() {
         console.log('✅ Found tbody');
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">⏳ Загрузка...</td></tr>';
     } else {
-        console.error('❌ tbody not found!');
+        console.error('tbody not found!');
         return;
     }
     
@@ -377,7 +378,7 @@ window.openEditProduct = async function(id) {
     try {
         const products = await getAllItems('products');
         const product = products.find(p => p.id === id);
-        if (!product) { showToast('❌ Товар не найден'); return; }
+        if (!product) { showToast('Товар не найден'); return; }
         
         document.getElementById('editProductId').value = product.id;
         document.getElementById('editProductSku').value = product.sku; 
@@ -391,7 +392,7 @@ window.openEditProduct = async function(id) {
         
         openModal('editProductModal');
     } catch (err) {
-        showToast('❌ Ошибка: ' + err.message);
+        showToast('Ошибка: ' + err.message);
     }
 };
 
@@ -401,10 +402,10 @@ window.deleteProduct = async function(id) {
     try {
         await deleteItem('products', id);
         if (window.saveDataToFile) await window.saveDataToFile();
-        showToast('✅ Товар удален');
+        showToast('Товар удален');
         loadProducts();
     } catch (err) {
-        showToast('❌ Ошибка: ' + err.message);
+        showToast('Ошибка: ' + err.message);
     }
 };
 
@@ -425,10 +426,10 @@ window.deleteSelected = async function() {
         }
         if (window.saveDataToFile) await window.saveDataToFile();
         window.clearSelection();
-        showToast(`✅ Удалено товаров: ${count}`);
+        showToast(`Удалено товаров: ${count}`);
         loadProducts();
     } catch (err) {
-        showToast('❌ Ошибка: ' + err.message);
+        showToast('Ошибка: ' + err.message);
     }
 };
 
@@ -454,7 +455,7 @@ function setupEventListeners() {
                 loadProducts();
                 
                 // Показываем уведомление
-                showToast(`✅ Порог низкого остатка установлен: ${newValue}`);
+                showToast(`Порог низкого остатка установлен: ${newValue}`);
             }
         });
         
@@ -537,13 +538,13 @@ async function handleCreateProduct() {
         await addItem('products', formData);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showToast(`✅ Товар добавлен (SKU: ${finalSku})`);
+        showToast(`Товар добавлен (SKU: ${finalSku})`);
         document.getElementById('createProductForm').reset();
         closeModal('createProductModal');
         loadProducts();
         populateCategoryDropdowns(); // Обновляем список категорий
     } catch (error) {
-        showToast('❌ Ошибка: ' + error.message);
+        showToast('Ошибка: ' + error.message);
     }
 }
 
@@ -564,12 +565,12 @@ async function handleEditProduct() {
         await updateItem('products', id, updates);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showToast('✅ Товар обновлен');
+        showToast('Товар обновлен');
         closeModal('editProductModal');
         loadProducts();
         populateCategoryDropdowns();
     } catch (error) {
-        showToast('❌ Ошибка: ' + error.message);
+        showToast('Ошибка: ' + error.message);
     }
 }
 
@@ -598,6 +599,79 @@ window.closeModalOnOverlay = function(event, modalId) {
         window.closeModal(modalId);
     }
 };
+
+/**
+ * Обработчик экспорта данных товаров
+ */
+window.handleExport = async function() {
+    // Конфигурация колонок  для Товаров
+    const columns = [
+        { key: 'sku', label: 'SKU' },
+        { key: 'category', label: 'Категория' },
+        { key: 'name', label: 'Название' },
+        { key: 'price', label: 'Цена', format: 'currency' },
+        { key: 'quantity', label: 'Остаток', format: 'number' },
+        { key: 'is_active', label: 'Статус' } // Будет преобразован в "В продаже"/"Снят"
+    ];
+    
+    showExportDialog(async (mode) => {
+        let dataToExport = [];
+        let filename = 'products';
+        
+        try {
+            // Загружаем данные из БД
+            const allProducts = await getAllItems('products');
+            
+            // Подготавливаем данные (преобразуем булевы значения в текст)
+            const preparedData = allProducts.map(p => ({
+                ...p,
+                is_active: p.is_active ? 'В продаже' : 'Снят',
+                price: parseFloat(p.price) || 0,
+                quantity: parseInt(p.quantity) || 0
+            }));
+
+            switch (mode) {
+                case 'selected':
+                    dataToExport = getSelectedRowsData('#productTable', columns);
+                    if (dataToExport.length === 0) {
+                        alert('Нет выделенных строк');
+                        return;
+                    }
+                    filename = 'products_selected';
+                    break;
+                    
+                case 'visible':
+                    // Для товаров логика фильтрации может отличаться, 
+                    // но принцип тот же: берем allProducts и фильтруем по текущим условиям
+                    // (Здесь упрощенно берем всё, так как фильтрация в товарах часто сложная)
+                    dataToExport = getVisibleRowsData('#productTable', columns);
+                    if (dataToExport.length === 0) {
+                        alert('Нет отображённых строк');
+                        return;
+                    }
+                    filename = 'products_filtered';
+                    break;
+                    
+                case 'all':
+                    dataToExport = preparedData;
+                    filename = 'products_all';
+                    break;
+            }
+            
+            exportToCSV(dataToExport, columns, filename);
+            
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('Ошибка экспорта: ' + error.message);
+        }
+    });
+};
+
+
+exportToCSV(dataToExport, columns, filename, {
+    addTotalRow: false,  // ← Итоговая строка НЕ добавляется
+    tableName: 'products'
+});
 
 // Глобальный экспорт
 window.openEditProduct = window.openEditProduct;

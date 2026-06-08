@@ -320,17 +320,9 @@ window.handleDeleteClient = async function(id) {
 };
 
 window.saveDataToFile = async function() {
-    try {
-        const backup = await exportAllData(); // Уже включает sales и bulk_adjustments
-        const filePath = 'crm_data/backup.json';
-        try { await Neutralino.filesystem.createDirectory('crm_data'); } catch(e){}
-        await Neutralino.filesystem.writeFile(filePath, backup);
-        console.log('Full backup saved');
-        return true;
-    } catch (error) {
-        console.error('Backup error:', error);
-        return false;
-    }
+    // Функция отключена - SQLite сохраняет данные автоматически
+    console.log('💾 Save disabled - using SQLite auto-save');
+    return true;
 };
 
 // resources/js/main.js
