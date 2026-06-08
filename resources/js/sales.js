@@ -8,6 +8,7 @@ import {
     getSalesPaginated,
     deleteItem,
     getItemById,
+    getSalesWithItems,
     updateItem,
     getAllItems
 } from './db_sqlite.js';
@@ -23,6 +24,7 @@ let currentPage = 1;
 let currentPageSize = 10;
 let currentFilters = {};
 let selectionManager = null;
+let productOptions = ''; 
 
 // Маппинг типов для отображения (английский ключ → русский текст + класс)
 const TYPE_LABELS = {
@@ -101,7 +103,8 @@ async function populateDropdowns() {
             getAllItems('clients')
         ]);
         
-        const productOptions = products
+        // Заполняем глобальную переменную
+        productOptions = products
             .filter(p => p.is_active)
             .map(p => `<option value="${p.id}" data-price="${p.price}" data-stock="${p.quantity}">
                 ${p.sku} — ${p.name} (ост.: ${p.quantity}, ${p.price}₽)
@@ -115,8 +118,7 @@ async function populateDropdowns() {
         
         fillSelect('filterProduct', '<option value="">Все товары</option>', productOptions);
         fillSelect('saleProduct', '<option value="">Выберите товар...</option>', productOptions);
-        fillSelect('bulkProduct', '<option value="">Выберите товар...</option>', productOptions);
-        
+        fillSelect('bulkProduct', '<option value="">Выберите товар...</option>', productOptions);        
         const clientOptions = clients.map(c => 
             `<option value="${c.id}">${c.name} (${c.phone || c.email || 'нет контакта'})</option>`
         ).join('');
@@ -147,38 +149,35 @@ export async function loadSalesTable(sortBy = 'date_desc') {
     }
     
     try {
-        let sales = await getAllItems('sales');
+        // 🔥 ИСПОЛЬЗУЕМ ХЕЛПЕР ВМЕСТО getAllItems
+        const sales = await getSalesWithItems({
+            type: currentFilters.type !== 'all' ? currentFilters.type : null
+        });
+        
         const products = await getAllItems('products');
         const clients = await getAllItems('clients');
-        
-        const productMap = Object.fromEntries(products.map(p => [p.id, p]));
         const clientMap = Object.fromEntries(clients.map(c => [String(c.id), c]));
         
-        //  Применяем фильтры
-        if (currentFilters.type && currentFilters.type !== 'all') {
-            sales = sales.filter(s => s.type === currentFilters.type);
-        }
+        // 🔥 ФИЛЬТРАЦИЯ (теперь sale.items - это массив)
+        let filteredSales = sales;
         
         if (currentFilters.product_id) {
-            sales = sales.filter(s => s.product_id == currentFilters.product_id);
+            filteredSales = filteredSales.filter(sale => 
+                sale.items.some(item => String(item.product_id) === String(currentFilters.product_id))
+            );
         }
         
-        // Поиск по клиенту (имя или телефон)
         if (currentFilters.client_name) {
             const searchQuery = currentFilters.client_name.toLowerCase();
-            sales = sales.filter(s => {
-                if (!s.client_id) return false;
-                const client = clientMap[String(s.client_id)];
+            filteredSales = filteredSales.filter(sale => {
+                if (!sale.client_id) return false;
+                const client = clientMap[String(sale.client_id)];
                 if (!client) return false;
                 
                 const clientName = (client.name || '').toLowerCase();
                 const clientPhone = (client.phone || '').replace(/\D/g, '');
                 const queryDigits = searchQuery.replace(/\D/g, '');
-                console.log('🔍 Debug client search:', {
-                    clientMapKeys: Object.keys(clientMap).slice(0, 5),
-                    sampleSaleClientId: sales[0]?.client_id,
-                    lookupResult: clientMap[String(sales[0]?.client_id)]
-                });
+                
                 return clientName.includes(searchQuery) || 
                        clientPhone.includes(queryDigits) ||
                        (client.email && client.email.toLowerCase().includes(searchQuery));
@@ -188,17 +187,17 @@ export async function loadSalesTable(sortBy = 'date_desc') {
         // Фильтр по датам
         if (currentFilters.date_from) {
             const fromDate = new Date(currentFilters.date_from);
-            sales = sales.filter(s => new Date(s.transaction_date) >= fromDate);
+            filteredSales = filteredSales.filter(s => new Date(s.transaction_date) >= fromDate);
         }
         
         if (currentFilters.date_to) {
             const toDate = new Date(currentFilters.date_to);
             toDate.setHours(23, 59, 59, 999);
-            sales = sales.filter(s => new Date(s.transaction_date) <= toDate);
+            filteredSales = filteredSales.filter(s => new Date(s.transaction_date) <= toDate);
         }
         
         // Сортировка
-        sales.sort((a, b) => {
+        filteredSales.sort((a, b) => {
             if (sortBy === 'date_asc') return new Date(a.transaction_date) - new Date(b.transaction_date);
             if (sortBy === 'date_desc') return new Date(b.transaction_date) - new Date(a.transaction_date);
             if (sortBy === 'amount_desc') return (b.total_amount || 0) - (a.total_amount || 0);
@@ -207,9 +206,9 @@ export async function loadSalesTable(sortBy = 'date_desc') {
         });
         
         // Пагинация
-        const total = sales.length;
+        const total = filteredSales.length;
         const start = (currentPage - 1) * currentPageSize;
-        const pagedSales = sales.slice(start, start + currentPageSize);
+        const pagedSales = filteredSales.slice(start, start + currentPageSize);
         
         renderSalesTable(pagedSales);
         renderPagination(
@@ -231,59 +230,66 @@ export async function loadSalesTable(sortBy = 'date_desc') {
 }
 
 // === РЕНДЕР ТАБЛИЦЫ ===
-function renderSalesTable(items) {
+function renderSalesTable(sales) {
     const shouldAnimate = getSetting('ui.animateRows');
     const tbody = document.querySelector('#salesTable tbody');
     
     if (!tbody) return;
     
-    if (items.length === 0) {
+    if (sales.length === 0) {
         tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;"> Нет записей</td></tr>';
         return;
     }
     
-    Promise.all([getAllItems('products'), getAllItems('clients')]).then(([products, clients]) => {
-        const productMap = Object.fromEntries(products.map(p => [String(p.id), p]));
-        const clientMap = Object.fromEntries(clients.map(c => [String(c.id), c]));
+    tbody.innerHTML = sales.map((sale, index) => {
+        const animClass = shouldAnimate ? 'table-row-animate' : '';
+        const animDelay = shouldAnimate ? `style="animation-delay:${index * 0.04}s"` : '';
         
-        tbody.innerHTML = items.map((item, index) => {
-            const product = productMap[String(item.product_id)];
-            const client = item.client_id ? (clientMap[String(item.client_id)]?.name || `ID:${item.client_id}`) : '—';            
-            // Анимация
-            const animClass = shouldAnimate ? 'table-row-animate' : '';
-            const animDelay = shouldAnimate ? `style="animation-delay:${index * 0.04}s"` : '';
-            
-            // Комментарий с обрезкой
-            const commentHtml = createTruncatableHtml(item.comment, 25, 'Комментарий');
-            
-            // Сумма и тип
-            const isPositive = item.type === 'restock';
-            const sumClass = isPositive ? 'color:#166534' : 'color:#991b1b';
-            const sumSign = isPositive ? '+' : '';
-            const typeInfo = TYPE_LABELS[item.type] || { text: item.type, class: 'badge-gray' };
-            
-            // Фон для записей с периодом
-            const hasPeriod = item.comment?.includes('📅 Период:');
-            const rowBg = hasPeriod ? 'background:#f0f9ff' : '';
-            
-            return `
-            <tr data-id="${item.id}" class="${animClass}" ${animDelay} style="${rowBg}">
-                <td><strong>#${item.id}</strong></td>
-                <td>${product ? `${product.sku} ${product.name}` : '-'}</td>
+        // 🔥 Получаем клиента
+        const client = sale.client_id ? sale.client_name || `ID:${sale.client_id}` : '—';
+        
+        // 🔥 Получаем количество товаров в чеке
+        const itemsCount = sale.items?.length || 0;
+        
+        // 🔥 Получаем первый товар для отображения (или "N товаров")
+        let productDisplay = '-';
+        if (itemsCount === 1) {
+            const item = sale.items[0];
+            productDisplay = `${item.product_sku || ''} ${item.product_name || ''}`.trim();
+        } else if (itemsCount > 1) {
+            productDisplay = `${itemsCount} товаров`;
+        }
+        
+        // Комментарий с обрезкой
+        const commentHtml = createTruncatableHtml(sale.comment, 25, 'Комментарий');
+        
+        // Сумма и тип
+        const isPositive = sale.type === 'restock';
+        const sumClass = isPositive ? 'color:#166534' : 'color:#991b1b';
+        const sumSign = isPositive ? '+' : '';
+        const typeInfo = TYPE_LABELS[sale.type] || { text: sale.type, class: 'badge-gray' };
+        
+        // Фон для записей с периодом
+        const hasPeriod = sale.comment?.includes('📅 Период:');
+        const rowBg = hasPeriod ? 'background:#f0f9ff' : '';
+        
+        return `
+            <tr data-id="${sale.id}" class="${animClass}" ${animDelay} style="${rowBg}">
+                <td><strong>#${sale.id}</strong></td>
                 <td>${client}</td>
-                <td style="text-align:center">${item.quantity}</td>
-                <td style="text-align:right;font-weight:600;${sumClass}">${sumSign}${(item.total_amount || 0).toFixed(2)} ₽</td>
-                <td>${new Date(item.transaction_date).toLocaleDateString()}</td>
+                <td style="text-align:center; cursor: pointer; color: #3b82f6; font-weight: 600;" 
+                    onclick="showSaleDetails(${sale.id})" 
+                    title="Нажмите для просмотра деталей">
+                    ${itemsCount} 
+                </td>
+                <td style="text-align:right;font-weight:600;${sumClass}">${sumSign}${(sale.total_amount || 0).toFixed(2)} ₽</td>
+                <td style="text-align:center">${new Date(sale.transaction_date).toLocaleDateString()}</td>
                 <td><span class="badge ${typeInfo.class}">${typeInfo.text}</span></td>
                 <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                     ${commentHtml}
                 </td>
             </tr>`;
-        }).join('');
-        
-        // Перепривязываем обработчики выделения (для динамических строк)
-        // if (selectionManager) selectionManager.refresh();
-    });
+    }).join('');
 }
 
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
@@ -394,7 +400,6 @@ function setupPeriodToggle(toggleId, commentContainerId, periodContainerId, comm
 }
 
 // === ОБРАБОТКА ФОРМ ===
-
 async function handleSingleSaleSubmit() {
     const btn = document.getElementById('btnSingleSale');
     if (btn?.disabled) return;
@@ -415,20 +420,31 @@ async function handleSingleSaleSubmit() {
         comment = document.getElementById('saleComment')?.value || '';
     }
     
+    // 🔥 СОБИРАЕМ НЕСКОЛЬКО ТОВАРОВ
+    const items = collectSaleItems();
+    
+    if (items.length === 0) { 
+        showWarning('Добавьте хотя бы один товар'); 
+        return; 
+    }
+    
+    // Рассчитываем общую сумму
+    const totalAmount = items.reduce((sum, item) => sum + item.line_total, 0);
+    
     const formData = {
-        client_id: document.getElementById('saleClient')?.value,
-        product_id: document.getElementById('saleProduct')?.value,
-        quantity: document.getElementById('saleQty')?.value,
-        unit_price: document.getElementById('salePrice')?.value,
+        client_id: document.getElementById('saleClient')?.value !== 'empty' 
+            ? document.getElementById('saleClient')?.value 
+            : null,
         transaction_date: document.getElementById('saleDate')?.value || new Date().toISOString(),
         comment,
-        type: document.getElementById('saleType')?.value
+        type: document.getElementById('saleType')?.value,
+        payment_type: document.getElementById('salePaymentType')?.value,  // 🔥 Добавлено
+        total_amount: totalAmount,
+        items: items  // 🔥 ПЕРЕДАЁМ МАССИВ ТОВАРОВ
     };
     
-    if (!formData.product_id) { showWarning('Выберите товар'); return; }
-    
     if (formData.type === 'writeoff') {
-        const ok = await confirmModal('Подтверждение', `Списать ${formData.quantity} ед.?`);
+        const ok = await confirmModal('Подтверждение', `Списать ${formData.items.reduce((s, i) => s + i.quantity, 0)} ед.?`);
         if (!ok) return;
     }
     
@@ -448,6 +464,10 @@ async function handleSingleSaleSubmit() {
         document.getElementById('saleCommentContainer').style.display = 'block';
         document.getElementById('salePeriodContainer').style.display = 'none';
         
+        // Очищаем контейнер товаров
+        const container = document.getElementById('saleItemsContainer');
+        if (container) container.innerHTML = '';
+        
         closeModal('singleSaleModal');
         await populateDropdowns();
         loadSalesTable();
@@ -460,7 +480,6 @@ async function handleSingleSaleSubmit() {
         btn.textContent = 'Зарегистрировать сделку';
     }
 }
-
 async function handleBulkAdjustmentSubmit() {
     const btn = document.getElementById('btnBulkAdjustment');
     if (btn?.disabled) return;
@@ -643,6 +662,134 @@ function hideContextMenu() {
     const menu = document.getElementById('ctxMenu');
     if (menu) menu.style.display = 'none';
 }
+
+// Добавление строки товара
+// Добавление строки товара
+window.addSaleItemRow = function(productId = '', quantity = 1, price = '') {
+    const container = document.getElementById('saleItemsContainer');
+    if (!container) {
+        showError('Контейнер для товаров не найден');
+        return;
+    }
+    
+    const rowId = Date.now();
+    
+    const row = document.createElement('div');
+    row.className = 'sale-item-row';
+    row.dataset.rowId = rowId;
+    row.innerHTML = `
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+            <select class="form-control item-product" style="flex: 2;" required>
+                <option value="">Выберите товар...</option>
+                ${productOptions}
+            </select>
+            <input type="number" class="form-control item-qty" value="${quantity}" min="1" style="width: 70px;" required>
+            <input type="number" class="form-control item-price" value="${price}" step="0.01" style="width: 100px;" required>
+            <button type="button" class="btn-action-icon" onclick="removeSaleItemRow(${rowId})" style="padding: 5px;">✕</button>
+        </div>
+    `;
+    container.appendChild(row);
+    
+    // Автозаполнение цены при выборе товара
+    row.querySelector('.item-product').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const price = selectedOption.dataset.price;
+        if (price) {
+            row.querySelector('.item-price').value = price;
+        }
+    });
+    
+    // Если передан productId, выбираем его
+    if (productId) {
+        row.querySelector('.item-product').value = productId;
+    }
+};
+// Удаление строки
+window.removeSaleItemRow = function(rowId) {
+    const row = document.querySelector(`.sale-item-row[data-row-id="${rowId}"]`);
+    if (row) row.remove();
+};
+
+// Сбор данных формы
+function collectSaleItems() {
+    const items = [];
+    document.querySelectorAll('.sale-item-row').forEach(row => {
+        const productId = row.querySelector('.item-product').value;
+        const quantity = parseInt(row.querySelector('.item-qty').value) || 1;
+        const unitPrice = parseFloat(row.querySelector('.item-price').value) || 0;
+        
+        if (productId) {
+            items.push({
+                product_id: productId,
+                quantity,
+                unit_price: unitPrice,
+                line_total: quantity * unitPrice
+            });
+        }
+    });
+    return items;
+}
+
+// Показать детали сделки
+window.showSaleDetails = async function(saleId) {
+    try {
+        const sales = await getSalesWithItems({});
+        const sale = sales.find(s => s.id === saleId);
+        
+        if (!sale) {
+            showError('Сделка не найдена');
+            return;
+        }
+        
+        // Заполняем основную информацию
+        document.getElementById('detailSaleId').textContent = sale.id;
+        document.getElementById('detailClient').textContent = sale.client_name || '—';
+        document.getElementById('detailDate').textContent = new Date(sale.transaction_date).toLocaleString('ru-RU');
+        document.getElementById('detailTotal').textContent = `${(sale.total_amount || 0).toFixed(2)} ₽`;
+        
+        // Тип оплаты
+        const paymentTypes = {
+            'cash': 'Наличные',
+            'card': 'Карта',
+            'transfer': 'Перевод'
+        };
+        document.getElementById('detailPaymentType').textContent = paymentTypes[sale.payment_type] || '—';
+        
+        // Товары
+        const itemsContainer = document.getElementById('detailItems');
+        if (sale.items && sale.items.length > 0) {
+            itemsContainer.innerHTML = sale.items.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 10px; margin-bottom: 8px; background: white; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #1e293b;">${item.product_name || `ID:${item.product_id}`}</div>
+                        <div style="font-size: 12px; color: #64748b;">${item.product_sku || ''}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; color: #1e293b;">${item.quantity} шт. × ${item.unit_price.toFixed(2)} ₽</div>
+                        <div style="font-weight: 700; color: #10b981;">${item.line_total.toFixed(2)} ₽</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            itemsContainer.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Нет товаров</div>';
+        }
+        
+        // Комментарий
+        const commentSection = document.getElementById('detailCommentSection');
+        if (sale.comment) {
+            document.getElementById('detailComment').textContent = sale.comment;
+            commentSection.style.display = 'block';
+        } else {
+            commentSection.style.display = 'none';
+        }
+        
+        openModal('saleDetailsModal');
+        
+    } catch (error) {
+        console.error('Error showing sale details:', error);
+        showError('❌ Ошибка загрузки деталей: ' + error.message);
+    }
+};
 
 // Глобальный экспорт
 window.deleteSelected = deleteSelected;

@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Генератор тестовых данных для CRM System
+Генератор тестовых данных для CRM System (нормализованная БД)
 Использование:
-py tests/stress/generate_test_data.py --clients 1000 --products 1000 --sales 1000 --tickets 1000 --notes 500 --output tests/stress/backup.json
+  py tests/stress/generate_test_data.py --clients 1000 --products 1000 --sales 500 --tickets 1000 --notes 500 --output tests/stress/backup.json
+
+Изменения:
+- Таблица sales теперь содержит только заголовки чеков
+- Позиции товаров хранятся в новой таблице sale_items
+- Одна продажа может содержать несколько товаров
 """
 
 import json
@@ -35,6 +40,7 @@ LONG_TEXT = """вчфслыяюмшдрфидрфышгпарыфот.зампф
 ырпавываявчпаспршощжжшдглноавсп
 длинный текст для проверки обрезки и прокрутки в модальном окне"""
 START_DATE = datetime(2026, 5, 1)
+
 def random_date(start_date, end_date):
     """Генерация случайной даты в диапазоне"""
     delta = end_date - start_date
@@ -127,19 +133,24 @@ def generate_tickets(clients, count, start_id=1):
     
     return tickets
 
-def generate_sales(clients, products, count, start_id=1):
-    """Генерация продаж"""
+def generate_sales_and_items(clients, products, count, sale_start_id=1, item_start_id=1):
+    """
+    Генерация продаж и позиций чеков (нормализованная структура)
+    
+    Возвращает кортеж: (sales_list, sale_items_list, next_sale_id, next_item_id)
+    """
     sales = []
+    sale_items = []
     base_date = START_DATE
     
-    for i in range(count):
+    current_sale_id = sale_start_id
+    current_item_id = item_start_id
+    
+    for _ in range(count):
         created = random_date(base_date, datetime.now())
-        product = random.choice(products) if products else None
         client = random.choice(clients) if clients and random.random() > 0.2 else None
         
         sale_type = random.choice(SALE_TYPES)
-        quantity = random.randint(1, 20)
-        unit_price = product["price"] if product else round(random.uniform(100, 10000), 2)
         
         # Комментарий с периодом (10% случаев)
         comment = ""
@@ -150,25 +161,50 @@ def generate_sales(clients, products, count, start_id=1):
         elif random.random() > 0.8:
             comment = f"Комментарий #{random.randint(1000, 9999)}"
         
+        # Генерируем 1-3 позиции в чеке (для продажи/списания)
+        # Для поступления (restock) — обычно 1 товар
+        num_items = 1 if sale_type == 'restock' else random.randint(1, 3)
+        total_amount = 0
+        
+        for _ in range(num_items):
+            product = random.choice(products) if products else None
+            if not product:
+                continue
+                
+            quantity = random.randint(1, 20)
+            unit_price = product["price"]
+            line_total = round(quantity * unit_price, 2)
+            total_amount += line_total
+            
+            item = {
+                "id": current_item_id,
+                "sale_id": current_sale_id,
+                "product_id": product["id"],
+                "quantity": quantity,
+                "unit_price": unit_price,
+                "line_total": line_total
+            }
+            sale_items.append(item)
+            current_item_id += 1
+        
+        # Создаём заголовок чека
         sale = {
+            "id": current_sale_id,
             "client_id": client["id"] if client else None,
-            "product_id": product["id"] if product else None,
-            "quantity": quantity,
-            "unit_price": unit_price,
-            "total_amount": round(quantity * unit_price, 2),
             "transaction_date": created.strftime("%Y-%m-%dT%H:%M"),
-            "comment": comment,
             "type": sale_type,
-            "is_bulk": False,
-            "created_at": created.isoformat() + "Z",
-            "updated_at": created.isoformat() + "Z",
-            "id": start_id + i
+            "comment": comment,
+            "total_amount": round(total_amount, 2),
+            # "created_at": created.isoformat() + "Z",
+            # "updated_at": created.isoformat() + "Z"
         }
         # Убираем None для совместимости
         sale = {k: v for k, v in sale.items() if v is not None}
         sales.append(sale)
+        
+        current_sale_id += 1
     
-    return sales
+    return sales, sale_items, current_sale_id, current_item_id
 
 def generate_calendar_notes(count, start_id=1):
     """Генерация заметок календаря"""
@@ -195,50 +231,67 @@ def generate_calendar_notes(count, start_id=1):
     return notes
 
 def main():
-    parser = argparse.ArgumentParser(description='Генератор тестовых данных для CRM')
+    parser = argparse.ArgumentParser(description='Генератор тестовых данных для CRM (нормализованная БД)')
     parser.add_argument('--clients', type=int, default=100, help='Количество клиентов')
     parser.add_argument('--products', type=int, default=100, help='Количество товаров')
     parser.add_argument('--tickets', type=int, default=100, help='Количество обращений')
-    parser.add_argument('--sales', type=int, default=100, help='Количество продаж')
+    parser.add_argument('--sales', type=int, default=100, help='Количество продаж (чеков)')
     parser.add_argument('--notes', type=int, default=50, help='Количество заметок календаря')
     parser.add_argument('--start-id', type=int, default=1, help='Начальный ID для записей')
     parser.add_argument('--output', type=str, default='tests/stress/backup.json', help='Путь к выходному файлу')
     
     args = parser.parse_args()
     
-    print(f"🚀 Генерация тестовых данных...")
-    print(f"   Клиенты: {args.clients}, Товары: {args.products}, Обращения: {args.tickets}, Продажи: {args.sales}, Заметки: {args.notes}")
+    print(f"🚀 Генерация тестовых данных (нормализованная структура)...")
+    print(f"   Клиенты: {args.clients}, Товары: {args.products}, Чеки: {args.sales}, Обращения: {args.tickets}, Заметки: {args.notes}")
     
-    # Генерация
+    # Генерация с учётом нормализации
     clients = generate_clients(args.clients, args.start_id)
     products = generate_products(args.products, args.start_id + args.clients)
     tickets = generate_tickets(clients, args.tickets, args.start_id + args.clients + args.products)
-    sales = generate_sales(clients, products, args.sales, args.start_id + args.clients + args.products + args.tickets)
-    notes = generate_calendar_notes(args.notes, args.start_id + args.clients + args.products + args.tickets + args.sales)
     
-    # Формирование структуры
+    # Генерация продаж и позиций чеков
+    sales, sale_items, next_sale_id, next_item_id = generate_sales_and_items(
+        clients, products, args.sales,
+        sale_start_id=args.start_id + args.clients + args.products + args.tickets,
+        item_start_id=args.start_id + args.clients + args.products + args.tickets + args.sales
+    )
+    
+    notes = generate_calendar_notes(args.notes, next_item_id)
+    
+    # Формирование структуры с новой таблицей sale_items
     data = {
-        "version": 6,
+        "version": 6,  # Обновляем версию из-за изменения структуры
         "exported_at": datetime.now().isoformat() + "Z",
         "stores": [
             {"store": "clients", "items": clients},
             {"store": "products", "items": products},
-            {"store": "tickets", "items": tickets},
             {"store": "sales", "items": sales},
-            {"store": "bulk_adjustments", "items": []},  # Можно добавить при необходимости
+            {"store": "sale_items", "items": sale_items},
+            {"store": "tickets", "items": tickets},
+            {"store": "bulk_adjustments", "items": []},
             {"store": "calendar_notes", "items": notes}
         ]
     }
     
     # Создание директории если нет
-    os.makedirs(os.path.dirname(args.output) if os.path.dirname(args.output) else '.', exist_ok=True)
+    output_dir = os.path.dirname(args.output)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
     
     # Сохранение
     with open(args.output, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     
     print(f"✅ Данные сохранены в {args.output}")
-    print(f"📊 Итого записей: {len(clients)} клиентов, {len(products)} товаров, {len(tickets)} обращений, {len(sales)} продаж, {len(notes)} заметок")
+    print(f"📊 Итого записей:")
+    print(f"   • Клиенты: {len(clients)}")
+    print(f"   • Товары: {len(products)}")
+    print(f"   • Чеки (sales): {len(sales)}")
+    print(f"   • Позиции чеков (sale_items): {len(sale_items)}")
+    print(f"   • Обращения: {len(tickets)}")
+    print(f"   • Заметки: {len(notes)}")
+    print(f"\n💡 Среднее количество товаров в чеке: {len(sale_items) / len(sales) if sales else 0:.2f}")
 
 if __name__ == "__main__":
     main()

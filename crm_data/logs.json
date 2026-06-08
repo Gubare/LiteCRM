@@ -1937,5 +1937,319 @@
       "updated_at": "2026-06-06T22:30:14.365Z"
     },
     "metadata": {}
+  },
+  {
+    "id": 110,
+    "timestamp": "2026-06-08T18:12:35.712Z",
+    "action": "import",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "D:/Distr/VScode/Projects/MVPs/CRM/my-crm-neutralino/tests/stress/backup.json",
+      "target": "crm_data.sqlite",
+      "type": "json2sql"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 111,
+    "timestamp": "2026-06-08T18:14:41.581Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1001,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-08T18:14:41.518Z",
+      "updated_at": "2026-06-08T18:14:41.518Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 112,
+    "timestamp": "2026-06-08T18:14:49.152Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1001,
+    "data": {
+      "sku": "11-1001",
+      "category": "111",
+      "name": "1111",
+      "description": "11",
+      "price": 11,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-06-08T18:14:49.074Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 113,
+    "timestamp": "2026-06-08T18:15:07.770Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1002,
+    "data": {
+      "name": "Пифагор",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-08T18:15:07.694Z",
+      "updated_at": "2026-06-08T18:15:07.694Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 114,
+    "timestamp": "2026-06-08T18:15:58.319Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1003,
+    "data": {
+      "name": "Аристотель",
+      "phone": "123142154212",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-08T18:15:58.221Z",
+      "updated_at": "2026-06-08T18:15:58.221Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 115,
+    "timestamp": "2026-06-08T18:17:27.578Z",
+    "action": "create",
+    "store": "tasks",
+    "recordId": 1,
+    "data": {
+      "title": "Позвонить ",
+      "description": "",
+      "deadline": "",
+      "priority": "urgent-important",
+      "status": "todo",
+      "related_table": "products",
+      "related_id": 17,
+      "related_display": "Air-13-407 ()",
+      "created_at": "2026-06-08T18:17:27.503Z",
+      "updated_at": "2026-06-08T18:17:27.503Z",
+      "completed_at": null,
+      "is_archived": 0
+    },
+    "metadata": {}
+  },
+  {
+    "id": 116,
+    "timestamp": "2026-06-08T18:53:25.628Z",
+    "action": "import",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "D:/Distr/VScode/Projects/MVPs/CRM/my-crm-neutralino/tests/stress/backup.json",
+      "target": "crm_data.sqlite",
+      "type": "json2sql"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 117,
+    "timestamp": "2026-06-08T18:54:31.553Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1001,
+    "data": {
+      "sku": "ТЕ-1001",
+      "category": "Телефон",
+      "name": "GE-213981",
+      "description": "",
+      "price": 22333,
+      "quantity": 12,
+      "is_active": true,
+      "created_at": "2026-06-08T18:54:31.460Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 118,
+    "timestamp": "2026-06-08T18:54:44.679Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1001,
+    "data": {
+      "name": "Пифагор",
+      "phone": "99999",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-08T18:54:44.581Z",
+      "updated_at": "2026-06-08T18:54:44.581Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 119,
+    "timestamp": "2026-06-08T18:55:30.206Z",
+    "action": "create",
+    "store": "products",
+    "recordId": 1002,
+    "data": {
+      "sku": "ПИ-1002",
+      "category": "Пицца",
+      "name": "Пицца",
+      "description": "",
+      "price": 23141,
+      "quantity": 11,
+      "is_active": true,
+      "created_at": "2026-06-08T18:55:30.122Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 120,
+    "timestamp": "2026-06-08T18:58:08.235Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 71,
+    "data": {
+      "id": 71,
+      "client_id": 215,
+      "transaction_date": "2026-05-07T19:45",
+      "type": "restock",
+      "comment": "",
+      "payment_type": "Наличные",
+      "total_amount": 1773.8
+    },
+    "metadata": {}
+  },
+  {
+    "id": 121,
+    "timestamp": "2026-06-08T18:58:08.813Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 87,
+    "data": {
+      "id": 87,
+      "client_id": 103,
+      "transaction_date": "2026-05-06T20:37",
+      "type": "restock",
+      "comment": "",
+      "payment_type": "Наличные",
+      "total_amount": 3899.25
+    },
+    "metadata": {}
+  },
+  {
+    "id": 122,
+    "timestamp": "2026-06-08T18:58:09.281Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 460,
+    "data": {
+      "id": 460,
+      "client_id": 797,
+      "transaction_date": "2026-06-05T12:06",
+      "type": "restock",
+      "comment": "",
+      "payment_type": "Наличные",
+      "total_amount": 5150.42
+    },
+    "metadata": {}
+  },
+  {
+    "id": 123,
+    "timestamp": "2026-06-08T18:58:09.808Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 484,
+    "data": {
+      "id": 484,
+      "client_id": 694,
+      "transaction_date": "2026-06-01T04:04",
+      "type": "restock",
+      "comment": "",
+      "payment_type": "Наличные",
+      "total_amount": 4072.5
+    },
+    "metadata": {}
+  },
+  {
+    "id": 124,
+    "timestamp": "2026-06-08T18:58:10.226Z",
+    "action": "delete",
+    "store": "sales",
+    "recordId": 259,
+    "data": {
+      "id": 259,
+      "client_id": 498,
+      "transaction_date": "2026-05-14T20:35",
+      "type": "restock",
+      "comment": "",
+      "payment_type": "Наличные",
+      "total_amount": 4925.6
+    },
+    "metadata": {}
+  },
+  {
+    "id": 125,
+    "timestamp": "2026-06-08T18:59:26.931Z",
+    "action": "create",
+    "store": "tickets",
+    "recordId": 1001,
+    "data": {
+      "client_name": null,
+      "type": "Вопрос",
+      "contact": "",
+      "status": "Открыта",
+      "description": "цймйццй",
+      "created_at": "2026-06-08T18:59:26.845Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 126,
+    "timestamp": "2026-06-08T18:59:39.387Z",
+    "action": "create",
+    "store": "clients",
+    "recordId": 1002,
+    "data": {
+      "name": "Александр",
+      "phone": "",
+      "email": "",
+      "total_spent": 0,
+      "purchase_count": 0,
+      "created_at": "2026-06-08T18:59:39.333Z",
+      "updated_at": "2026-06-08T18:59:39.333Z"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 127,
+    "timestamp": "2026-06-08T19:01:50.931Z",
+    "action": "import",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "D:/Distr/VScode/Projects/MVPs/CRM/my-crm-neutralino/tests/stress/backup.json",
+      "target": "crm_data.sqlite",
+      "type": "json2sql"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 128,
+    "timestamp": "2026-06-08T19:21:55.911Z",
+    "action": "import",
+    "store": "converter",
+    "recordId": null,
+    "data": {
+      "source": "D:/Distr/VScode/Projects/MVPs/CRM/my-crm-neutralino/tests/stress/backup.json",
+      "target": "crm_data.sqlite",
+      "type": "json2sql"
+    },
+    "metadata": {}
   }
 ]

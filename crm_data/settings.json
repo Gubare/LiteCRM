@@ -2,14 +2,14 @@
   "ui.showTooltips": true,
   "ui.showNavText": true,
   "ui.animateRows": true,
-  "ui.theme": "blue",
-  "inventory.lowStockThreshold": 50,
+  "ui.theme": "1c",
+  "inventory.lowStockThreshold": 55,
   "ui.selectionModifier": "ctrl",
   "charts.period": {
-    "type": "7",
+    "type": "all",
     "from": null,
     "to": null,
-    "appliedAt": "2026-06-06T20:53:19.141Z"
+    "appliedAt": "2026-06-08T18:16:53.002Z"
   },
   "ui.showHelpTooltips": true,
   "calendar.workDays": {

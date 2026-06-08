@@ -1,5 +1,5 @@
 // resources/js/charts.js
-import { getAllItems } from './db_sqlite.js';
+import { getAllItems, getDbInstance } from './db_sqlite.js';
 import { getSetting, updateSetting } from './settings-manager.js';
 // === КОНФИГУРАЦИЯ ГРАФИКОВ ===
 const CHART_CONFIGS = {
@@ -496,7 +496,22 @@ export function prepareTopProducts(sales, products) {
     sales.forEach(sale => {
         if (sale.type !== 'sale') return;
         
-        const productId = sale.product_id;
+        const db = getDbInstance();
+        const result = db.exec(`
+            SELECT 
+                s.id,
+                s.client_id,
+                s.transaction_date,
+                s.total_amount,
+                si.product_id,
+                si.quantity,
+                si.unit_price,
+                p.name as product_name
+            FROM sales s
+            JOIN sale_items si ON s.id = si.sale_id
+            LEFT JOIN products p ON si.product_id = p.id
+            WHERE s.type = 'sale'
+        `);
         const amount = parseFloat(sale.total_amount) || 0;
         
         productSales[productId] = (productSales[productId] || 0) + amount;

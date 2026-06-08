@@ -77,6 +77,88 @@ export async function initDatabase() {
 
 async function createTables() {
     console.log('Creating SQLite tables...');
+
+        // Проверяем, существует ли таблица sales и имеет ли она старую структуру
+    try {
+        const checkResult = db.exec("PRAGMA table_info(sales)");
+        if (checkResult.length > 0) {
+            const columns = checkResult[0].values.map(row => row[1]);
+            if (columns.includes('product_id')) {
+                console.log('⚠️ Detected old sales table structure, migrating...');
+                
+                // Сохраняем старые данные
+                const oldSales = db.exec("SELECT * FROM sales");
+                
+                // Пересоздаём таблицу sales без product_id
+                db.run("DROP TABLE sales");
+                db.run(`CREATE TABLE sales (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    client_id INTEGER,
+                    transaction_date TEXT NOT NULL,
+                    type TEXT CHECK(type IN ('sale', 'writeoff', 'restock')) NOT NULL,
+                    comment TEXT,
+                    total_amount REAL DEFAULT 0,
+                    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
+                )`);
+                
+                // Создаём sale_items, если не существует
+                db.run(`CREATE TABLE IF NOT EXISTS sale_items (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    sale_id INTEGER NOT NULL,
+                    product_id INTEGER NOT NULL,
+                    quantity INTEGER NOT NULL DEFAULT 1,
+                    unit_price REAL NOT NULL,
+                    line_total REAL NOT NULL,
+                    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+                    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+                )`);
+                
+                // Мигрируем данные
+                if (oldSales.length > 0 && oldSales[0].values.length > 0) {
+                    const oldColumns = oldSales[0].columns;
+                    const productIdIndex = oldColumns.indexOf('product_id');
+                    const quantityIndex = oldColumns.indexOf('quantity');
+                    const unitPriceIndex = oldColumns.indexOf('unit_price');
+                    
+                    const insertSale = db.prepare("INSERT INTO sales (id, client_id, transaction_date, type, comment, total_amount) VALUES (?, ?, ?, ?, ?, ?)");
+                    const insertItem = db.prepare("INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, line_total) VALUES (?, ?, ?, ?, ?)");
+                    
+                    for (const row of oldSales[0].values) {
+                        const saleId = row[0]; // id
+                        const clientId = row[oldColumns.indexOf('client_id')];
+                        const transDate = row[oldColumns.indexOf('transaction_date')];
+                        const type = row[oldColumns.indexOf('type')];
+                        const comment = row[oldColumns.indexOf('comment')] || null;
+                        const totalAmount = row[oldColumns.indexOf('total_amount')] || 0;
+                        
+                        // Вставляем sale
+                        insertSale.bind([saleId, clientId, transDate, type, comment, totalAmount]);
+                        insertSale.step();
+                        insertSale.reset();
+                        
+                        // Вставляем sale_item, если есть product_id
+                        if (productIdIndex >= 0 && row[productIdIndex]) {
+                            const productId = row[productIdIndex];
+                            const qty = quantityIndex >= 0 ? row[quantityIndex] : 1;
+                            const price = unitPriceIndex >= 0 ? row[unitPriceIndex] : 0;
+                            const lineTotal = qty * price;
+                            
+                            insertItem.bind([saleId, productId, qty, price, lineTotal]);
+                            insertItem.step();
+                            insertItem.reset();
+                        }
+                    }
+                    
+                    insertSale.free();
+                    insertItem.free();
+                    
+                    console.log('✅ Migration completed');
+                }
+            }
+        }
+    } catch (e) {
+        console.log('📄 Table sales does not exist yet, creating...');
+    }
     
     // Клиенты
     db.run(`CREATE TABLE IF NOT EXISTS clients (
@@ -108,18 +190,23 @@ async function createTables() {
     db.run(`CREATE TABLE IF NOT EXISTS sales (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         client_id INTEGER,
+        transaction_date TEXT NOT NULL,
+        type TEXT CHECK(type IN ('sale', 'writeoff', 'restock')) NOT NULL,
+        comment TEXT,
+        payment_type TEXT DEFAULT 'Наличные',
+        total_amount REAL DEFAULT 0,
+        FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS sale_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sale_id INTEGER NOT NULL,
         product_id INTEGER NOT NULL,
-        quantity INTEGER NOT NULL,
+        quantity INTEGER NOT NULL DEFAULT 1,
         unit_price REAL NOT NULL,
-        total_amount REAL NOT NULL,
-        transaction_date TEXT DEFAULT (datetime('now')),
-        comment TEXT DEFAULT '',
-        type TEXT DEFAULT 'sale',
-        is_bulk INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT (datetime('now')),
-        updated_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY (client_id) REFERENCES clients(id),
-        FOREIGN KEY (product_id) REFERENCES products(id)
+        line_total REAL NOT NULL,
+        FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     )`);
     
     // Обращения (tickets)
@@ -188,7 +275,7 @@ async function createTables() {
     db.run(`CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(client_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_sales_product ON sales(product_id)`);
+    // db.run(`CREATE INDEX IF NOT EXISTS idx_sales_product ON sales(product_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(transaction_date)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tickets_client ON tickets(client_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status)`);
@@ -198,6 +285,8 @@ async function createTables() {
     db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_deadline ON tasks(deadline)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_related ON tasks(related_table, related_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_archived ON tasks(is_archived)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_sale_items_sale_id ON sale_items(sale_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_sale_items_product_id ON sale_items(product_id)`);
 
     console.log('✅ All tables created successfully');
 }
@@ -380,8 +469,7 @@ export async function clearStore(storeName) {
 export async function exportAllData() {
     if (!db) await initDatabase();
     
-    const stores = ['clients', 'products', 'sales', 'tickets', 'bulk_adjustments', 'calendar_notes'];
-    const result = {
+        const stores = ['clients', 'products', 'sales', 'sale_items', 'tickets', 'bulk_adjustments', 'calendar_notes'];    const result = {
         version: 6,
         exported_at: new Date().toISOString(),
         stores: []
@@ -530,91 +618,69 @@ export async function getActiveProducts() {
 // === СПЕЦИФИЧНЫЕ ФУНКЦИИ ДЛЯ ПРОДАЖ ===
 
 // Создать единичную сделку
-export async function createSale(data, retry = true) {
-    console.log('💰 Creating sale:', data);
+export async function createSale(saleData) {
+    const db = await getDbInstance();
+    
+    db.run('BEGIN TRANSACTION');
     
     try {
-        // Проверяем существование товара ПЕРЕД созданием продажи
-        const product = await getItemById('products', parseInt(data.product_id));
-        
-        if (!product) {
-            const errorMsg = `Товар с ID ${data.product_id} не найден в базе. ` +
-                           `Возможно, он был удалён. Проверьте таблицу товаров.`;
+        // 1. Создаём заголовок чека
+        const saleStmt = db.prepare(`
+            INSERT INTO sales (client_id, transaction_date, type, comment, total_amount, payment_type)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `);
+        saleStmt.bind([
+            saleData.client_id || null,
+            saleData.transaction_date || new Date().toISOString(),
+            saleData.type || 'sale',
+            saleData.comment || '',
+            saleData.total_amount || 0,
+            saleData.payment_type || null
+        ]);
+        saleStmt.step();
+        const saleId = db.exec('SELECT last_insert_rowid()')[0].values[0][0];
+        saleStmt.free();
+
+        // 2. Создаём строки чека
+        if (saleData.items && Array.isArray(saleData.items)) {
+            const itemStmt = db.prepare(`
+                INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, line_total)
+                VALUES (?, ?, ?, ?, ?)
+            `);
             
-            if (retry) {
-                // Пробуем показать ошибку с возможностью повтора
-                throw new Error(errorMsg);
-            } else {
-                // Если уже была попытка — просто выбрасываем
-                throw new Error(errorMsg);
+            for (const item of saleData.items) {
+                const lineTotal = (item.quantity || 1) * (item.unit_price || 0);
+                itemStmt.bind([saleId, item.product_id, item.quantity, item.unit_price, lineTotal]);
+                itemStmt.step();
+                itemStmt.reset();
+                
+                // Списываем остаток товара (для типа 'sale')
+                if (saleData.type === 'sale') {
+                    await updateProductStock(db, item.product_id, -item.quantity);
+                }
             }
+            itemStmt.free();
         }
         
-        // Проверяем, достаточно ли товара на складе (для продаж и списаний)
-        if (data.type === 'sale' || data.type === 'writeoff') {
-            const requestedQty = parseInt(data.quantity);
-            const availableQty = product.quantity || 0;
-            
-            if (requestedQty > availableQty) {
-                throw new Error(
-                    `Недостаточно товара "${product.name}" на складе. ` +
-                    `Запрошено: ${requestedQty}, доступно: ${availableQty}`
-                );
-            }
+        db.run('COMMIT');
+        
+        // 🔥 ДОБАВИТЬ: Сохранение БД на диск после успешной транзакции
+        if (typeof Neutralino !== 'undefined' && shouldSaveToFile) {
+            await saveDatabaseToFile();
         }
         
-        const sale = {
-            client_id: data.client_id === 'empty' ? null : parseInt(data.client_id),
-            product_id: parseInt(data.product_id),
-            quantity: parseInt(data.quantity),
-            unit_price: parseFloat(data.unit_price),
-            total_amount: parseFloat(data.quantity) * parseFloat(data.unit_price),
-            transaction_date: data.transaction_date || new Date().toISOString(),
-            comment: data.comment || '',
-            type: data.type || 'sale',
-            is_bulk: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
-        
-        // Создаём запись о продаже
-        const id = await addItem('sales', sale);
-        console.log('✅ Sale created with id:', id);
-        
-        // Обновляем остаток товара
-        const quantityChange = data.type === 'restock' 
-            ? +sale.quantity
-            : -sale.quantity;
-        
-        const stockUpdated = await updateProductStock(
-            parseInt(data.product_id),
-            quantityChange
-        );
-        
-        if (!stockUpdated) {
-            // Откатываем продажу, если не удалось обновить остаток
-            await deleteItem('sales', id);
-            throw new Error('Не удалось обновить остаток товара. Продажа отменена.');
+        // Обновляем метрики клиента
+        if (saleData.client_id && saleData.type === 'sale') {
+            await updateClientMetrics(db, saleData.client_id);
         }
         
-        return id;
+        return saleId;
         
     } catch (error) {
-        console.error('❌ Error in createSale:', error);
-        
-        if (retry) {
-            // Показываем окно с ошибкой и возможностью повтора
-            // Но не бесконечно — только один раз
-            await showErrorWithRetry(
-                error.message,
-                () => createSale(data, false) // Повтор без показа окна
-            );
-        }
-        
+        db.run('ROLLBACK');
         throw error;
     }
 }
-
 // Создать пакетную корректировку
 export async function createBulkAdjustment(data, retry = true) {
     console.log('📦 Creating bulk adjustment:', data);
@@ -732,7 +798,19 @@ export async function getSalesPaginated(page = 1, pageSize = 10, filters = {}, s
     
     // Получаем единичные продажи
     if (recordType === 'sales' || recordType === 'all') {
-        let sql = 'SELECT *, "single" as source, type as tag FROM sales WHERE 1=1';
+        let sql = `
+            SELECT 
+                s.*,
+                si.product_id,
+                si.quantity,
+                si.unit_price,
+                si.line_total,
+                "single" as source,
+                s.type as tag
+            FROM sales s
+            LEFT JOIN sale_items si ON s.id = si.sale_id
+            WHERE 1=1
+        `;
         const params = [];
         
         if (filters.type) {
@@ -888,28 +966,24 @@ export async function getProductsForDropdown() {
 // === ФУНКЦИЯ СОХРАНЕНИЯ НА ДИСК ===
 export async function saveDatabaseToFile() {
     if (!shouldSaveToFile || !db || typeof Neutralino === 'undefined') {
+        console.log('💾 Save skipped:', { shouldSaveToFile, db: !!db, Neutralino: typeof Neutralino });
         return false;
     }
     
     try {
-        // Экспортируем БД в бинарный формат
         const data = db.export();
-        
-        // Конвертируем Uint8Array в строку для Neutralino
         let binary = '';
         const len = data.byteLength;
         for (let i = 0; i < len; i++) {
             binary += String.fromCharCode(data[i]);
         }
         
-        // Создаём директорию если нет
         try {
             await Neutralino.filesystem.createDirectory('crm_data');
         } catch (e) {
             // Директория уже существует
         }
         
-        // Записываем файл
         await Neutralino.filesystem.writeFile(
             DB_CONFIG.sqlite.filename,
             binary
@@ -992,4 +1066,95 @@ export async function getTasksForRecord(tableName, recordId) {
         t.related_id === parseInt(recordId) && 
         !t.is_archived
     );
+}
+
+// Получить все продажи с товарами (группированные)
+export async function getSalesWithItems(filters = {}) {
+    if (!db) await initDatabase();
+    
+    let sql = `
+        SELECT 
+            s.*,
+            si.id as item_id,
+            si.product_id,
+            si.quantity,
+            si.unit_price,
+            si.line_total,
+            p.name as product_name,
+            p.sku as product_sku,
+            c.name as client_name
+        FROM sales s
+        LEFT JOIN sale_items si ON s.id = si.sale_id
+        LEFT JOIN products p ON si.product_id = p.id
+        LEFT JOIN clients c ON s.client_id = c.id
+        WHERE 1=1
+    `;
+    
+    const params = [];
+    
+    if (filters.type) {
+        sql += ' AND s.type = ?';
+        params.push(filters.type);
+    }
+    
+    if (filters.client_id) {
+        sql += ' AND s.client_id = ?';
+        params.push(filters.client_id);
+    }
+    
+    const result = db.exec(sql, params);
+    
+    if (!result.length) return [];
+    
+    const columns = result[0].columns;
+    const rows = result[0].values;
+    
+    // Группируем по sale_id
+    const salesMap = new Map();
+    
+    for (const row of rows) {
+        const sale = {};
+        const items = [];
+        
+        columns.forEach((col, i) => {
+            const val = row[i];
+            
+            // Поля из sale_items
+            if (col === 'item_id' || col === 'product_id' || 
+                col === 'quantity' || col === 'unit_price' || col === 'line_total') {
+                items[col] = val;
+            } 
+            // Поля из products
+            else if (col === 'product_name' || col === 'product_sku') {
+                items[col] = val || '';
+            }
+            // Поля из sales и clients
+            else {
+                sale[col] = col === 'is_bulk' ? val === 1 : (val === null ? '' : val);
+            }
+        });
+        
+        const saleId = sale.id;
+        
+        if (!salesMap.has(saleId)) {
+            salesMap.set(saleId, {
+                ...sale,
+                items: []
+            });
+        }
+        
+        // Добавляем item, если он есть
+        if (items.product_id) {
+            salesMap.get(saleId).items.push({
+                product_id: items.product_id,
+                quantity: items.quantity,
+                unit_price: items.unit_price,
+                line_total: items.line_total,
+                product_name: items.product_name,
+                product_sku: items.product_sku
+            });
+        }
+    }
+    
+    return Array.from(salesMap.values());
 }
