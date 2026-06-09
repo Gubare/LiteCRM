@@ -143,7 +143,7 @@ describe('🚀 Performance Tests: Database Operations', () => {
         });
     });
     
-    describe('🗑️ deleteItem Performance', () => {
+    describe('deleteItem Performance', () => {
         TEST_SCALES.forEach(count => {
             it(`should delete ${count} items`, async () => {
                 const data = generateTestData(count, `delete_test`);
@@ -218,11 +218,11 @@ describe('🚀 Performance Tests: Database Operations', () => {
             console.timeEnd('✏️ UPDATE');
             
             // DELETE
-            console.time('🗑️ DELETE');
+            console.time('DELETE');
             for (const id of ids) {
                 await deleteItem(TEST_STORE, id);
             }
-            console.timeEnd('🗑️ DELETE');
+            console.timeEnd('DELETE');
             
             // Проверка
             const remaining = await getAllItems(TEST_STORE);

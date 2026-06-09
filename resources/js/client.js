@@ -8,37 +8,34 @@ import {
     getAllItems
 } from './db_sqlite.js';
 import { renderPagination } from './partials/pagination.js';
-import { SelectionManager } from './partials/selectionManager.js';
+// import { SelectionManager } from './partials/selectionManager.js';
 import { openModal, closeModal, confirmModal } from './partials/modalManager.js';
 import { exportToCSV, showExportDialog, getSelectedRowsData, getVisibleRowsData } from './export-utils.js';
+import { focusFirstInput, setupModalArrows, setupModalHotkeys, initShortcutsForModal } from './partials/modal-utils.js';
+
 
 // === СОСТОЯНИЕ ===
 let currentPage = 1;
 let currentPageSize = 10;
 let currentFilters = {};
 let allSales = []; // Кэш продаж для метрик
-window.selectionManager = null;
+// window.selectionManager = null;
+let selectedRows = new Map(); // Хранит { id: DOM-элемент }
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof Neutralino !== 'undefined') Neutralino.init();
     
-    // Инициализация менеджера выделения
-    window.selectionManager = new SelectionManager({
-        tableBodySelector: '#clientTable tbody',
-        actionBarId: 'bulkActionBar',
-        ctxMenuId: 'ctxMenu',
-        callbacks: {
-            onEdit: openClientModal,
-            onDelete: handleDelete
-        }
-    });
 
     // Загрузка данных
     await loadClients();
     setupEventListeners();
     
-    // Обработчик формы (используем ваш рабочий код)
+    // Настройка горячих клавиш для модального окна клиентов
+    setupModalArrows('#clientModal');
+    setupModalHotkeys('#clientModal', '#clientForm', null, null); 
+
+    // Обработчик формы
     const form = document.getElementById('clientForm');
     if (form) {
         form.addEventListener('submit', async (e) => {
@@ -143,7 +140,7 @@ function renderTable(clients) {
         <tr data-id="${client.id}" 
             class="${animClass}" 
             ${animDelay}
-            onclick="window.selectionManager.handleClick(event)">
+            onclick="handleRowClick(event, ${client.id})">
             <td><strong>#${client.id}</strong></td>
             <td>${client.name}</td>
             <td>${client.phone || '—'}</td>
@@ -156,30 +153,98 @@ function renderTable(clients) {
     }).join('');
 }
 
+// === ВЫДЕЛЕНИЕ СТРОК ===
+window.handleRowClick = function(event, id) {
+    event.preventDefault();
+    event.stopPropagation(); // Чтобы не срабатывали другие обработчики
+    
+    const row = event.currentTarget;
+    const modifier = getSetting('ui.selectionModifier') || 'ctrl';
+    
+    // Определяем, нажата ли клавиша-модификатор
+    const isModifier = modifier === 'shift' ? event.shiftKey : (event.ctrlKey || event.metaKey);
+
+    if (isModifier) {
+        // Добавляем/удаляем из выделения
+        if (selectedRows.has(id)) {
+            selectedRows.delete(id);
+        } else {
+            selectedRows.set(id, row);
+        }
+    } else {
+        // Очищаем и выделяем только текущую
+        selectedRows.clear();
+        selectedRows.set(id, row);
+    }
+    
+    updateSelectionUI();
+};
+
+window.updateSelectionUI = function() {
+    // Убираем класс selected со всех строк
+    document.querySelectorAll('#clientTable tbody tr').forEach(tr => {
+        tr.classList.remove('selected');
+    });
+    
+    // Добавляем класс selected выделенным строкам
+    selectedRows.forEach(row => row.classList.add('selected'));
+
+    // Обновляем панель действий с проверкой на null
+    const bar = document.getElementById('bulkActionBar');
+    const countBadge = document.getElementById('selectedCount');
+    const btnEdit = document.getElementById('btnBulkEdit');
+    const btnDelete = document.getElementById('btnBulkDelete');
+    const count = selectedRows.size;
+
+    if (count > 0) {
+        if (bar) bar.classList.add('visible');
+        if (countBadge) countBadge.textContent = count;
+        if (btnEdit) btnEdit.disabled = count !== 1;
+        if (btnDelete) btnDelete.disabled = false;
+    } else {
+        if (bar) bar.classList.remove('visible');
+    }
+};
+
+window.clearSelection = function() {
+    selectedRows.clear();
+    updateSelectionUI();
+};
 // === Создание/Обновление клиента ===
 export async function handleClientFormSubmit() {
     const id = document.getElementById('clientId')?.value;
     const formData = {
-        name: document.getElementById('clientName').value,
-        phone: document.getElementById('clientPhone').value,
-        email: document.getElementById('clientEmail').value
+        name: document.getElementById('clientName').value.trim(),
+        phone: document.getElementById('clientPhone').value.trim(),
+        email: document.getElementById('clientEmail').value.trim()
     };
     
     try {
         if (id) {
-            // Обновление (ваш код)
+            // Обновление
             await dbUpdateClient(parseInt(id), formData);
             showToast('Клиент обновлён');
+            closeModal('clientModal');
         } else {
-            // Создание (ваш код)
+            // Создание
             formData.created_at = new Date().toISOString();
             await dbCreateClient(formData.name, formData.phone, formData.email);
             showToast('Клиент создан');
+            
+            //Проверка флага SaveAndNew
+            const action = window._modalSaveAction;
+            if (action === 'saveAndNew') {
+                // Очищаем форму и оставляем модалку открытой
+                document.getElementById('clientForm').reset();
+                document.getElementById('clientId').value = '';
+                document.getElementById('clientModalTitle').textContent = 'Добавить клиента';
+                focusFirstInput('#clientModal');
+            } else {
+                closeModal('clientModal');
+            }
         }
         
-        // Сохранение в файл и перезагрузка
         if (window.saveDataToFile) await window.saveDataToFile();
-        closeModal('clientModal');
         loadClients();
         
     } catch (error) {
@@ -412,6 +477,8 @@ window.openClientModal = async function(id = null) {
     }
     
     openModal('clientModal');
+    // Автофокус на первое поле после открытия
+    setTimeout(() => focusFirstInput('#clientModal'), 100);
 };
 
 // === ПРОСМОТР ИНФОРМАЦИИ О СЕГМЕНТЕ ===
@@ -449,17 +516,25 @@ window.showClusterInfo = async function(clientId, event) {
 
 // === КОНТЕКСТНОЕ МЕНЮ И МАССОВЫЕ ДЕЙСТВИЯ ===
 window.editFromCtx = async function() {
-    const id = window.selectionManager.getCtxTargetId();
-    if (id) await window.openClientModal(id);
+    const ctxMenu = document.getElementById('ctxMenu');
+    const id = ctxMenu?.dataset?.targetId;
+    if (id) {
+        ctxMenu.style.display = 'none';
+        await window.openClientModal(parseInt(id));
+    }
 };
 
 window.deleteFromCtx = async function() {
-    const id = window.selectionManager.getCtxTargetId();
-    if (id) await handleDelete(id);
+    const ctxMenu = document.getElementById('ctxMenu');
+    const id = ctxMenu?.dataset?.targetId;
+    if (id) {
+        ctxMenu.style.display = 'none';
+        await handleDelete(parseInt(id));
+    }
 };
 
 window.bulkDelete = async function() {
-    const ids = window.selectionManager.getSelectedIds();
+    const ids = Array.from(selectedRows.keys());
     if (ids.length === 0) return;
     
     const confirmed = await confirmModal(
@@ -475,11 +550,9 @@ window.bulkDelete = async function() {
     }
     if (window.saveDataToFile) await window.saveDataToFile();
     
-    window.selectionManager.clear();
+    clearSelection();
     loadClients();
-    // showToast(`✅ Удалено клиентов: ${ids.length}`);
 };
-
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 function setupEventListeners() {
     // Фильтры
@@ -580,7 +653,7 @@ window.handleExport = async function() {
             
         } catch (error) {
             console.error('Export error:', error);
-            alert('❌ Ошибка экспорта: ' + error.message);
+            alert('Ошибка экспорта: ' + error.message);
         }
     });
 };
@@ -599,3 +672,35 @@ function extractRowsDataFromDOM(rows, columns) {
         return item;
     });
 }
+
+// === КОНТЕКСТНОЕ МЕНЮ ===
+document.addEventListener('contextmenu', (e) => {
+    const row = e.target.closest('tr[data-id]');
+    if (!row) return;
+    
+    // Предотвращаем стандартное меню браузера
+    e.preventDefault();
+    
+    // Показываем наше меню
+    const ctxMenu = document.getElementById('ctxMenu');
+    if (ctxMenu) {
+        // Сохраняем ID выбранной строки
+        ctxMenu.dataset.targetId = row.dataset.id;
+        
+        // Позиционируем меню
+        const x = e.pageX;
+        const y = e.pageY;
+        
+        ctxMenu.style.left = `${x}px`;
+        ctxMenu.style.top = `${y}px`;
+        ctxMenu.style.display = 'block';
+    }
+});
+
+// Скрываем контекстное меню при клике в любом месте
+document.addEventListener('click', () => {
+    const ctxMenu = document.getElementById('ctxMenu');
+    if (ctxMenu) {
+        ctxMenu.style.display = 'none';
+    }
+});

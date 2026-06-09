@@ -453,22 +453,5 @@ window.archiveTask = async function(id) {
 
 window.editTask = function(id) {
     // TODO: Реализовать редактирование
-    showToast('⚠️ Редактирование скоро будет доступно');
+    showToast(' Редактирование скоро будет доступно');
 }
-
-// Утилита для toast-уведомлений (если нет отдельного файла)
-// function showToast(message, type = 'success') {
-//     const toast = document.createElement('div');
-//     toast.style.cssText = `
-//         position: fixed; bottom: 20px; right: 20px;
-//         background: ${type === 'error' ? '#ef4444' : '#10b981'};
-//         color: white; padding: 12px 20px; border-radius: 6px;
-//         z-index: 10000; animation: slideIn 0.3s ease;
-//     `;
-//     toast.textContent = message;
-//     document.body.appendChild(toast);
-//     setTimeout(() => {
-//         toast.style.animation = 'slideOut 0.3s ease';
-//         setTimeout(() => toast.remove(), 300);
-//     }, 3000);
-// }

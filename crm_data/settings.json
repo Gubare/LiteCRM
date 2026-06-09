@@ -3,7 +3,7 @@
   "ui.showNavText": true,
   "ui.animateRows": true,
   "ui.theme": "1c",
-  "inventory.lowStockThreshold": 55,
+  "inventory.lowStockThreshold": 20,
   "ui.selectionModifier": "ctrl",
   "charts.period": {
     "type": "all",
@@ -22,6 +22,9 @@
     "6": false
   },
   "calendar.canEditSchedule": true,
-  "auth.passwordHash": "4d939723aee58df1d4cc07dc421ca4128d8c69edfcb8f236d1eb961bc440a81d",
-  "notifications.deadlineAlerts": true
+  "auth.passwordHash": null,
+  "notifications.deadlineAlerts": true,
+  "products.categories": [
+    "Основной товар"
+  ]
 }

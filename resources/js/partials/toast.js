@@ -13,10 +13,10 @@ export function showToast(message, type = 'info', duration = 3000) {
     
     // Иконки для разных типов
     const icons = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
+        success: '',
+        error: '',
+        warning: '',
+        info: 'ℹ'
     };
     
     // Стили для разных типов

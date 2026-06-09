@@ -307,9 +307,9 @@
 
         <!-- Контекстное меню (ПКМ) -->
         <div id="ctxMenu" class="ctx-menu">
-            <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()">
-                <span></span> Редактировать
-            </button>
+            <!-- <button class="ctx-menu-item" id="ctxEdit" onclick="ctxEditAction()"> -->
+                <!-- <span></span> Редактировать -->
+            <!-- </button> -->
             <div class="ctx-divider"></div>
             <button class="ctx-menu-item danger" id="ctxDelete" onclick="ctxDeleteAction()">
                 <span></span> Удалить
@@ -407,7 +407,7 @@
 <div id="saleDetailsModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'saleDetailsModal')">
     <div class="modal-window" style="max-width: 600px;" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <h3 style="margin: 0;">📋 Детали сделки #<span id="detailSaleId"></span></h3>
+            <h3 style="margin: 0;">Детали сделки #<span id="detailSaleId"></span></h3>
         </div>
         
         <div style="padding: 20px 0;">
@@ -437,14 +437,14 @@
             </div>
             
             <!-- Товары в чеке -->
-            <h4 style="margin: 0 0 15px 0; color: #1e293b;">📦 Товары:</h4>
+            <h4 style="margin: 0 0 15px 0; color: #1e293b;">Товары:</h4>
             <div id="detailItems" style="max-height: 300px; overflow-y: auto;">
                 <!-- Динамически заполняется -->
             </div>
             
             <!-- Комментарий -->
             <div id="detailCommentSection" style="margin-top: 20px; padding: 15px; background: #fffbeb; border-radius: 8px; display: none;">
-                <div style="font-size: 12px; color: #64748b; margin-bottom: 5px;">💬 Комментарий</div>
+                <div style="font-size: 12px; color: #64748b; margin-bottom: 5px;">Комментарий</div>
                 <div style="color: #1e293b; line-height: 1.6;" id="detailComment"></div>
             </div>
         </div>
@@ -549,10 +549,8 @@ document.getElementById('editSaleForm').addEventListener('submit', async (e) => 
         if (window.saveDataToFile) await window.saveDataToFile();
         
         closeModal('editSaleModal');
-        // showToast('✅ Изменения сохранены');
         window.loadSalesTable();
     } catch (err) {
-        // showToast('❌ Ошибка сохранения: ' + err.message);
     }
 });
 

@@ -159,9 +159,9 @@
 
         <!-- Панель массовых действий -->
         <div id="bulkActionBar" class="bulk-action-bar">
-            <span>Выбрано: <span class="count-badge">0</span></span>
-            <button id="btnBulkDelete" class="btn-action delete" onclick="window.bulkDelete()">🗑️ Удалить</button>
-            <button class="btn-action" onclick="window.selectionManager.clear()" style="margin-left:auto;">✕ Снять выделение</button>
+            <span>Выбрано: <span id="selectedCount" class="count-badge">0</span></span>
+            <button id="btnBulkDelete" class="btn-action delete" onclick="window.bulkDelete()">Удалить</button>
+            <button class="btn-action" onclick="clearSelection()" style="margin-left:auto;">✕ Снять выделение</button>
         </div>
 
         <!-- Таблица -->
@@ -252,52 +252,9 @@
                         Сохранить
                     </button>
                 </div>
-                    <div class="form-footer-hint">
-                        <kbd>Enter</kbd> - следующее поле | 
-                        <kbd>Ctrl+Tab</kbd> - сохранить и новый | 
-                        <kbd>Esc</kbd> - сохранить и закрыть
-                    </div>
             </form>
         </div>
     
-
-    <div class="modal-shortcuts-panel" id="shortcutsPanel">
-        <h4>Горячие клавиши</h4>
-        
-        <div class="shortcut-item">
-            <span class="shortcut-desc">Переход к следующему полю</span>
-            <div class="shortcut-keys">
-                <kbd>Enter</kbd>
-            </div>
-        </div>
-        
-        <div class="shortcut-item">
-            <span class="shortcut-desc">Сохранить и добавить нового</span>
-            <div class="shortcut-keys">
-                <kbd>Ctrl</kbd>+<kbd>Tab</kbd>
-            </div>
-        </div>
-        
-        <div class="shortcut-item">
-            <span class="shortcut-desc">Сохранить и закрыть</span>
-            <div class="shortcut-keys">
-                <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
-            </div>
-        </div>
-        
-        <div class="shortcut-item">
-            <span class="shortcut-desc">Закрыть без сохранения</span>
-            <div class="shortcut-keys">
-                <kbd>Esc</kbd>
-            </div>
-        </div>
-        
-        <div class="shortcut-item">
-            <span class="shortcut-desc">Сохранить и закрыть</span>
-            <div class="shortcut-keys">
-                <kbd>Ctrl</kbd>+<kbd>Esc</kbd>
-            </div>
-        </div>
     </div>
     </div>
 

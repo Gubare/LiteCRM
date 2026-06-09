@@ -18,6 +18,7 @@ import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js'
 import { SelectionManager } from './partials/selectionManager.js';
 import { confirmModal } from './partials/modalManager.js';
 import { showSuccess, showError, showWarning } from './partials/toast.js';
+import { focusFirstInput, setupModalArrows, setupModalHotkeys, initShortcutsForModal } from './partials/modal-utils.js';
 
 // === СОСТОЯНИЕ СТРАНИЦЫ ===
 let currentPage = 1;
@@ -46,7 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     initSelectionManager();
     
     setupEventListeners();
-    
+    setupModalArrows('#singleSaleModal');
+    setupModalArrows('#bulkAdjustmentModal');
+    setupModalHotkeys('#singleSaleModal', '#singleSaleForm', null, null);
+    setupModalHotkeys('#bulkAdjustmentModal', '#bulkAdjustmentForm', null, null);
     // Установка даты по умолчанию
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -78,10 +82,10 @@ async function handleBulkDelete() {
     await selectionManager.bulkDelete(
         'sales',
         (count) => {
-            showSuccess(`✅ Удалено: ${count}`);
+            showSuccess(`Удалено: ${count}`);
             loadSalesTable();
         },
-        (err) => showError('❌ ' + err.message)
+        (err) => showError('' + err.message)
     );
 }
 
@@ -265,7 +269,7 @@ function renderSalesTable(sales) {
         const typeInfo = TYPE_LABELS[sale.type] || { text: sale.type, class: 'badge-gray' };
         
         // Фон для записей с периодом
-        const hasPeriod = sale.comment?.includes('📅 Период:');
+        const hasPeriod = sale.comment?.includes('Период:');
         const rowBg = hasPeriod ? 'background:#f0f9ff' : '';
         
         return `
@@ -410,7 +414,7 @@ async function handleSingleSaleSubmit() {
         if (new Date(from) > new Date(to)) { showWarning('Некорректный период'); return; }
         
         const fmt = d => new Date(d).toLocaleDateString('ru-RU');
-        comment = `📅 Период: с ${fmt(from)} по ${fmt(to)}`;
+        comment = `Период: с ${fmt(from)} по ${fmt(to)}`;
     } else {
         comment = document.getElementById('saleComment')?.value || '';
     }
@@ -443,35 +447,31 @@ async function handleSingleSaleSubmit() {
     }
     
     btn.disabled = true;
-    btn.textContent = '⏳ Обработка...';
+    btn.textContent = 'Обработка...';
     
-    try {
+
+        try {
         await createSale(formData);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showSuccess('✅ Сделка зарегистрирована');
+        showToast('Сделка зарегистрирована');
         
-        // Сброс формы
-        document.getElementById('singleSaleForm')?.reset();
-        document.getElementById('saleDate').value = new Date().toISOString().slice(0, 16);
-        document.getElementById('salePeriodToggle').checked = false;
-        document.getElementById('saleCommentContainer').style.display = 'block';
-        document.getElementById('salePeriodContainer').style.display = 'none';
+        // Проверка флага SaveAndNew
+        const action = window._modalSaveAction;
+        if (action === 'saveAndNew') {
+            // Очищаем форму и оставляем модалку открытой
+            document.getElementById('singleSaleForm').reset();
+            // Сбрасываем дату на текущую
+            document.getElementById('saleDate').value = new Date().toISOString().slice(0, 16);
+            // Возвращаем фокус
+            setTimeout(() => focusFirstInput('#singleSaleModal'), 50);
+        } else {
+            closeModal('singleSaleModal');
+        }
         
-        // Очищаем контейнер товаров
-        const container = document.getElementById('saleItemsContainer');
-        if (container) container.innerHTML = '';
-        
-        closeModal('singleSaleModal');
-        await populateDropdowns();
         loadSalesTable();
-        
     } catch (error) {
-        console.error('Error creating sale:', error);
-        showError('❌ ' + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Зарегистрировать сделку';
+        showToast(' Ошибка: ' + error.message);
     }
 }
 async function handleBulkAdjustmentSubmit() {
@@ -489,7 +489,7 @@ async function handleBulkAdjustmentSubmit() {
         if (new Date(from) > new Date(to)) { showWarning('Некорректный период'); return; }
         
         const fmt = d => new Date(d).toLocaleDateString('ru-RU');
-        comment = `📅 Период: с ${fmt(from)} по ${fmt(to)}`;
+        comment = `Период: с ${fmt(from)} по ${fmt(to)}`;
     } else {
         comment = document.getElementById('bulkComment')?.value || '';
     }
@@ -511,13 +511,13 @@ async function handleBulkAdjustmentSubmit() {
     }
     
     btn.disabled = true;
-    btn.textContent = '⏳ Обработка...';
+    btn.textContent = 'Обработка...';
     
     try {
         await createBulkAdjustment(formData);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showSuccess('✅ Корректировка зарегистрирована');
+        showSuccess('Корректировка зарегистрирована');
         
         document.getElementById('bulkAdjustmentForm')?.reset();
         document.getElementById('bulkDate').value = new Date().toISOString().slice(0, 16);
@@ -531,7 +531,7 @@ async function handleBulkAdjustmentSubmit() {
         
     } catch (error) {
         console.error('Error creating bulk adjustment:', error);
-        showError('❌ ' + error.message);
+        showError('' + error.message);
     } finally {
         btn.disabled = false;
         btn.textContent = 'Зарегистрировать корректировку';
@@ -551,6 +551,14 @@ window.openModal = function(modalId) {
     if (modal) {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        
+        initShortcutsForModal(`#${modalId}`);
+
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                focusFirstInput(`#${modalId}`);
+            }, 150);
+        });
     }
 };
 
@@ -585,7 +593,7 @@ window.openEditSale = async function(id) {
         
         openModal('editSaleModal');
     } catch (err) {
-        showError('❌ ' + err.message);
+        showError('' + err.message);
     }
 };
 
@@ -595,10 +603,10 @@ window.deleteSaleById = async function(id) {
     try {
         await deleteItem('sales', id);
         if (window.saveDataToFile) await window.saveDataToFile();
-        showSuccess('✅ Запись удалена');
+        showSuccess('Запись удалена');
         loadSalesTable();
     } catch (err) {
-        showError('❌ Ошибка удаления');
+        showError('Ошибка удаления');
     }
 };
 
@@ -622,10 +630,10 @@ window.ctxDeleteAction = async function() {
     try {
         await deleteItem('sales', id);
         if (window.saveDataToFile) await window.saveDataToFile();
-        showSuccess('✅ Запись удалена');
+        showSuccess('Запись удалена');
         loadSalesTable();
     } catch (err) {
-        showError('❌ ' + err.message);
+        showError('' + err.message);
     }
 };
 
@@ -644,10 +652,10 @@ export async function deleteSelected() {
         if (window.saveDataToFile) await window.saveDataToFile();
         
         selectionManager.clear();
-        showSuccess(`✅ Удалено записей: ${count}`);
+        showSuccess(`Удалено записей: ${count}`);
         loadSalesTable();
     } catch (err) {
-        showError('❌ ' + err.message);
+        showError('' + err.message);
     }
 }
 

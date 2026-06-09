@@ -251,7 +251,7 @@
             const config = REPORTS_CONFIG[storeName];
             
             if (!config) {
-                container.innerHTML = `<div class="error">❌ Конфигурация для "${storeName}" не найдена</div>`;
+                container.innerHTML = `<div class="error">Конфигурация для "${storeName}" не найдена</div>`;
                 isCalculating = false;
                 return;
             }
@@ -300,7 +300,7 @@
                     
             } catch (error) {
                 console.error('Error loading reports:', error);
-                container.innerHTML = `<div class="error">❌ Ошибка загрузки данных: ${error.message}</div>`;
+                container.innerHTML = `<div class="error">Ошибка загрузки данных: ${error.message}</div>`;
             } finally {
                 refreshBtn.disabled = false;
                 refreshBtn.innerHTML = 'Обновить';

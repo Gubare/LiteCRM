@@ -3,6 +3,7 @@ import { getAllItems, addItem, updateItem, deleteItem, getDbInstance } from './d
 import { getSetting } from './settings-manager.js';
 import { renderPagination } from './partials/pagination.js';
 import { createTruncatableHtml, initTextViewer } from './partials/textViewer.js';
+import { focusFirstInput, setupModalArrows, setupModalHotkeys, initShortcutsForModal } from './partials/modal-utils.js';
 
 let currentPage = 1;
 let currentPageSize = 10;
@@ -40,6 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadTickets();
     setupEventListeners();
     initTextViewer();
+
+    await populateClientDropdown();
+
+    // Настройка горячих клавиш для модальных окон обращений
+    setupModalArrows('#createTicketModal');
+    setupModalArrows('#editTicketModal');
+    setupModalHotkeys('#createTicketModal', '#createTicketForm', null, null);
+    setupModalHotkeys('#editTicketModal', '#editTicketForm', null, null);
 });
 
 async function waitForDatabase() {
@@ -322,10 +331,10 @@ window.ctxDeleteAction = async function() {
     try {
         await deleteItem('tickets', ctxTargetId);
         if (window.saveDataToFile) await window.saveDataToFile();
-        showToast('✅ Обращение удалено');
+        showToast(' Обращение удалено');
         loadTickets();
     } catch (err) {
-        showToast('❌ Ошибка: ' + err.message);
+        showToast(' Ошибка: ' + err.message);
     }
 };
 
@@ -335,7 +344,7 @@ async function openEditTicket(id) {
     try {
         const tickets = await getAllItems('tickets');
         const ticket = tickets.find(t => t.id === id);
-        if (!ticket) { showToast('❌ Обращение не найдено'); return; }
+        if (!ticket) { showToast(' Обращение не найдено'); return; }
         
         document.getElementById('editTicketId').value = ticket.id;
         document.getElementById('editTicketClient').value = ticket.client_name || '';
@@ -346,7 +355,7 @@ async function openEditTicket(id) {
         
         openModal('editTicketModal');
     } catch (err) {
-        showToast('❌ Ошибка: ' + err.message);
+        showToast(' Ошибка: ' + err.message);
     }
 }
 
@@ -367,10 +376,10 @@ window.deleteSelected = async function() {
         }
         if (window.saveDataToFile) await window.saveDataToFile();
         window.clearSelection();
-        showToast(`✅ Удалено обращений: ${count}`);
+        showToast(` Удалено обращений: ${count}`);
         loadTickets();
     } catch (err) {
-        showToast('❌ Ошибка: ' + err.message);
+        showToast(' Ошибка: ' + err.message);
     }
 };
 
@@ -385,7 +394,7 @@ export async function handleCreateTicket() {
     };
     
     if (!formData.type) {
-        showToast('⚠️ Выберите тип обращения');
+        showToast(' Выберите тип обращения');
         return;
     }
     
@@ -393,12 +402,22 @@ export async function handleCreateTicket() {
         await addItem('tickets', formData);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showToast('✅ Обращение создано');
-        document.getElementById('createTicketForm').reset();
-        closeModal('createTicketModal');
+        showToast('Обращение создано');
+        
+        //Проверка флага SaveAndNew
+        const action = window._modalSaveAction;
+        if (action === 'saveAndNew') {
+            // Очищаем форму и оставляем модалку открытой
+            document.getElementById('createTicketForm').reset();
+            // Возвращаем фокус на первое поле
+            setTimeout(() => focusFirstInput('#createTicketModal'), 50);
+        } else {
+            closeModal('createTicketModal');
+        }
+        
         loadTickets();
     } catch (error) {
-        showToast('❌ Ошибка: ' + error.message);
+        showToast(' Ошибка: ' + error.message);
     }
 }
 
@@ -417,11 +436,11 @@ async function handleEditTicket() {
         await updateItem('tickets', id, updates);
         if (window.saveDataToFile) await window.saveDataToFile();
         
-        showToast('✅ Обращение обновлено');
+        showToast('Обращение обновлено');
         closeModal('editTicketModal');
         loadTickets();
     } catch (error) {
-        showToast('❌ Ошибка: ' + error.message);
+        showToast(' Ошибка: ' + error.message);
     }
 }
 
@@ -436,8 +455,20 @@ function showToast(message) {
 }
 
 window.openModal = function(modalId) {
-    document.getElementById(modalId).classList.add('active');
-    document.body.style.overflow = 'hidden';
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        initShortcutsForModal(`#${modalId}`);
+
+        // Гарантированный автофокус
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                focusFirstInput(`#${modalId}`);
+            }, 150);
+        });
+    }
 };
 
 window.closeModal = function(modalId) {
@@ -459,6 +490,44 @@ window.viewFullText = function(text) {
         openModal('fullTextModal');
     }
 };
+
+/**
+ * Заполняет выпадающий список клиентов в форме обращения
+ */
+async function populateClientDropdown() {
+    try {
+        const clients = await getAllItems('clients');
+        const select = document.getElementById('ticketClient');
+        
+        if (!select) {
+            console.warn('⚠️ Element #ticketClient not found');
+            return;
+        }
+        
+        // Сохраняем текущее выбранное значение (если редактируем)
+        const currentValue = select.value;
+        
+        // Формируем опции
+        const options = clients
+            .sort((a, b) => a.name.localeCompare(b.name)) // Сортировка по имени
+            .map(c => {
+                const contact = c.phone || c.email || 'нет контакта';
+                return `<option value="${c.id}">${c.name} — ${contact}</option>`;
+            })
+            .join('');
+        
+        // Заполняем select
+        select.innerHTML = '<option value="">Оставить пустым</option>' + options;
+        
+        // Восстанавливаем выбранное значение (для режима редактирования)
+        if (currentValue) {
+            select.value = currentValue;
+        }
+        
+    } catch (error) {
+        console.error('❌ Error populating client dropdown:', error);
+    }
+}
 
 // Глобальный экспорт
 window.openEditTicket = openEditTicket;

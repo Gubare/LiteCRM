@@ -575,7 +575,7 @@ export async function updateClientMetrics(clientId, saleAmount, countChange = 1)
 }
 
 export function deleteClient(id) { return deleteItem('clients', id); }
-export function updateClient(id, data) { return updateItem('clients', { ...data, updated_at: new Date().toISOString() }); }
+export function updateClient(id, data) { return updateItem('clients', id, { ...data, updated_at: new Date().toISOString() }); }
 export function getClientById(id) { return getItemById('clients', id); }
 export function clearAllClients() { return clearStore('clients'); }
 

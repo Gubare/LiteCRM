@@ -1,5 +1,5 @@
 // resources/js/partials/modalManager.js
-
+import { initShortcutsForModal } from './modal-utils.js';
 /**
  * Менеджер модальных окон
  * Универсальные функции для работы с модальными окнами
@@ -38,7 +38,7 @@ export function openModal(modalId, options = {}) {
     document.body.style.overflow = 'hidden'; // Блокируем прокрутку фона
     
     openModals.add(modalId);
-
+    initShortcutsForModal(`#${modalId}`);
     // Обработчик клика на оверлей
     if (settings.closeOnOverlay) {
         const overlayHandler = (e) => {

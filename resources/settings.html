@@ -452,19 +452,28 @@
         </div>
         <div class="settings-section" id="authSection">
             <h3>Безопасность</h3>
+            
             <div class="form-group">
-                <label>Пароль для входа в приложение:</label>
+                <label>Текущий пароль (для сброса):</label>
+                <input type="password" id="currentPassword" class="form-control" placeholder="Введите текущий пароль чтобы сбросить">
+                <small style="color: #94a3b8; margin-top: 5px; display: block;">
+                    Если введён текущий пароль, он будет удалён и приложение будет работать без пароля.
+                </small>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                <label>Новый пароль:</label>
                 <div style="display: flex; gap: 10px;">
                     <input type="password" id="appPassword" class="form-control" placeholder="Введите новый пароль">
                     <button id="btnSavePassword" class="btn-primary" style="width: auto;">Сохранить</button>
                 </div>
                 <small style="color: #94a3b8; margin-top: 5px; display: block;">
-                    Если пароль задан, при следующем запуске потребуется ввод. 
+                    Если пароль задан, при следующем запуске потребуется ввод.
                 </small>
             </div>
+            
             <div id="passwordStatus" style="margin-top: 10px; font-size: 13px;"></div>
         </div>
-
         <!-- Удаление приложения -->
         <div class="settings-section">
             <h3>Управление приложением</h3>
@@ -703,7 +712,7 @@
         
         console.log('🔍 Checking elements:');
         for (const [name, el] of Object.entries(elements)) {
-            console.log(`  ${name}:`, el ? '✅ FOUND' : '❌ NOT FOUND');
+            console.log(`  ${name}:`, el ? 'FOUND' : 'NOT FOUND');
         }
         
         // Применяем настройки
@@ -859,8 +868,10 @@
     // Загрузка статуса пароля
     const statusEl = document.getElementById('passwordStatus');
     const inputEl = document.getElementById('appPassword');
+    const currentPassEl = document.getElementById('currentPassword');
     const btnSave = document.getElementById('btnSavePassword');
     let savedHash = null;
+
     try {
         const data = await Neutralino.filesystem.readFile('crm_data/settings.json');
         const settings = JSON.parse(data);
@@ -869,58 +880,129 @@
     } catch (e) {
         console.log('⚠️ Could not read settings file');
     }
-    
+
     if (savedHash) {
         if (statusEl) {
-            statusEl.innerHTML = '<span style="color: #22c55e;">Пароль установлен</span>';
+            statusEl.innerHTML = '<span style="color: #22c55e;">✓ Пароль установлен</span>';
         }
         if (inputEl) {
             inputEl.placeholder = 'Введите новый пароль (оставьте пустым чтобы не менять)';
         }
+        if (currentPassEl) {
+            currentPassEl.placeholder = 'Введите текущий пароль для сброса';
+        }
     } else {
         if (statusEl) {
-            statusEl.innerHTML = '<span style="color: #f59e0b;">Пароль не задан</span>';
+            statusEl.innerHTML = '<span style="color: #f59e0b;">⚠ Пароль не задан</span>';
+        }
+        if (currentPassEl) {
+            currentPassEl.disabled = true;
+            currentPassEl.placeholder = 'Пароль не установлен';
         }
     }
-    
-    // Сохранение пароля
+
+    // Сохранение или сброс пароля
     if (btnSave) {
         btnSave.addEventListener('click', async () => {
-            const pass = inputEl.value;
+            const currentPass = currentPassEl?.value || '';
+            const newPass = inputEl?.value || '';
             
-            console.log('💾 Saving password, length:', pass?.length);
+            console.log('💾 Password operation:', { 
+                hasCurrent: currentPass.length > 0, 
+                hasNew: newPass.length > 0 
+            });
             
-            if (!pass || pass.trim() === '') {
-                showToast('⚠️ Введите пароль', 'warning');
-                return;
+            // Логика 1: Сброс пароля (введён текущий)
+            if (currentPass && currentPass.trim() !== '') {
+                try {
+                    btnSave.disabled = true;
+                    btnSave.textContent = 'Проверка...';
+                    
+                    // Хешируем введённый текущий пароль
+                    const enteredHash = await hashPassword(currentPass);
+                    console.log('🔐 Entered hash:', enteredHash);
+                    console.log('🔐 Saved hash:', savedHash);
+                    
+                    // Сравниваем хеши
+                    if (enteredHash === savedHash) {
+                        // Пароль верный - удаляем его
+                        await updateSetting('auth.passwordHash', null);
+                        console.log('✅ Password removed');
+                        
+                        showToast('Пароль сброшен! Теперь вход без пароля.', 'success');
+                        
+                        if (statusEl) {
+                            statusEl.innerHTML = '<span style="color: #f59e0b;">⚠ Пароль не задан</span>';
+                        }
+                        if (currentPassEl) {
+                            currentPassEl.value = '';
+                            currentPassEl.disabled = true;
+                            currentPassEl.placeholder = 'Пароль не установлен';
+                        }
+                        if (inputEl) {
+                            inputEl.value = '';
+                            inputEl.placeholder = 'Введите новый пароль';
+                        }
+                        
+                        // Обновляем savedHash
+                        savedHash = null;
+                    } else {
+                        // Пароль неверный
+                        showToast('Неверный текущий пароль', 'error');
+                        if (currentPassEl) {
+                            currentPassEl.value = '';
+                            currentPassEl.focus();
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error resetting password:', error);
+                    showToast('Ошибка: ' + error.message, 'error');
+                } finally {
+                    btnSave.disabled = false;
+                    btnSave.textContent = 'Сохранить';
+                }
             }
-            
-            try {
-                btnSave.disabled = true;
-                btnSave.textContent = 'Сохранение...';
-                
-                const hash = await hashPassword(pass);
-                console.log('🔐 Generated hash:', hash);
-                
-                await updateSetting('auth.passwordHash', hash);
-                console.log('✅ Password saved to settings');
-                
-                showToast('✅ Пароль сохранен! Перезапустите приложение.', 'success');
-                
-                if (statusEl) {
-                    statusEl.innerHTML = '<span style="color: #22c55e;">Пароль установлен</span>';
+            // Логика 2: Установка нового пароля
+            else if (newPass && newPass.trim() !== '') {
+                try {
+                    btnSave.disabled = true;
+                    btnSave.textContent = 'Сохранение...';
+                    
+                    const hash = await hashPassword(newPass);
+                    console.log('🔐 Generated hash:', hash);
+                    
+                    await updateSetting('auth.passwordHash', hash);
+                    console.log('✅ Password saved to settings');
+                    
+                    showToast('Пароль сохранён! Перезапустите приложение.', 'success');
+                    
+                    if (statusEl) {
+                        statusEl.innerHTML = '<span style="color: #22c55e;">✓ Пароль установлен</span>';
+                    }
+                    if (currentPassEl) {
+                        currentPassEl.disabled = false;
+                        currentPassEl.placeholder = 'Введите текущий пароль для сброса';
+                    }
+                    if (inputEl) {
+                        inputEl.value = '';
+                        inputEl.placeholder = 'Введите новый пароль (оставьте пустым чтобы не менять)';
+                    }
+                    
+                    // Обновляем savedHash
+                    savedHash = hash;
+                    
+                } catch (error) {
+                    console.error('❌ Error saving password:', error);
+                    showToast('Ошибка сохранения: ' + error.message, 'error');
+                } finally {
+                    btnSave.disabled = false;
+                    btnSave.textContent = 'Сохранить';
                 }
-                if (inputEl) {
-                    inputEl.value = '';
-                    inputEl.placeholder = 'Пароль установлен ✓';
-                }
-                
-            } catch (error) {
-                console.error('❌ Error saving password:', error);
-                showToast('❌ Ошибка сохранения: ' + error.message, 'error');
-            } finally {
-                btnSave.disabled = false;
-                btnSave.textContent = 'Сохранить';
+            }
+            // Логика 3: Оба поля пустые
+            else {
+                showToast(' Введите текущий пароль для сброса или новый пароль для установки', 'warning');
             }
         });
     } else {
@@ -964,7 +1046,7 @@
             try {
                 await Neutralino.filesystem.getStats(uninstallerPath);
             } catch {
-                 showToast('⚠️ Деинсталлятор не найден. Возможно, это портативная версия или приложение запущено из исходников.', 'warning');
+                 showToast(' Деинсталлятор не найден. Возможно, это портативная версия или приложение запущено из исходников.', 'warning');
                 return;
             }
             

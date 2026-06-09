@@ -1,6 +1,9 @@
 /* =========================================
    1. CSS ПЕРЕМЕННЫЕ И ТЕМЫ
    ========================================= */
+*, *::before, *::after {
+    border-radius: 0 !important;
+}
 :root {
   /* Цвета */
   --color-primary: #3b82f6;
@@ -2717,4 +2720,289 @@ body.help-tooltips-hidden .tooltip-icon { display: none !important; }
 .export-modal label:hover {
     background: #f5f5f5;
     border-color: #3b82f6;
+}
+
+.modal-shortcuts-panel {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.modal-shortcuts-panel h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.shortcut-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.shortcut-desc {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.shortcut-keys {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.shortcut-keys kbd {
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-family: monospace;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.form-footer-hint {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+.form-footer-hint kbd {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    margin: 0 2px;
+}
+
+/* === ПАНЕЛЬ ГОРЯЧИХ КЛАВИШ === */
+
+@keyframes fadeInShortcuts {
+    0% {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.modal-shortcuts-panel h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #475569;
+    font-weight: 600;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.shortcut-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.shortcut-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.shortcut-keys {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.shortcut-keys kbd {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #475569;
+    box-shadow: 0 2px 0 #cbd5e1, 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Адаптация для маленьких экранов */
+@media (max-width: 900px) {
+    .modal-shortcuts-panel {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        max-height: none;
+        margin-top: 20px;
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+}
+
+.shortcut-alt {
+    display: block;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.shortcut-keys kbd {
+    min-width: 28px; /* чуть шире для символов ↑↓␣ */
+}
+
+/* === GUIDE ACCORDION === */
+.guide-accordion {
+    margin-top: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.accordion-item:last-child {
+    border-bottom: none;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.accordion-header:hover {
+    background: #f1f5f9;
+}
+
+.accordion-header.active {
+    background: #e0f2fe;
+    border-left: 3px solid #3b82f6;
+}
+
+.accordion-title {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.accordion-icon {
+    font-size: 12px;
+    color: #64748b;
+    transition: transform 0.2s;
+}
+
+.accordion-header.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    padding: 0 16px;
+    background: white;
+    transition: max-height 0.3s ease-out;
+}
+
+.accordion-content .markdown-body {
+    padding: 16px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #475569;
+}
+
+/* Markdown внутри гайда */
+.accordion-content .markdown-body h4 {
+    margin: 16px 0 8px 0;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.accordion-content .markdown-body ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.accordion-content .markdown-body li {
+    margin: 4px 0;
+}
+
+.accordion-content .markdown-body code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.accordion-content .markdown-body blockquote {
+    margin: 12px 0;
+    padding: 10px 14px;
+    background: #f0f9ff;
+    border-left: 3px solid #3b82f6;
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    color: #0c4a6e;
+}
+
+.accordion-content .markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12px;
+}
+
+.accordion-content .markdown-body th,
+.accordion-content .markdown-body td {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.accordion-content .markdown-body th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .accordion-header {
+        padding: 12px 14px;
+    }
+    
+    .accordion-title {
+        font-size: 13px;
+    }
 }

@@ -376,12 +376,12 @@ export async function importFile(sourcePath, sourceType, targetType) {
             logAction('import', 'converter', null, { source: sourcePath, target: 'crm_data.sqlite', type: `${sourceType}2${targetType}` });
         }
         
-        showToast(`✅ Конвертация завершена: ${sourceType} → ${targetType}`, 'success');
+        showToast(`Конвертация завершена: ${sourceType} → ${targetType}`, 'success');
         return true;
         
     } catch (error) {
         console.error('❌ Import error:', error);
-        showToast(`❌ Ошибка: ${error.message}`, 'error');
+        showToast(`Ошибка: ${error.message}`, 'error');
         throw error;
     }
 }
@@ -472,7 +472,7 @@ export async function exportFile(sourceType, targetType, dirPath) {
                     filesCreated
                 });
             } else {
-                showToast('❌ Не удалось создать ни одного файла', 'error');
+                showToast(' Не удалось создать ни одного файла', 'error');
             }
             
             return filesCreated > 0;
@@ -542,7 +542,7 @@ function setupImportModal() {
                     document.getElementById('importFilePath').value = result[0];
                 }
             } catch (error) {
-                showToast('❌ Ошибка выбора файла', 'error');
+                showToast(' Ошибка выбора файла', 'error');
             }
         });
     }
@@ -553,7 +553,7 @@ function setupImportModal() {
         const targetType = document.getElementById('importTargetType').value;
         
         if (!sourcePath) {
-            showToast('⚠️ Выберите файл', 'error');
+            showToast(' Выберите файл', 'error');
             return;
         }
         
@@ -595,7 +595,7 @@ function setupExportModal() {
                     document.getElementById('exportDirPath').value = result;
                 }
             } catch (error) {
-                showToast('❌ Ошибка выбора папки', 'error');
+                showToast(' Ошибка выбора папки', 'error');
             }
         });
     }
@@ -606,7 +606,7 @@ function setupExportModal() {
         const dirPath = document.getElementById('exportDirPath').value;
         
         if (!dirPath) {
-            showToast('⚠️ Выберите папку', 'error');
+            showToast(' Выберите папку', 'error');
             return;
         }
         

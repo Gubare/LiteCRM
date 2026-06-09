@@ -95,7 +95,7 @@ function createTextViewerModal() {
     <div id="fullTextModal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'fullTextModal')">
         <div class="text-viewer-modal" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3 id="fullTextModalTitle" style="margin: 0;">📋 Полный текст</h3>
+                <h3 id="fullTextModalTitle" style="margin: 0;">Полный текст</h3>
             </div>
             <div class="modal-body">
                 <div id="fullTextContent" class="full-text-content"></div>

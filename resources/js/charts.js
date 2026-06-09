@@ -16,12 +16,12 @@ const CHART_CONFIGS = {
             icon: '',
             description: 'Продажа/Списание/Поступление'
         },
-        'topProducts': {
-            title: 'Топ-10 товаров',
-            type: 'bar',
-            icon: '',
-            description: 'Самые продаваемые товары'
-        },
+        // 'topProducts': {
+        //     title: 'Топ-10 товаров',
+        //     type: 'bar',
+        //     icon: '',
+        //     description: 'Самые продаваемые товары'
+        // },
         'avgCheckTrend': {
             title: 'Средний чек',
             type: 'line',
@@ -85,13 +85,13 @@ const CHART_CONFIGS = {
             type: 'doughnut',
             icon: '',
             description: 'Распределение товаров по категориям'
-        },
-        'categoryProfitability': {
-            title: 'Доходность категорий',
-            type: 'bar',
-            icon: '',
-            description: 'Выручка по категориям'
         }
+        // 'categoryProfitability': {
+        //     title: 'Доходность категорий',
+        //     type: 'bar',
+        //     icon: '',
+        //     description: 'Выручка по категориям'
+        // }
     },
     tickets: {
         'ticketsOverTime': {

@@ -191,7 +191,7 @@
         </div>
       </div>
       
-      <!-- Руководство по разделам -->
+      <!-- Руководство по разделам
       <div class="guide-section">
         <h3>Быстрый старт для работы:</h3>
         <ul>
@@ -213,7 +213,7 @@
           
           <li><strong>Задачи</strong> — канбан-доска для управления задачами. Приоритизация (Срочно/Важно), дедлайны, автоматические уведомления.</li>
         </ul>
-      </div>
+      </div> -->
       
     </main>
     
@@ -648,7 +648,7 @@
             `
           },
           product: {
-            title: '📦 Добавление товара',
+            title: 'Добавление товара',
             fields: `
               <div class="form-group">
                 <label>Название товара *</label>
@@ -671,7 +671,7 @@
             `
           },
           ticket: {
-            title: '📝 Регистрация обращения',
+            title: 'Регистрация обращения',
             fields: `
               <div class="form-row">
                 <div>
@@ -695,7 +695,7 @@
             `
           },
           sale: {
-            title: '💰 Оформление продажи',
+            title: 'Оформление продажи',
             fields: `
               <div class="form-group">
                 <label>Клиент *</label>
@@ -723,7 +723,7 @@
             `
           },
           task: {
-            title: '✅ Создание задачи',
+            title: 'Создание задачи',
             fields: `
               <div class="form-group">
                 <label>Название задачи *</label>
@@ -844,17 +844,17 @@
           
           // Показ уведомления (если есть showToast)
           if (window.showToast) {
-            showToast('✅ Данные сохранены!', 'success');
+            showToast('Данные сохранены!', 'success');
           } else {
-            alert('✅ Данные сохранены!');
+            alert('Данные сохранены!');
           }
           
         } catch (error) {
           console.error('❌ Error saving:', error);
           if (window.showToast) {
-            showToast('❌ Ошибка: ' + error.message, 'error');
+            showToast('Ошибка: ' + error.message, 'error');
           } else {
-            alert('❌ Ошибка: ' + error.message);
+            alert('Ошибка: ' + error.message);
           }
         }
       };

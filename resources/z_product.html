@@ -376,7 +376,7 @@
                     <td><input type="number" class="form-input product-input" value="${item.qty}" onchange="updateQty(${index}, this.value)"></td>
                     <td><input type="number" class="form-input product-input" value="${item.discount}" min="0" max="100" onchange="updateDiscount(${index}, this.value)"></td>
                     <td class="align-right"><strong>${finalSum.toLocaleString()} ₽</strong></td>
-                    <td><button class="btn-danger-text" onclick="removeItem(${index})">🗑️</button></td>
+                    <td><button class="btn-danger-text" onclick="removeItem(${index})"></button></td>
                 `;
                 tbody.appendChild(tr);
             });
