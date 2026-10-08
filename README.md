@@ -101,8 +101,8 @@ git --version
 
 ```bash
 # 1. Клонирование репозитория
-git clone https://github.com/ваш-логин/ваш-репозиторий.git
-cd ваш-репозиторий
+git clone https://github.com/Gubare/LiteCRM
+cd LiteCRM
 
 # 2. Установка зависимостей
 npm install
